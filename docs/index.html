@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#fbfbfa">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="정비사업뉴스">
+    <link rel="manifest" href="manifest.json">
+    <title>서울동부지사 관할 지역 정비사업 뉴스</title>
+    <style>
+        body {
+            margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, "Malgun Gothic", sans-serif;
+            background-color: #fbfbfa; color: #37352f;
+        }
+        #header { padding: 40px 50px 20px 50px; background-color: #fbfbfa; border-bottom: 1px solid #edf2fa; }
+        #header h1 { font-size: 28px; font-weight: 700; margin: 0 0 8px 0; color: #37352f; }
+        #header .subtitle { color: #73726e; font-size: 14px; }
+        #container { display: flex; padding: 0 50px 50px 50px; }
+        #sidebar { width: 200px; padding-right: 25px; border-right: 1px solid #eaeaea; margin-top: 30px; flex-shrink: 0; }
+        .sidebar-title { font-size: 11px; font-weight: 600; color: #acaba9; margin-bottom: 12px; padding-left: 10px; letter-spacing: 0.5px; }
+        .sidebar-item { padding: 8px 12px; font-size: 14px; border-radius: 6px; color: #37352f; margin-bottom: 4px; cursor: pointer; transition: background 0.2s; }
+        .sidebar-item:hover { background-color: #f1f1ef; }
+        .sidebar-item.active { background-color: #ececed; font-weight: 600; }
+        #main-content { flex: 1; padding-left: 40px; margin-top: 30px; min-width: 0; }
+        .view-bar { font-size: 14px; font-weight: 500; margin-bottom: 20px; border-bottom: 1px solid #eaeaea; padding-bottom: 8px; color: #37352f; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px; }
+        .notion-card { background: #ffffff; border: 1px solid #e9e9e6; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; }
+        .notion-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .card-meta { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+        .tag { font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
+        .district-tag { background-color: #edf2fa; color: #1f497d; }
+        .source-tag { background-color: #fbe4e4; color: #9c3a3a; }
+        .date-tag { background-color: #f1f1ef; color: #5a5a57; }
+        .news-title { font-size: 16px; font-weight: 600; margin: 0 0 14px 0; line-height: 1.4; }
+        .news-title a { color: #2383e2; text-decoration: none; }
+        .news-title a:hover { text-decoration: underline; }
+        .summary-box { background-color: #f7f7f5; padding: 14px; border-radius: 6px; font-size: 13.5px; line-height: 1.6; color: #37352f; margin-bottom: 14px; flex-grow: 1; }
+        .card-footer { font-size: 13px; margin-top: 8px; border-top: 1px dashed #eaeaea; padding-top: 10px; }
+        .card-footer a { color: #2383e2; text-decoration: none; font-weight: 500; display: inline-block; cursor: pointer; }
+        .card-footer a:hover { text-decoration: underline; color: #1a5fa8; }
+
+        /* ── 모바일 (폭 768px 이하) ── */
+        @media (max-width: 768px) {
+            #header { padding: 24px 16px 14px 16px; }
+            #header h1 { font-size: 20px; }
+            #header .subtitle { font-size: 12px; }
+            #container { flex-direction: column; padding: 0 16px 30px 16px; }
+            /* 사이드바 → 상단 가로 스크롤 탭 */
+            #sidebar {
+                width: 100%; padding-right: 0; border-right: none;
+                border-bottom: 1px solid #eaeaea; margin-top: 12px; padding-bottom: 10px;
+                position: sticky; top: 0; background-color: #fbfbfa; z-index: 10;
+            }
+            .sidebar-title { display: none; }
+            #sidebar-items { display: flex; overflow-x: auto; gap: 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+            #sidebar-items::-webkit-scrollbar { display: none; }
+            .sidebar-item { white-space: nowrap; margin-bottom: 0; background-color: #f1f1ef; font-size: 13px; padding: 7px 12px; border-radius: 16px; }
+            .sidebar-item.active { background-color: #37352f; color: #ffffff; }
+            #main-content { padding-left: 0; margin-top: 16px; }
+            .card-grid { grid-template-columns: 1fr; gap: 14px; }
+            .notion-card { padding: 16px; }
+            .notion-card:hover { transform: none; }
+        }
+    </style>
+
+    <script>
+        function filterDistrict(districtName, element) {
+            const items = document.querySelectorAll('.sidebar-item');
+            items.forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+
+            const cards = document.querySelectorAll('.notion-card');
+            cards.forEach(card => {
+                if (districtName === 'all') {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = (card.getAttribute('data-district') === districtName) ? 'flex' : 'none';
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <div id="header">
+        <h1>서울동부지사 관할 지역 정비사업 뉴스</h1>
+        <div class="subtitle">📅 2026-07-07 기준 · 최근 30일 (2026-06-07 ~) · 총 2건 · 갱신 2026-07-07 07:00 KST</div>
+    </div>
+
+    <div id="container">
+        <div id="sidebar">
+            <div class="sidebar-title">관할 자치구</div>
+            <div id="sidebar-items">
+            <div class="sidebar-item active" onclick="filterDistrict('all', this)">🌐 전체 (2)</div><div class="sidebar-item" onclick="filterDistrict('성동구', this)">📍 성동구 (1)</div><div class="sidebar-item" onclick="filterDistrict('광진구', this)">📍 광진구 (0)</div><div class="sidebar-item" onclick="filterDistrict('동대문구', this)">📍 동대문구 (0)</div><div class="sidebar-item" onclick="filterDistrict('중랑구', this)">📍 중랑구 (0)</div><div class="sidebar-item" onclick="filterDistrict('도봉구', this)">📍 도봉구 (0)</div><div class="sidebar-item" onclick="filterDistrict('노원구', this)">📍 노원구 (1)</div><div class="sidebar-item" onclick="filterDistrict('강북구', this)">📍 강북구 (0)</div>
+            </div>
+        </div>
+
+        <div id="main-content">
+            <div class="view-bar">📋 갤러리 보기 — 최신순</div>
+            <div class="card-grid">
+                
+            <div class="notion-card" data-district="노원구">
+                <div class="card-meta">
+                    <span class="tag district-tag">📍 노원구</span>
+                    <span class="tag source-tag">📰 네이버뉴스</span>
+                    <span class="tag date-tag">📅 2026년 7월 4일</span>
+                </div>
+                <h3 class="news-title">
+                    <a href="https://n.news.naver.com/t1" target="_blank">상계주공5단지 재건축 사업시행인가</a>
+                </h3>
+                <div class="summary-box">
+                    • 노원구 상계주공5단지 재건축 사업시행계획이 인가됨<br>• 이주 및 착공 일정이 구체화될 전망임
+                </div>
+                <div class="card-footer">
+                    <a href="https://n.news.naver.com/t1" target="_blank">상세 원문 보기 →</a>
+                </div>
+            </div>
+            
+            <div class="notion-card" data-district="성동구">
+                <div class="card-meta">
+                    <span class="tag district-tag">📍 성동구</span>
+                    <span class="tag source-tag">📰 네이버뉴스</span>
+                    <span class="tag date-tag">📅 2026년 6월 27일</span>
+                </div>
+                <h3 class="news-title">
+                    <a href="https://n.news.naver.com/t2" target="_blank">성수전략정비구역 1지구 시공사 선정</a>
+                </h3>
+                <div class="summary-box">
+                    • 성동구 성수전략정비구역 1지구가 시공사 선정 총회를 개최함<br>• 한강변 정비사업 추진이 본격화됨
+                </div>
+                <div class="card-footer">
+                    <a href="https://n.news.naver.com/t2" target="_blank">상세 원문 보기 →</a>
+                </div>
+            </div>
+            
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
