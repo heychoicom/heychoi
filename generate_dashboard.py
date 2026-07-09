@@ -101,15 +101,15 @@ def _list_params(page: int) -> dict:
     }
 
 
-def _detail_url(host: str, mgt_no: str) -> str:
-    return (f"https://{host}{EMINWON_PATH}?jndinm=OfrNotAncmtEJB&context=NTIS"
+def _detail_url(base: str, mgt_no: str) -> str:
+    return (f"{base}{EMINWON_PATH}?jndinm=OfrNotAncmtEJB&context=NTIS"
             f"&method=selectOfrNotAncmt&methodnm=selectOfrNotAncmtRegst"
             f"&not_ancmt_mgt_no={mgt_no}&homepage_pbs_yn=Y&subCheck=Y"
             f"&ofr_pageSize=10&not_ancmt_se_code=01,02,03,04,05,06"
             f"&title=고시공고&initValue=Y&countYn=Y&Key=B_Subject")
 
 
-def _parse_notice_rows(html_text: str, host: str) -> list:
+def _parse_notice_rows(html_text: str, base: str) -> list:
     """새올 목록 페이지의 표에서 (제목, 부서, 날짜, 상세링크) 추출"""
     soup = BeautifulSoup(html_text, "html.parser")
     items = []
@@ -142,7 +142,7 @@ def _parse_notice_rows(html_text: str, host: str) -> list:
 
         items.append({
             "title": title, "dept": dept, "date": pub,
-            "link": _detail_url(host, m_mgt.group(1)),
+            "link": _detail_url(base, m_mgt.group(1)),
         })
     return items
 
@@ -154,36 +154,51 @@ def fetch_notices_for_district(district: str, cutoff: datetime) -> list | None:
         return None
 
     for host in EMINWON_HOSTS[district]:
-        collected, ok = [], False
-        for page in range(1, NOTICE_PAGES + 1):
-            try:
-                r = requests.get(f"https://{host}{EMINWON_PATH}",
-                                 params=_list_params(page), headers=UA,
-                                 timeout=12, verify=False)
-                r.raise_for_status()
-            except Exception:
-                break  # 이 호스트 포기, 다음 후보로
-            rows = _parse_notice_rows(_decode(r), host)
-            if not rows:
-                break
-            ok = True
-            collected.extend(rows)
-            if min(x["date"] for x in rows) < cutoff:
-                break  # 이 페이지에 이미 기간 밖 고시가 있으면 중단
+        # 구청 서버는 https 미지원(http 전용)인 곳이 많아 두 방식 모두 시도
+        for scheme in ("https", "http"):
+            base = f"{scheme}://{host}"
+            collected, ok = [], False
+            for page in range(1, NOTICE_PAGES + 1):
+                try:
+                    r = requests.get(f"{base}{EMINWON_PATH}",
+                                     params=_list_params(page), headers=UA,
+                                     timeout=12, verify=False)
+                    r.raise_for_status()
+                except Exception as e:
+                    if page == 1:
+                        print(f"    [{scheme}://{host}] 접속 실패: {type(e).__name__}")
+                    break  # 이 방식 포기
+                rows = _parse_notice_rows(_decode(r), base)
+                if not rows:
+                    if page == 1:
+                        print(f"    [{scheme}://{host}] 접속됐으나 목록 파싱 0행")
+                    break
+                ok = True
+                collected.extend(rows)
+                if min(x["date"] for x in rows) < cutoff:
+                    break  # 이 페이지에 이미 기간 밖 고시가 있으면 중단
 
-        if ok:
-            seen, result = set(), []
-            for n in collected:
-                if n["date"] < cutoff or n["link"] in seen:
-                    continue
-                if not any(k in n["title"] for k in NOTICE_KEYWORDS):
-                    continue
-                seen.add(n["link"])
-                n["district"] = district
-                result.append(n)
-            result.sort(key=lambda x: x["date"], reverse=True)
-            print(f"  → [{host}] 고시 {len(result)}건 채택")
-            return result[:MAX_NOTICE_PER_DISTRICT]
+            if ok:
+                in_period = [n for n in collected if n["date"] >= cutoff]
+                seen, result = set(), []
+                for n in in_period:
+                    if n["link"] in seen:
+                        continue
+                    if not any(k in n["title"] for k in NOTICE_KEYWORDS):
+                        continue
+                    seen.add(n["link"])
+                    n["district"] = district
+                    result.append(n)
+                result.sort(key=lambda x: x["date"], reverse=True)
+                print(f"  → [{scheme}://{host}] 목록 {len(collected)}행 / "
+                      f"기간내 {len(in_period)}건 / 정비관련 {len(result)}건 채택")
+                if in_period and result:
+                    return result[:MAX_NOTICE_PER_DISTRICT]
+                if in_period:
+                    # 목록·날짜는 정상인데 정비 관련 고시가 없는 경우 → 0건으로 확정
+                    return []
+                # 기간내 0건은 날짜 파싱 오류일 수 있으므로 다음 후보도 시도
+                print(f"    (기간내 고시가 없어 다음 후보 주소 확인)")
 
     print(f"  → 고시공고 수집 실패 (모든 호스트 불가)")
     return None
