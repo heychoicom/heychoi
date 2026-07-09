@@ -7,1888 +7,1202 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="정비사업뉴스">
     <link rel="manifest" href="manifest.json">
-    <title>서울동부지사 관할 지역 정비사업 뉴스</title>
+    <title>서울동부지사 관할 지역 정비사업 뉴스·고시</title>
     <style>
-        body {
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, "Malgun Gothic", sans-serif;
-            background-color: #fbfbfa; color: #37352f;
-        }
-        #header { padding: 40px 50px 20px 50px; background-color: #fbfbfa; border-bottom: 1px solid #edf2fa; }
-        #header h1 { font-size: 28px; font-weight: 700; margin: 0 0 8px 0; color: #37352f; }
-        #header .subtitle { color: #73726e; font-size: 14px; }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, "Malgun Gothic", sans-serif; background-color: #fbfbfa; color: #37352f; }
+        #header { padding: 40px 50px 0 50px; background-color: #fbfbfa; border-bottom: 1px solid #edf2fa; }
+        #header h1 { font-size: 28px; font-weight: 700; margin: 0 0 8px 0; }
+        #header .subtitle { color: #73726e; font-size: 14px; margin-bottom: 16px; }
+        .tab-bar { display: flex; gap: 4px; }
+        .tab-btn { padding: 10px 18px; font-size: 15px; font-weight: 600; color: #73726e; cursor: pointer; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: #37352f; border-bottom-color: #37352f; }
         #container { display: flex; padding: 0 50px 50px 50px; }
         #sidebar { width: 200px; padding-right: 25px; border-right: 1px solid #eaeaea; margin-top: 30px; flex-shrink: 0; }
         .sidebar-title { font-size: 11px; font-weight: 600; color: #acaba9; margin-bottom: 12px; padding-left: 10px; letter-spacing: 0.5px; }
-        .sidebar-item { padding: 8px 12px; font-size: 14px; border-radius: 6px; color: #37352f; margin-bottom: 4px; cursor: pointer; transition: background 0.2s; }
+        .sidebar-item { padding: 8px 12px; font-size: 14px; border-radius: 6px; margin-bottom: 4px; cursor: pointer; transition: background 0.2s; }
         .sidebar-item:hover { background-color: #f1f1ef; }
         .sidebar-item.active { background-color: #ececed; font-weight: 600; }
         #main-content { flex: 1; padding-left: 40px; margin-top: 30px; min-width: 0; }
-        .view-bar { font-size: 14px; font-weight: 500; margin-bottom: 20px; border-bottom: 1px solid #eaeaea; padding-bottom: 8px; color: #37352f; }
+        .view-bar { font-size: 14px; font-weight: 500; margin-bottom: 20px; border-bottom: 1px solid #eaeaea; padding-bottom: 8px; }
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px; }
-        .notion-card { background: #ffffff; border: 1px solid #e9e9e6; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; }
+        .notion-card { background: #fff; border: 1px solid #e9e9e6; border-radius: 8px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; }
         .notion-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .fallback-card { border-style: dashed; background: #fffdf5; }
         .card-meta { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
         .tag { font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 4px; white-space: nowrap; }
         .district-tag { background-color: #edf2fa; color: #1f497d; }
         .source-tag { background-color: #fbe4e4; color: #9c3a3a; }
+        .notice-tag { background-color: #fdecc8; color: #8a6116; }
+        .dept-tag { background-color: #e8f3ec; color: #2b6a46; }
         .date-tag { background-color: #f1f1ef; color: #5a5a57; }
         .news-title { font-size: 16px; font-weight: 600; margin: 0 0 14px 0; line-height: 1.4; }
         .news-title a { color: #2383e2; text-decoration: none; }
         .news-title a:hover { text-decoration: underline; }
-        .summary-box { background-color: #f7f7f5; padding: 14px; border-radius: 6px; font-size: 13.5px; line-height: 1.6; color: #37352f; margin-bottom: 14px; flex-grow: 1; }
+        .summary-box { background-color: #f7f7f5; padding: 14px; border-radius: 6px; font-size: 13.5px; line-height: 1.6; margin-bottom: 14px; flex-grow: 1; }
         .card-footer { font-size: 13px; margin-top: 8px; border-top: 1px dashed #eaeaea; padding-top: 10px; }
-        .card-footer a { color: #2383e2; text-decoration: none; font-weight: 500; display: inline-block; cursor: pointer; }
-        .card-footer a:hover { text-decoration: underline; color: #1a5fa8; }
+        .card-footer a { color: #2383e2; text-decoration: none; font-weight: 500; }
+        .card-footer a:hover { text-decoration: underline; }
 
-        /* ── 모바일 (폭 768px 이하) ── */
         @media (max-width: 768px) {
-            #header { padding: 24px 16px 14px 16px; }
+            #header { padding: 24px 16px 0 16px; }
             #header h1 { font-size: 20px; }
             #header .subtitle { font-size: 12px; }
+            .tab-btn { flex: 1; text-align: center; padding: 10px 4px; font-size: 14px; }
             #container { flex-direction: column; padding: 0 16px 30px 16px; }
-            /* 사이드바 → 상단 가로 스크롤 탭 */
-            #sidebar {
-                width: 100%; padding-right: 0; border-right: none;
-                border-bottom: 1px solid #eaeaea; margin-top: 12px; padding-bottom: 10px;
-                position: sticky; top: 0; background-color: #fbfbfa; z-index: 10;
-            }
+            #sidebar { width: 100%; padding-right: 0; border-right: none; border-bottom: 1px solid #eaeaea; margin-top: 12px; padding-bottom: 10px; position: sticky; top: 0; background-color: #fbfbfa; z-index: 10; }
             .sidebar-title { display: none; }
             #sidebar-items { display: flex; overflow-x: auto; gap: 6px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             #sidebar-items::-webkit-scrollbar { display: none; }
             .sidebar-item { white-space: nowrap; margin-bottom: 0; background-color: #f1f1ef; font-size: 13px; padding: 7px 12px; border-radius: 16px; }
-            .sidebar-item.active { background-color: #37352f; color: #ffffff; }
+            .sidebar-item.active { background-color: #37352f; color: #fff; }
             #main-content { padding-left: 0; margin-top: 16px; }
             .card-grid { grid-template-columns: 1fr; gap: 14px; }
             .notion-card { padding: 16px; }
             .notion-card:hover { transform: none; }
         }
     </style>
-
-    <script>
-        function filterDistrict(districtName, element) {
-            const items = document.querySelectorAll('.sidebar-item');
-            items.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
-
-            const cards = document.querySelectorAll('.notion-card');
-            cards.forEach(card => {
-                if (districtName === 'all') {
-                    card.style.display = 'flex';
-                } else {
-                    card.style.display = (card.getAttribute('data-district') === districtName) ? 'flex' : 'none';
-                }
-            });
-        }
-    </script>
 </head>
 <body>
 
     <div id="header">
-        <h1>서울동부지사 관할 지역 정비사업 뉴스</h1>
-        <div class="subtitle">📅 2026-07-09 기준 · 최근 30일 (2026-06-09 ~) · 총 105건 · 갱신 2026-07-09 19:33 KST</div>
+        <h1>서울동부지사 관할 지역 정비사업 뉴스·고시</h1>
+        <div class="subtitle">📅 2026-07-10 기준 · 최근 30일 (2026-06-10 ~) · 갱신 2026-07-10 06:20 KST</div>
+        <div class="tab-bar">
+            <div class="tab-btn active" data-tab="news">📰 뉴스</div>
+            <div class="tab-btn" data-tab="notice">📢 고시공고</div>
+        </div>
     </div>
 
     <div id="container">
         <div id="sidebar">
             <div class="sidebar-title">관할 자치구</div>
-            <div id="sidebar-items">
-            <div class="sidebar-item active" onclick="filterDistrict('all', this)">🌐 전체 (105)</div><div class="sidebar-item" onclick="filterDistrict('성동구', this)">📍 성동구 (15)</div><div class="sidebar-item" onclick="filterDistrict('광진구', this)">📍 광진구 (15)</div><div class="sidebar-item" onclick="filterDistrict('동대문구', this)">📍 동대문구 (15)</div><div class="sidebar-item" onclick="filterDistrict('중랑구', this)">📍 중랑구 (15)</div><div class="sidebar-item" onclick="filterDistrict('도봉구', this)">📍 도봉구 (15)</div><div class="sidebar-item" onclick="filterDistrict('노원구', this)">📍 노원구 (15)</div><div class="sidebar-item" onclick="filterDistrict('강북구', this)">📍 강북구 (15)</div>
-            </div>
+            <div id="sidebar-items"><div class="sidebar-item active" data-district="all">🌐 전체</div><div class="sidebar-item" data-district="성동구">📍 성동구</div><div class="sidebar-item" data-district="광진구">📍 광진구</div><div class="sidebar-item" data-district="동대문구">📍 동대문구</div><div class="sidebar-item" data-district="중랑구">📍 중랑구</div><div class="sidebar-item" data-district="도봉구">📍 도봉구</div><div class="sidebar-item" data-district="노원구">📍 노원구</div><div class="sidebar-item" data-district="강북구">📍 강북구</div></div>
         </div>
-
         <div id="main-content">
-            <div class="view-bar">📋 갤러리 보기 — 최신순</div>
+            <div class="view-bar" id="view-bar"></div>
             <div class="card-grid">
-                
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.ksilbo.co.kr/news/articleView.html?idxno=1061710" target="_blank">&#x27;멸실 위기&#x27; 오윤 테라코타 해체·보관키로…자금마련 펀딩 시작</a>
-                </h3>
-                <div class="summary-box">
-                    • 멸실 위기에 놓인 &#x27;민중 판화가&#x27; 오윤(1946~1986)의 서울 광진구 구의동 테라코타 벽화가 보존을 위한 해체<br>• 그러나 건물이 재건축될 예정이어서 다시 철거 위기에 놓이자 추진위가 구성돼 해체와 보존 작업을 추진하고
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.ksilbo.co.kr/news/articleView.html?idxno=1061710" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/243/0000100251?sid=101" target="_blank">서울 분양가 3년 새 66%↑…강남3구·한강벨트 양극화 심화</a>
-                </h3>
-                <div class="summary-box">
-                    • 이는 강남권 분양가가 하락한 것이 아니라 동작구와 성동구, 용산구 등 한강변 핵심 지역에서도 고분양가<br>• 정비사업 중심의 신규 공급이 이어질 예정이어서 당분간 높은 분양가와 지역별 가격 격차는 지속될
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/243/0000100251?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/001/0016186209?sid=103" target="_blank">&#x27;멸실 위기&#x27; 오윤 테라코타 해체·보관키로…자금마련 펀딩 시작</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 광진구 구의동 테라코타 벽화가 보존을 위한 해체 작업에 들어간다<br>• 9일 오윤 구의동 테라코타
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/001/0016186209?sid=103" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.ngetnews.com/news/articleView.html?idxno=551294" target="_blank">KT, 3년간 18조원 투자…통신 넘어 AX 플랫폼 기업 전환 속도</a>
-                </h3>
-                <div class="summary-box">
-                    • 6일 업계에 따르면 박윤영 KT 대표는 서울 광진구 풀만 앰배서더 이스트폴에서 취임 후 첫 기자간담회를<br>• 제로 트러스트 원칙을 적용해 전사 보안 체계를 재정비하고 AI 시대에 맞는 보안 경쟁력을 확보한다는
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.ngetnews.com/news/articleView.html?idxno=551294" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/016/0002668262?sid=101" target="_blank">‘핫플 성수’에 래미안 쇼핑 스트리트 뜬다…삼성물산, 성수3지구 상가...</a>
-                </h3>
-                <div class="summary-box">
-                    • 성수3지구는 성동구 성수동2가 572-7번지 일대 약 11만4193㎡ 면적을 재개발하는 정비사업이다<br>• 공사비만 약 1조8000억원에 달하며 2200여 가구가 들어설 예정이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/016/0002668262?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://realty.chosun.com/site/data/html_dir/2026/07/09/2026070902898.html" target="_blank">&quot;입주 반년 됐는데&quot;…&#x27;평당 8000만원&#x27; 이문아이파크자이 상가 누수 논란</a>
-                </h3>
-                <div class="summary-box">
-                    • 이문아이파크자이는 동대문구 이문3구역 재정비촉진구역을 재개발해 조성한 대단지다<br>• IPARK현대산업개발과 GS건설이 컨소시엄으로 공동 시공했으며, 아파트 4321가구와 오피스텔 594실을 합쳐 총 4915가구 규모다
-                </div>
-                <div class="card-footer">
-                    <a href="https://realty.chosun.com/site/data/html_dir/2026/07/09/2026070902898.html" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.smartbizn.com/news/articleView.html?idxno=148211" target="_blank">서울 집값 다시 탄력···동탄 1.29% &#x27;질주&#x27;·전세도 동반 상승, 하반기...</a>
-                </h3>
-                <div class="summary-box">
-                    • 최근 가격 부담에도 불구하고 교통망 개선과 재개발 기대감, 생활 인프라를 갖춘 지역으로 매수세가<br>• 서울에서는 성동구가 0.46% 올라 가장 높은 상승률을 기록했고 노원구 0.44%, 강북구 0.43%, 강동구 0.43%, 송파구 0.42
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.smartbizn.com/news/articleView.html?idxno=148211" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/417/0001151050?sid=102" target="_blank">서울시 1급 핵심 4인 행정국에 발령…&quot;신상필벌 방점&quot;</a>
-                </h3>
-                <div class="summary-box">
-                    • 명 기획관은 공공주택과장을 거치며 오 시장의 신속통합기획을 이끈 인물이다<br>• 김창규 균형발전본부장은
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/417/0001151050?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.viva100.com/article/20260709501197" target="_blank">서울시, 모아주택 규제 손질…용적률 최대 500%·층수 제한 완화</a>
-                </h3>
-                <div class="summary-box">
-                    • 저층주거지 정비와 도심 주택 공급을 이끄는 대표 사업으로 자리 잡을 수 있도록 제도를 지속적으로 보완하겠다”고 말했다<br>• 한편 서울시는 최근 광진구 자양1동 일대 모아타운 관리계획을 확정하고 ‘세대구분형
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.viva100.com/article/20260709501197" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004639938?sid=101" target="_blank">수도권 분양가 1년 새 27.2%↑…서울은 3.3㎡당 6000만원 눈앞</a>
-                </h3>
-                <div class="summary-box">
-                    • 다만 올들어 동작구와 성동구 등 한강 벨트에서 고분양가 단지가 여럿 등장하며 강남 3구(강남·서초<br>• 랩장은 “고유가에서 파생된 공사비 부담이 쉽게 가라앉지 않고 있고 서울은 정비사업을 중심으로 한
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004639938?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64751" target="_blank">상계한신3차, 재건축 정비구역 지정 &#x27;목전&#x27;</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 노원구 상계한신3차아파트가 재건축 정비구역 지정을 목적에 두고 있다<br>• 구는 9일 상계한신3차아파트 재건축사업 정비구역 지정 및 정비계획 수립(안)에 대한 재공람을 내달 10일까지 진행한다고 공고했다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64751" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://news.einfomax.co.kr/news/articleView.html?idxno=4424221" target="_blank">KB부동산 &quot;서울 아파트값 상승률 2주 연속 둔화…동탄 오름폭 축소&quot;</a>
-                </h3>
-                <div class="summary-box">
-                    • 일대 재건축 추진 단지 위주로 가격이 올랐다&quot;고 진단했다<br>• 경기권은 전주 대비 0.2% 상승했다
-                </div>
-                <div class="card-footer">
-                    <a href="https://news.einfomax.co.kr/news/articleView.html?idxno=4424221" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.ebn.co.kr/news/articleView.html?idxno=1715757" target="_blank">[Game &amp; Now] 무신사 손잡은 로스트아크, 스토리 다듬은 카제나…스마일...</a>
-                </h3>
-                <div class="summary-box">
-                    • 이번 팝업은 오는 22일부터 31일까지 서울 성동구 무신사 스토어 성수에서 운영되며, 오전 11시부터 오후<br>• 라이브 서비스 게임에서 초반 서사를 전면 재정비하는 것은 흔치 않은 결정으로, 작품 완성도에 대한 재투자
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.ebn.co.kr/news/articleView.html?idxno=1715757" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.goodkyung.com/news/articleView.html?idxno=289083" target="_blank">[줌! 이 기업] 롯데건설, &#x27;턴어라운드 원년&#x27;…선별수주·재무개선 &#x27;투트...</a>
-                </h3>
-                <div class="summary-box">
-                    • 지난 5일 롯데건설은 총 공사비 1조3492억원 규모의 서울 성동구 &#x27;성수전략정비구역 제4지구(성수4지구)&#x27; 재개발 사업의 시공사로 최종 선정됐다<br>• 치열한 경쟁 속에서 조합원 72.4%의 압도적인 지지를 받았다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.goodkyung.com/news/articleView.html?idxno=289083" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/022/0004141805?sid=101" target="_blank">급등하던 화성 동탄 오름폭 축소… 수도권 아파트 시장 숨고르기 양상</a>
-                </h3>
-                <div class="summary-box">
-                    • 노원구의 경우 매수자와 매도자 간 희망 가격 격차로 거래가 쉽지 않지만, 상계동 일대 재건축 추진<br>• 서울은 성북구(0.92%)와 광진구(0.66%)의 상승세가 가팔랐으며, 경기는 구리시(0.95%)와 수원시 영통구(0.86%)의
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/022/0004141805?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.smartbizn.com/news/articleView.html?idxno=148183" target="_blank">&quot;서울 집값 더 뛰었다&quot;···수도권 상승폭 확대, 지방은 회복 조짐</a>
-                </h3>
-                <div class="summary-box">
-                    • 재건축 기대감과 교통 접근성이 좋은 단지를 중심으로 매수세가 이어진 영향으로 풀이된다<br>• 서울에서는 성동구(0.46%), 노원구(0.44%), 강북구(0.43%), 강동구(0.43%), 송파구(0.42%) 등이 높은 상승률을 기록했다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.smartbizn.com/news/articleView.html?idxno=148183" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.ekn.kr/web/view.php?key=20260709028000872" target="_blank">[르포] 국평 ‘17억’ 장위 푸르지오 마크원 건설 현장 가보니</a>
-                </h3>
-                <div class="summary-box">
-                    • 장위 푸르지오 마크원은 장위동 10구역을 재개발하는 단지다<br>• 지하 5층~지상 32층, 25개 단지, 총 1931 가구
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.ekn.kr/web/view.php?key=20260709028000872" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014056901?sid=102" target="_blank">노원구, 전국 지자체 유일 공공·재개발 임대아파트 관리비 지원</a>
-                </h3>
-                <div class="summary-box">
-                    • 공공·재개발 임대 아파트는 노원구가 자체 예산을 투입해 공동 관리비 50%를 지원한다<br>• 지원금은 아파트 관리 주체 신청을 받아 매달 지급된다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014056901?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.theguru.co.kr/news/article.html?no=104191" target="_blank">서울 아파트 평당 분양가 6000만원 육박… 강남 넘어 &#x27;한강 벨트&#x27;로 고분...</a>
-                </h3>
-                <div class="summary-box">
-                    • 동작구(7844만원)를 비롯해 성동구, 용산구 등 한강변 주요<br>• 입지에서 초고가 단지 분양이 잇따르면서
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.theguru.co.kr/news/article.html?no=104191" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.ekn.kr/web/view.php?key=20260709020030856" target="_blank">서울 아파트값 0.30% 상승…성북·구로·동탄·영통 ‘불장 축’ 넓어졌...</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울에서는 성동구(0.46%), 노원구(0.44%), 강북구(0.43%), 강동구(0.43%), 송파구(0.42%) 등이 높은 상승률을<br>• 개발 호재와 정비사업이 예정된 지역, 산업 배후 수요가 풍부한 지역으로 매수세가 집중되면서 지역 간 가격
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.ekn.kr/web/view.php?key=20260709020030856" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.pointdaily.co.kr/news/articleView.html?idxno=311332" target="_blank">서울 분양가, 이제 &#x27;동네값&#x27;이 됐다</a>
-                </h3>
-                <div class="summary-box">
-                    • 이는 강남권 분양가가 하락했다기보다<br>• 동작구, 성동구, 용산구 등 비강남 핵심 입지에서도 고분양가
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.pointdaily.co.kr/news/articleView.html?idxno=311332" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/366/0001178011?sid=101" target="_blank">서울시는 밀고, 성동구는 “로드맵 없다”… 행당8구역 네 번째 재개발...</a>
-                </h3>
-                <div class="summary-box">
-                    • 성동구는 그동안 서울시 중심의 정비사업 운영 방식에 대해 자치구 권한을 더 확대해야 한다는 입장을 보여왔다<br>• 정비사업은 지역별 여건과 주민 의견이 중요한 만큼, 정비구역 지정 등 주요
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/366/0001178011?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="http://www.thevaluenews.co.kr/news/view.php?idx=199984" target="_blank">대우건설, 적자 털어낼 사상 최대 &#x27;2.9조&#x27; 수주... 하반기까지 &#x27;18조&#x27; 총...</a>
-                </h3>
-                <div class="summary-box">
-                    • 지난 5일 마감된 서울 성동구 성수전략정비구역 4지구(성수4지구) 주택재개발정비사업 시공사 선정 총회에서 경쟁사인 롯데건설에 시공권을 내줬다<br>• 서울 성동구 성수4지구 설계안
-                </div>
-                <div class="card-footer">
-                    <a href="http://www.thevaluenews.co.kr/news/view.php?idx=199984" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.lecturernews.com/news/articleView.html?idxno=205864" target="_blank">이마트·홈플러스·롯데마트·코스트코 휴무일, 7월 11일(토) 대형마트 ...</a>
-                </h3>
-                <div class="summary-box">
-                    • 그러나 성수점 재개발에 따라 2023년 5월 서울 중구 오렌지센터로 본사를 이전했다<br>• 현재 본사는 독립
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.lecturernews.com/news/articleView.html?idxno=205864" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a>
-                </h3>
-                <div class="summary-box">
-                    • 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원[서울25]</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 노원구가 공공·재개발 임대아파트 공동 관리비를 지원한다고 9일 밝혔다<br>• 공공·재개발 임대아파트의 공동 관리비를 자체 예산으로 지원하는 곳은 전국 시도에서 노원구가 유일하다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.ajunews.com/view/20260709122615634" target="_blank">강남 아닌 성북·구로가 올렸다…서울 집값 상승축 이동</a>
-                </h3>
-                <div class="summary-box">
-                    • 상대적으로 가격 부담이 낮은 지역으로 실수요가 유입되고 재개발 등 개발 기대감이 반영된 영향으로<br>• 성동구(0.46%), 노원구(0.44%), 강동구(0.43%), 송파구(0.42%) 등을 중심으로 학군과 역세권, 대단지 선호가 이어지며
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.ajunews.com/view/20260709122615634" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607091329241650572" target="_blank">노원구, 전국 유일 공공ㆍ재개발 임대아파트 관리비 지원</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울시 사업 외 자체 재원으로 지원 확대 노원구가 3년째 공공ㆍ재개발 임대아파트 공동관리비 지원을 이어간다<br>• 자체 재원으로 공공ㆍ재개발 아파트를 지원하는 지자체는 노원구가 유일하다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607091329241650572" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.hg-times.com/news/articleView.html?idxno=303469" target="_blank">유보화 성동구청장, 민선 9기 구정 시동…정비·안전·청렴 행정 속도</a>
-                </h3>
-                <div class="summary-box">
-                    • 성동구는 기존 주거정비과를 정비사업신속추진과로 개편하고, 4개 팀 체제를 6개 팀 체제로 확대할 계획이다<br>• 성동구는 성수·행당·금호·옥수 등 지역별 주거 여건과 개발 수요가 다르다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.hg-times.com/news/articleView.html?idxno=303469" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.naeil.com/news/read/594821?ref=naver" target="_blank">공공·재개발 임대아파트 관리비 뚝↓</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 노원구 공공·재개발 임대아파트에 거주하는 주민들이 관리비를 아낄 수 있게 됐다<br>• 노원구는 영구임대아파트뿐 아니라 공공·재개발 임대까지 공동관리비를 지원해 취약계층 주거비 부담 완화에 앞장선다고 9일
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.naeil.com/news/read/594821?ref=naver" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64740" target="_blank">상봉9구역, 최고 49층 아파트 999세대로 재개발</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구 상봉9구역이 최고 49층 아파트 999세대로 재개발된다<br>• 구는 상봉9재정비촉진구역 도시정비형 재개발 사업시행자인 우리자산신탁이 신청한 사업시행변경계획을 9일 인가·고시했다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64740" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="성동구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 성동구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/023/0003986671?sid=101" target="_blank">수도권 분양가 1년 새 27.2%↑... 서울 평균 평당 5905만원</a>
-                </h3>
-                <div class="summary-box">
-                    • 다만 올해 들어 동작구, 성동구 등 한강 벨트에서 고분양가 단지가 등장하며 강남 3구(강남·서초·송파)<br>• 서울은 정비 사업을 중심으로 한 신규 공급이 이어지는 만큼 아파트 분양가는 연내 높은 수준을 유지할
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/023/0003986671?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/629/0000514624?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a>
-                </h3>
-                <div class="summary-box">
-                    • 영구임대아파트는 공동관리비 전액을 지원하며 서울시가 70%, 노원구가 30%를 부담한다<br>• 공공·재개발 임대아파트의 경우 구가 자체 예산을 투입해 공동관리비의 50%를 지원한다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/629/0000514624?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.newstnt.com/news/articleView.html?idxno=709576" target="_blank">영구임대 넘어 공공임대까지…노원구 공동관리비 지원 확대</a>
-                </h3>
-                <div class="summary-box">
-                    • 공공·재개발 임대아파트는 노원구가 자체 예산으로 공동관리비의 50%를 지원한다<br>• 지원 대상은 영구임대아파트 7개 단지와 공공·재개발 임대아파트 17개 단지다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.newstnt.com/news/articleView.html?idxno=709576" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.newspim.com/news/view/20260709000576" target="_blank">&#x27;위기의 모아주택·모아타운&#x27; 개선…용적률 상향·층수제한 사실상 폐지</a>
-                </h3>
-                <div class="summary-box">
-                    • 이동훈 선임기자 = 노후 저층주거지를 대상으로 하는 소규모 정비사업인 &#x27;모아주택·모아타운&#x27;의 사업성이<br>• 모아주택·모아타운 사업 개선 방안이 발표됐다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.newspim.com/news/view/20260709000576" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64725" target="_blank">면목10구역, 재개발 추정비례율 100.87%로 추산</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구 면목10구역 추정비례율이 100.87%로 추산됐다<br>• 앞으로 치고 35층 아파트 959세대로
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64725" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/001/0016184665?sid=101" target="_blank">[서미숙의 집수다] 자동말소되는 등록임대, 임대주택 지위 두고 논란</a>
-                </h3>
-                <div class="summary-box">
-                    • 양천구 목동, 노원구 상계동 등지의 아파트는 8년 전에는 정비사업 추진 움직임이 없었지만 최근 속도전에 들어가며 조합인가를 받은 단지들이 줄을 잇고 있다<br>• 대한주택임대인협회 성창엽 회장은 &quot;양도세 중과 배제와
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/001/0016184665?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/215/0001258135?sid=102" target="_blank">노원구, 임대아파트 공동관리비 10억 지원…2만2천 세대 혜택</a>
-                </h3>
-                <div class="summary-box">
-                    • 공공·재개발 임대아파트는 노원구가 자체 예산으로 공동관리비의 50%를 지원하며, 관리주체의 신청을 받아 매월 지급한다<br>• 지원 대상은 영구임대아파트 7개 단지와 공공임대 8개 단지, 재개발임대 9개 단지 등 총 24개
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/215/0001258135?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.hg-times.com/news/articleView.html?idxno=303450" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원 확대...전국 유일</a>
-                </h3>
-                <div class="summary-box">
-                    • 영구임대아파트는 공동관리비 전액을 지원하며, 이 중 70%는 서울시가, 30%는 노원구가 부담한다<br>• 공공·재개발 임대아파트의 경우 노원구가 자체 예산으로 공동관리비의 50%를 지원한다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.hg-times.com/news/articleView.html?idxno=303450" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.rcast.co.kr/news/articleView.html?idxno=31224" target="_blank">2년 멈췄던 GTX-C 본공사 착수... 창동에서 병점까지 집값 상승 잇따라</a>
-                </h3>
-                <div class="summary-box">
-                    • 도봉구 창동역 인근 &#x27;동아청솔&#x27; 전용 84㎡ 역시 2025년 4월 9억9,000만원(12층)에서 올해 5월 11억5,000만원(19층)<br>• 단지는 의왕 우성4차아파트 및 가로주택정비사업을 통해 공급되며, 지하 3층~지상 29층 4개 동 규모로 총
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.rcast.co.kr/news/articleView.html?idxno=31224" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.gukjenews.com/news/articleView.html?idxno=3630618" target="_blank">노원구, 임대아파트 공동관리비 지원 확대…주거 취약계층 부담 완화</a>
-                </h3>
-                <div class="summary-box">
-                    • 공공임대아파트와 재개발임대아파트에는 노원구가 예산을 투입해 공동관리비의 절반을 지원한다<br>• 지원금은 각 아파트 관리주체의 신청을 받아 매월 지급된다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.gukjenews.com/news/articleView.html?idxno=3630618" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5039070" target="_blank">노원구, 공공·재개발 임대아파트까지 공동관리비 지원 확대</a>
-                </h3>
-                <div class="summary-box">
-                    • 공공·재개발 임대아파트는 노원구가 자체 예산으로 공동관리비의 50%를 지원하고 있으며, 지원금은 아파트 관리주체의 신청을 받아 매월 지급된다<br>• 지원 대상은 영구임대아파트 7개 단지와 공공임대 8개 단지
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5039070" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.housingherald.co.kr/news/articleView.html?idxno=62149" target="_blank">재개발·재건축 시공자 선정 &#x27;1회 유찰 시 수의계약&#x27;?…경쟁입찰 소멸 ...</a>
-                </h3>
-                <div class="summary-box">
-                    • 동대문구 신설1구역 공공재개발을 시작으로 성남 신흥1구역, 수진1구역, 그리고 민간 정비사업인 송파구 잠실우성4차와 가락삼익맨숀 등 수많은 사업지가 이 방식을 택했다<br>• 문제는 조합들이 대개 현장설명회 개최 후 불과
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.housingherald.co.kr/news/articleView.html?idxno=62149" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002803412?sid=102" target="_blank">노원구 “전국 지자체 유일 공공·재개발 임대아파트 공동관리비 지원”</a>
-                </h3>
-                <div class="summary-box">
-                    • 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002803412?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 9일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/005/0001859881?sid=101" target="_blank">아파트 사기 어려운 30대 연립·다세대 매수 늘었다</a>
-                </h3>
-                <div class="summary-box">
-                    • 아파트 대비 상대적으로 적은 자금으로 내집 마련이 가능한데다<br>• 정비사업 기대감까지 더해진 영향으로
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/005/0001859881?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="노원구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 노원구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://daily.hankooki.com/news/articleView.html?idxno=1384222" target="_blank">상계3구역 공공재개발 &#x27;속도&#x27;…포스코이앤씨·두산건설 관심</a>
-                </h3>
-                <div class="summary-box">
-                    • 사진=서울시 서울 노원구 상계3구역 공공재개발 사업이 공동사업시행 건설업자 선정에 돌입하며 속도를 내고 있다<br>• 8일 상계3구역 공공재개발 주민대표회의에 따르면 전날 한국토지주택공사(LH) 수도권 정비사업특별
-                </div>
-                <div class="card-footer">
-                    <a href="https://daily.hankooki.com/news/articleView.html?idxno=1384222" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/469/0000941166?sid=102" target="_blank">[클릭! 자치뉴스] 서울 중랑구, 면목행정복합타운 통합개발 본격화</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구(구청장 류경기)는 서울시 제2차 공공주택통합심의를 통과한 면목행정복합타운 통합개발 사업<br>• 구는 면목동 378-10번지 일대 지하철 7호선 용마산역 인근 공공시설 부지를 활용해 행정·문화시설을 재정비하
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/469/0000941166?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.cnbizm.com/news/articleView.html?idxno=307974" target="_blank">중랑구, 면목행정복합타운 통합개발 사업 추진에 속도...지난달 서울시...</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구(구청장 류경기)가 지난달 서울시 제2차 공공주택통합심의를 통과하며 면목행정복합타운<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.cnbizm.com/news/articleView.html?idxno=307974" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="http://tbs.seoul.kr/news/newsView.do?typ_800=7&idx_800=3537212&seq_800=20530087" target="_blank">[변상욱쇼:서울25, 직-터뷰] 정창수 강북구청장</a>
-                </h3>
-                <div class="summary-box">
-                    • 도시 정비사업 신속추진으로 도시환경개선도 이루어질것 주3-4회 지하철역으로 출근해서 주민 의견청취중<br>• 주변에 있는 도봉구나 노원구나 성북구 수준으로 올리는 것에 첫 발을 디디려고 합니다
-                </div>
-                <div class="card-footer">
-                    <a href="http://tbs.seoul.kr/news/newsView.do?typ_800=7&idx_800=3537212&seq_800=20530087" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004639447?sid=101" target="_blank">중랑구, 면목행정복합타운 사업 추진 본격화</a>
-                </h3>
-                <div class="summary-box">
-                    • 8일 중랑구에 따르면 면목행정복합타운 통합개발 사업은 면목동 378-10번지 일대 7호선 용마산역 인근 공공시설 부지를 활용해 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다<br>• 지하 4층~지상 47층 규모로
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004639447?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014053900?sid=102" target="_blank">중랑구, 면목행정복합타운 통합개발 속도…내년 착공</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구(구청장 류경기)가 지난달 서울시 제2차 공공주택통합심의를 통과하며 면목행정복합타운<br>• 시설을 재정비하고 공공 주택을 함께 조성하는 사업이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014053900?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/018/0006325342?sid=102" target="_blank">경실련 &quot;공공주택 절반은 무늬만 공공…&#x27;진짜 공공임대&#x27; 늘려야&quot;</a>
-                </h3>
-                <div class="summary-box">
-                    • 이어 “재건축·재개발 규제 완화에만 의존할 것이 아니라 LH와 SH가 보유한 공공택지를 활용해 저렴한<br>• 서울 동대문구 장안동의 한 오피스텔이 인근에서 2억9000만원에 거래됐는데도 LH는 같은 지역 오피스텔을
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/018/0006325342?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272622" target="_blank">중랑구, 면목행정복합타운 통합개발사업 &#x27;속도 낸다&#x27;</a>
-                </h3>
-                <div class="summary-box">
-                    • 중랑구 서울시 제2차 공공주택통합심의를 통과하면서 면목행정복합타운 통합개발 사업 추진에 속도를 내고<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272622" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002803239?sid=101" target="_blank">6월 서울 아파트, 월세 8247건 &gt; 전세 7108건</a>
-                </h3>
-                <div class="summary-box">
-                    • 동대문구 용두동 래미안엘리니티 전용 84㎡는 지난달 30일 보증금 1억 원, 월세 340만 원에 거래됐다<br>• 서울에서 진행 중인 여러 정비사업도 월세 추가 급등을 촉발할 뇌관으로 분석된다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002803239?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.hg-times.com/news/articleView.html?idxno=303422" target="_blank">중랑구, 47층 712세대 면목행정복합타운 조성...2027년 착공 목표</a>
-                </h3>
-                <div class="summary-box">
-                    • 한강타임즈 백진아 기자 = 중랑구(구청장 류경기)는 서울시 제2차 공공주택통합심의 통과를 계기로<br>• 이번 사업은 면목동 378-10번지 일대 7호선 용마산역 인근의 공공시설 부지를 활용해, 행정·문화시설 재정비와
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.hg-times.com/news/articleView.html?idxno=303422" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.etoday.co.kr/news/view/2601489" target="_blank">[단독] 통합심의 넉 달 만에…광진 자양2동 모아타운 무산</a>
-                </h3>
-                <div class="summary-box">
-                    • 이투데이=이난희 기자 | 727가구 공급계획 통과했지만 주민 반대·동의 철회 3개 구역 줄줄이 제외…광진구, 서울시에 취소 요청 한강 변 배후 주거지로 대형 개발 호재가 맞물려 정비사업 시장의 주목을 받던 서울 광진구
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.etoday.co.kr/news/view/2601489" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.job-post.co.kr/news/articleView.html?idxno=220396" target="_blank">중랑구, 면목행정복합타운 개발 본궤도…공공주택통합심의 통과</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구가 면목행정복합타운 통합개발 사업의 핵심 행정절차를 통과하며 사업 추진에 속도를 낸다<br>• 문화시설을 재정비하고 공공주택을 함께 조성하는 대규모 복합개발 사업이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.job-post.co.kr/news/articleView.html?idxno=220396" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/277/0005786931?sid=102" target="_blank">중랑구, 면목행정복합타운 통합개발 본격화</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구(구청장 류경기)가 지난달 서울시 제2차 공공주택통합심의를 통과하며 면목행정복합타운<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/277/0005786931?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272486" target="_blank">최동민 동대문구청장, 용두동 주민 만나 현안 해결 의지 밝혀</a>
-                </h3>
-                <div class="summary-box">
-                    • [사진=김종영 기자] 최동민 동대문구청장이 용두동주민센터에서 &#x27;동민과의 대화&#x27;를 열고 주민들과의 현장<br>• [사진=김종영 기자] 문홍식 전 주민자치위원회 위원장은 &quot;주택 재개발 정책 지속성이 있는지 궁금하고, 경동시장
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272486" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.thebell.co.kr/free/content/ArticleView.asp?key=202607061123594760105928" target="_blank">[더벨]박윤영 KT 대표 공식무대 데뷔 &#x27;AI 총력전 예고&#x27;</a>
-                </h3>
-                <div class="summary-box">
-                    • ◇단단한 본질에 확실한 성장 더한다<br>• KT는 6일 서울 광진구 풀만 앰배서더 이스트폴 호텔에서
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.thebell.co.kr/free/content/ArticleView.asp?key=202607061123594760105928" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002803097?sid=102" target="_blank">중랑구, 면목행정복합타운 통합개발 본격화…2030년 준공 목표</a>
-                </h3>
-                <div class="summary-box">
-                    • 중랑구청 제공 서울 중랑구는 면목행정복합타운 통합개발 사업이 최근 서울시 제2차 공공주택통합심의를<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002803097?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014052430?sid=101" target="_blank">&quot;월세 낼 바엔 집 산다&quot;…2030 몰리자 서울 중저가 &#x27;귀한 몸&#x27;</a>
-                </h3>
-                <div class="summary-box">
-                    • 자치구별로는 도봉구(0.37%), 동대문구(0.36%), 성북구(0.36%), 구로구(0.35%), 노원구(0.33%), 중랑구(0.32%) 등의 상승폭이 두드러졌다<br>• 부동산원은 &quot;재건축 추진 단지와 선호도가 높은 역세권, 대단지 등을 중심으로 수요가
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014052430?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607061257003410076" target="_blank">[재개발ㆍ재건축 탐방] (22) 27세 청년 조합장의 도전… “모든 세대가...</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 광진구 자양역과 한강공원 앞에서 추진 중인 ‘자양동 92-1번지 일원 소규모재개발정비사업’을 이끌고 있는 박 조합장은 정비사업 조합장으로는 이례적으로 젊은 나이지만, 조합원 지지로 선출된 뒤 관련 법령과
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607061257003410076" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/081/0003659240?sid=102" target="_blank">“서울시와 원팀 이뤄 직주락 도시로… 4년 후 광진 확 달라질 것” [민...</a>
-                </h3>
-                <div class="summary-box">
-                    • 광진구 전역에서는 재개발·재건축과 모아타운, 신속통합기획 등 62곳의 정비사업이 추진되고 있다<br>• 정비사업은 단순히 새집을 짓는 것이 아니다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/081/0003659240?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 8일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/008/0005382812?sid=101" target="_blank">&quot;5억 환급&quot; &quot;1+1 분양&quot; 갈등 끝 결국...&#x27;대형평형&#x27; 1개 동 빼고 재건축</a>
-                </h3>
-                <div class="summary-box">
-                    • 정비사업 과정에서 일부 토지나 건축물을 정비구역에서 제외한 사례가 적지 않다<br>• 상가나 종교시설 소유주와 보상·이전 조건을 두고 갈등을 빚은 경우가 대표적이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/008/0005382812?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/024/0000106725?sid=101" target="_blank">똘똘한 보류지 어디…6가구 모집에 수천명 [감평사의 부동산 현장진단]</a>
-                </h3>
-                <div class="summary-box">
-                    • 내손라구역 주택재개발정비사업 조합은 6월 18일부터 조달청 누리장터와 조합 홈페이지를 통해<br>• 서울 동대문구 이문동 ‘래미안라그란데’ 보류지 매각 또한 12가구 중 10가구가 주인을 찾으며 인기를 끌었다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/024/0000106725?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="광진구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 광진구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/014/0005544953?sid=101" target="_blank">&quot;반대하는 동 빼고 재건축&quot; 삼익맨션 일몰 리스크 털었다</a>
-                </h3>
-                <div class="summary-box">
-                    • 심의 통과에 따라 올해 하반기 사업시행인가 신청을 계획 중이다<br>• 자양7구역은 광진구의 자양3동 일대 통합 개발에 따라 정비계획 변경 절차를 밟으며 기한을 넘길 위기다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/014/0005544953?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="http://www.areyou.co.kr/news/articleView.html?idxno=94385" target="_blank">[아유경제_재건축] 장안현대 재건축 &#x27;관리처분인가&#x27;</a>
-                </h3>
-                <div class="summary-box">
-                    • 동대문구는 장현현대 재건축 정비사업조합(조합장 김수규ㆍ이하 조합)이 신청한 관리처분계획(안)을 「도시 및 주거환경정비법」 제74조 및 제78조에 따라 지난달(6월) 18일 인가하고, 이를 같은 날 고시했다
-                </div>
-                <div class="card-footer">
-                    <a href="http://www.areyou.co.kr/news/articleView.html?idxno=94385" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/008/0005382664?sid=101" target="_blank">&quot;같은 단지인데 나만 구축&quot;…&#x27;5동만 빼고 재건축&#x27; 명일삼익맨숀, 왜?</a>
-                </h3>
-                <div class="summary-box">
-                    • 정비사업 과정에서 일부 토지나 건축물을 정비구역에서 제외하는 사례는 적지 않다<br>• 상가나 종교시설 소유주와 보상·이전 조건을 두고 갈등을 빚는 경우가 대표적이다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/008/0005382664?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="http://www.queen.co.kr/news/articleView.html?idxno=459912" target="_blank">&#x27;영끌족 성지&#x27; 노도강에 30대 수요 유입 ... 생애 첫 주택 매수 증가</a>
-                </h3>
-                <div class="summary-box">
-                    • 이어 동대문구와 성북구가 각각 0.36%, 구로구 0.35%, 노원구 0.33%, 중랑구 0.32% 순으로 상승하며 중저가 지역이<br>• 서울 외곽 지역은 상대적으로 가격 부담이 낮고 교통망 개선과 재개발 기대감 등이 맞물려 실거주 수요가
-                </div>
-                <div class="card-footer">
-                    <a href="http://www.queen.co.kr/news/articleView.html?idxno=459912" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64634" target="_blank">중랑구, 상봉7구역 사업시행변경인가 고시</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 중랑구가 상봉7재정비촉진구역 도시정비형 재개발사업의 사업시행계획변경인가를 지난 2일 고시했다<br>• 이번 변경인가에 따라 상봉7구역은 최고 49층 규모의 주상복합단지로 조성되며 공동주택과 오피스텔
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64634" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.job-post.co.kr/news/articleView.html?idxno=220255" target="_blank">중랑구 상봉7구역, 최고 49층 복합단지로 재탄생…동북권 랜드마크 조성...</a>
-                </h3>
-                <div class="summary-box">
-                    • 중랑구는 지난 2일 상봉7재정비촉진구역 도시정비형 재개발사업의 사업시행계획 변경인가를 고시했다고 밝혔다<br>• 이번 변경인가를 통해 주택 공급을 확대하고 문화시설과 상업시설을 함께 갖춘 복합개발이 본격
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.job-post.co.kr/news/articleView.html?idxno=220255" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.youthdaily.co.kr/news/article.html?no=222351" target="_blank">[재계부] &#x27;목화아파트&#x27; 첫 입찰 마감…여의도發 재건축 수주 &#x27;전초전&#x27; 임...</a>
-                </h3>
-                <div class="summary-box">
-                    • 둔촌동, 강북구 번동 등 모아타운 사업지에서도 입찰 접수가 대기 중이다<br>• 신규 시공사 확보를 위한 현장설명회도 서울 핵심지와 전국 재개발 구역을 중심으로 잇따른다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.youthdaily.co.kr/news/article.html?no=222351" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/018/0006324194?sid=102" target="_blank">&quot;물 새고 옹벽에 금가도 재개발 앞뒀다고 보수도 안해줘&quot;</a>
-                </h3>
-                <div class="summary-box">
-                    • 강북구 미아동 재개발 예정지에서도 균열이 간 옹벽과 담장이 곳곳에서 확인됐고, 솔샘 일대 재개발·재건축 지역에서도 장마철마다<br>• 담벼락 붕괴와 전선 화재 신고가 반복된다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/018/0006324194?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014049713?sid=101" target="_blank">&quot;부동산 불패는 끝났다&quot;…31년 전문가가 본 한국 주택 시장의 균열</a>
-                </h3>
-                <div class="summary-box">
-                    • 수도권 중심부의 초고가 재건축 단지나 한강벨트 등 이른바 고가 입지 시장 역시 향후 2~3년 동안 약세를<br>• 반면 부모 세대와 경제적으로 분리된 30대 실수요층은 자신들의 소득 수준으로 감당할 수 있는 동대문구, 성북구
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/003/0014049713?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 7일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/081/0003658873?sid=102" target="_blank">“실용과 협치로 도봉 대전환… 거대한 ‘창동 엔진’ 돌린다”[민선 9...</a>
-                </h3>
-                <div class="summary-box">
-                    • (60) 도봉구청장은 지난달 30일 창동 구민회관 인수위원회 사무실에서 당선인 신분으로 진행한 서울신문<br>• 서울주택도시개발공사(SH) 등과 협의해 나가겠다.” -재개발·재건축 등 도시정비사업의 추진 방향은
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/081/0003658873?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004638694?sid=101" target="_blank">상봉7구역, 최고 49층 주상복합 재탄생…“841가구 공급”</a>
-                </h3>
-                <div class="summary-box">
-                    • 중랑구는 상봉7재정비촉진구역 도시정비형 재개발사업의 사업시행계획 변경인가를 고시했다고 2일 밝혔다<br>• 상봉7구역은 상봉역과 망우역 일대 상업지역에 위치한 재정비촉진구역으로, 2015년 최고 43층 2개 동 총
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004638694?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160288216122135" target="_blank">동대문구, 재개발 신축 공동주택 재산세 예측 서비스</a>
-                </h3>
-                <div class="summary-box">
-                    • ▲ (사진=동대문구청 제공)  동대문구(구청장 최동민)의 ‘우리집 재산세 예측 서비스’가 주민들의 큰 호응 속에 마무리됐다<br>• 6일 구에 따르면 재개발 신축 공동주택 입주민들의 세금 불안과 궁금증을 덜어주기 위해
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160288216122135" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="동대문구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 동대문구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/015/0005306764?sid=101" target="_blank">9조 투입 강북 경전철 &#x27;속도&#x27;…성북·관악·서대문 들썩</a>
-                </h3>
-                <div class="summary-box">
-                    • 이어 강서구(7.53%), 구로구(7.05%), 관악구(6.92%), 영등포구(6.66%), 동대문구(6.65%), 서대문구(6.60%) 등 외곽 지역이<br>• 목동 신시가지 아파트와 강서구 가양·화곡동, 영등포구 일대 등 정비사업 지역도 기대가 커지고 있다
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/015/0005306764?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="중랑구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 중랑구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="http://www.beyondpost.co.kr/view.php?ud=202607061703042562205868f676_30" target="_blank">상봉7구역, 841세대 규모 고층 복합단지로 바뀐다</a>
-                </h3>
-                <div class="summary-box">
-                    • 상봉7구역은 중랑구 상봉동 일대 상업지역에 있는 재정비 사업지다<br>• 상봉역과 망우역을 중심으로 지하철 7호선, 경춘선, 중앙선이 지나는 곳이다
-                </div>
-                <div class="card-footer">
-                    <a href="http://www.beyondpost.co.kr/view.php?ud=202607061703042562205868f676_30" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.econovill.com/news/articleView.html?idxno=742378" target="_blank">[정경구號 IPARK ②] &#x27;35층 족쇄&#x27; 풀고 초고속 질주…메가 정비사업, 서...</a>
-                </h3>
-                <div class="summary-box">
-                    • 이들 정책은 정비사업의 판을 흔들 수 있다고 업계는 평가한다<br>• 특히, 강남을 비롯해 여의도, 목동 등 서울 내
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.econovill.com/news/articleView.html?idxno=742378" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202437" target="_blank">HJ중공업, 2572억 규모 &#x27;부산 벡스코 제3전시장 건립사업&#x27; 수주 [건설오...</a>
-                </h3>
-                <div class="summary-box">
-                    • 현대엔지니어링은 지난해 서울 강북구 북서울꿈의숲에 첫 플랜비 정원을 조성했다<br>• 올해는 보라매공원에
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202437" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="http://www.areyou.co.kr/news/articleView.html?idxno=94364" target="_blank">[아유경제_부동산] 서울시, 도솔학교 재건축 확정… 2031년 개교 예정</a>
-                </h3>
-                <div class="summary-box">
-                    • 도솔학교 재건축 위치도<br>• &lt;제공=서울시&gt; [아유경제=조명의 기자] 서울 도봉구 도봉동 381-1 일원 서울도솔학교(특수학교) 본관동과 체육관동이 지상 4층 규모로 재건축된다
-                </div>
-                <div class="card-footer">
-                    <a href="http://www.areyou.co.kr/news/articleView.html?idxno=94364" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.topdaily.kr/articles/110839" target="_blank">[TOP&#x27;s Pick] [건설] 롯데건설, 성수전략정비구역 제4지구 재개발 수주 ...</a>
-                </h3>
-                <div class="summary-box">
-                    • 주택재개발정비사업(이하 성수4지구)’ 수주<br>• 성수4지구는 서울시 성동구 성수2가1동 219-4번지 일대에 지하
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.topdaily.kr/articles/110839" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64550" target="_blank">쌍문5구역, 최고 35층 아파트 1,087세대로 재개발</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 도봉구 쌍문5구역이 최고 35층 아파트 1,087세대로 재개발된다<br>• 구는 쌍문5구역 주택정비형 재개발사업 정비계획 결정 및 정비구역 지정안에 대해 내달 3일까지 공람을 진행한다고 지난 2일 공고했다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64550" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 6일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607050156126960924" target="_blank">[이번주 재개발ㆍ재건축] 의정부 가재울ㆍ성남 태평3구역 시공사 ‘윤곽...</a>
-                </h3>
-                <div class="summary-box">
-                    • 이밖에 강서구와 강동구, 강북구 등 서울 모아타운 사업지에서 입찰이 예정됐다<br>• 현설=현설은 서울 마천5구역(마천5재정비촉진구역)과 한강로구역, 남양주 퇴계원4구역, 의정부 장암2구역, 부산 하단2구역, 울산
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607050156126960924" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 4일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/031/0001039767?sid=101" target="_blank">&#x27;지정만 132곳&#x27; 멈춰 선 모아타운…한화 &#x27;연속수주&#x27;로 물꼬트나</a>
-                </h3>
-                <div class="summary-box">
-                    • 인접구역 정비사업 계획을 함께 수립할 수 있게 되면서 석관1차 사업전반이 탄력을 받을 전망이다<br>• 현재 서울내 모아타운 대상지는 132곳에 달하지만 실제 착공에 들어간 곳은 1호 시범사업지인 강북구 번동이
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/031/0001039767?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 3일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.businesspost.co.kr/BP?command=article_view&num=441518" target="_blank">실수요자 &#x27;포모&#x27;에 서울 성북 집값 상반기 8% 껑충, 길음뉴타운 국민평...</a>
-                </h3>
-                <div class="summary-box">
-                    • &lt;비즈니스포스트&gt; &quot;성북구 물건을 강북구에서 물어보시네요<br>• 도로 건너 여기는 센트레빌은
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.businesspost.co.kr/BP?command=article_view&num=441518" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 3일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/031/0001039623?sid=101" target="_blank">&#x27;학군지 16억·초소형 8억&#x27;⋯GTX 호재에 달아오른 &#x27;노도강&#x27; [현장]</a>
-                </h3>
-                <div class="summary-box">
-                    • GTX-C 노선 착공이랑 재건축 진행 속도가 빨라지면서 하루가 다르게 분위기가 바뀌고 있어요.&quot; (서울 도봉구 창동 A공인중개사무소 관계자) 수도권광역급행철도(GTX) 재건축 기대감이 맞물리면서 서울 강북권(강북·도봉
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/031/0001039623?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 3일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64531" target="_blank">창동 상아1차, 재건축 시공자 현설에 5개사</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 도봉구 창동 상아1차아파트의 재건축사업 시공자 현장설명회에 5개사가 참석했다<br>• 창동 상아1차아파트 재건축 사업시행자인 대한토지신탁은 지난 2일 시공자 선정을 위한 현장설명회를 개최했다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64531" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 3일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64529" target="_blank">미아동 345-1번지, 재개발 추정비례율 110.33%로 추산</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 강북구 미아동 345-1번지 일대 재개발 추정비례율이 110.33%로 추산됐다<br>• 앞으로 최고 25층 아파트
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64529" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/293/0000087148?sid=101" target="_blank">[정비사업 스케치]창동 상아1차, 시공사 선정 열쇠 &#x27;공사비 절감&#x27;</a>
-                </h3>
-                <div class="summary-box">
-                    • 대한토지신탁이 사업시행자를 맡은 도봉구 첫 신탁방식 정비사업이지만 일반분양 물량이 많지 않아 공사비와 추가 이주비 조건이 토지등소유자 분담금 부담과 연결된다<br>• 대한토지신탁은 현장설명회에서 예정가격 없는
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/293/0000087148?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://daily.hankooki.com/news/articleView.html?idxno=1382334" target="_blank">창동 상아1차 재건축, 호반·KCC·두산 등 5개사 현설 참석</a>
-                </h3>
-                <div class="summary-box">
-                    • 사진=도봉구 제공  서울 도봉구 창동 상아1차아파트 재건축사업이 시공사 선정 절차에 들어갔다<br>• 2일 정비업계에 따르면 이날 서울 강남구 대한토지신탁 사무실에서 열린 상아1차 재건축사업 시공사 현장설명회에는
-                </div>
-                <div class="card-footer">
-                    <a href="https://daily.hankooki.com/news/articleView.html?idxno=1382334" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.ekn.kr/web/view.php?key=20260702028158703" target="_blank">“토허제 확대에도 상승세 지속”…서울 아파트값 0.27%↑, 동탄 1.46% 급...</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울은 전주(0.30%)보다<br>• 상승폭이 0.03%포인트 축소됐지만 재건축 추진 단지와 역세권, 대단지를 중심으로 매수세가 이어지며 24주 연속 상승세를 이어갔다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.ekn.kr/web/view.php?key=20260702028158703" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.smartbizn.com/news/articleView.html?idxno=147626" target="_blank">&quot;서울 집값 0.27% 상승&quot;···수도권 오름세 지속, 지방은 &#x27;숨고르기&#x27;</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울은 재건축 추진 단지와 역세권, 대단지 등 선호 지역을 중심으로 매수 문의와 거래가 이어지며 상승세를 유지했다<br>• 도봉구와 동대문구, 성북구, 송파구 등이 비교적 높은 상승률을 보였다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.smartbizn.com/news/articleView.html?idxno=147626" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5036914" target="_blank">재건축·역세권 매수세 계속…서울 아파트값 73주 연속↑</a>
-                </h3>
-                <div class="summary-box">
-                    • 재건축 추진 단지와 역세권 등 선호 단지를 중심으로 매수세가 이어졌지만 상승 폭은 지난주보다<br>• 자치구 중에선 성북구가 0.45%로 상승 폭이 가장 컸고 강서구와 강북구가 각각 0.41%로 뒤를 이었다
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5036914" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202362" target="_blank">&#x27;창동 선두주자&#x27; 상아1차 재건축 시공권 누가 노리나</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 도봉구 창동 상아1차아파트 재건축 수주를 노리는 건설사의 윤곽이 드러났다<br>• 상아1차 재건축은 창동 일대에서 추진되는 정비사업 가운데 가장 앞선 속도를 보이고 있는 만큼 향후 인근 노후 단지 정비사업의
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202362" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.naeil.com/news/read/593964?ref=naver" target="_blank">딱딱한 ‘취임식’ 주민잔치로 탈바꿈</a>
-                </h3>
-                <div class="summary-box">
-                    • 대표했고 재개발·재건축 주민 대표도 감사와 축하 인사를 전했다<br>• 2일 서울 각 자치구에 따르면 딱딱하기만
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.naeil.com/news/read/593964?ref=naver" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="도봉구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 도봉구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004637341?sid=101" target="_blank">분양가 27억인데도 완판 기대…노량진 청약 흥행</a>
-                </h3>
-                <div class="summary-box">
-                    • 마포구(171.5%), 성동구(138.4%) 등 핵심지는 낙찰가율이 크게 치솟은 반면 도봉구(85.7%), 중랑구(86.2%) 등<br>• “3기 신도시 특공이 기회…정비사업은 자금 계획 중요” - 핵심 요약: 박지민 월용청약연구소 대표는 1일
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/011/0004637341?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.cnbizm.com/news/articleView.html?idxno=307361" target="_blank">정창수 강북구청장, 첫 결재는 &#x27;지역경제&#x27;… 취임 첫날 수유재래시장, ...</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 강북구(구청장 정창수)는 정창수 구청장이 취임 첫날인 지난 1일 국립4·19민주묘지 참배를 시작으로, 첫<br>• 등 정비사업 적극지원, 수유1동은 코아빌라,삼흥연립, 수유동 486번지, 수유일대 모아타운 등 정비사업 적극
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.cnbizm.com/news/articleView.html?idxno=307361" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/025/0003534830?sid=101" target="_blank">“4억 전세 살바엔 ‘이곳’ 사라”…15억 아파트 입주권 쥐는 법</a>
-                </h3>
-                <div class="summary-box">
-                    • 실제 강북구 미아동 ‘한화포레나미아’ 84㎡(이하 전용면적) 월세가 지난 5월 310만원(보증금 5000만원<br>• 「 “예산 적을수록 비규제, 재개발 관심 둬야” 」 그럼 어떤 집을 사야 할까
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/025/0003534830?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 7월 2일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="http://www.queen.co.kr/news/articleView.html?idxno=459605" target="_blank">소규모 정비사업 추가 이주비 확보 나서 ... 조기 소진에 여유기금 끌어...</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 강북구 번동 전경.(자료사진) 정부가 수도권 주택 공급 확대의 핵심 사업인 소규모 주택정비사업의 공급 차질을 막기 위해 추가 이주비 확보에 나선다<br>• 올해 이주비 지원 예산이 예상보다
-                </div>
-                <div class="card-footer">
-                    <a href="http://www.queen.co.kr/news/articleView.html?idxno=459605" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 6월 30일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/015/0005304282?sid=101" target="_blank">&quot;집은 클수록 좋다?&quot;…소형 아파트 몸값 뛴 뜻밖의 이유 [돈앤톡]</a>
-                </h3>
-                <div class="summary-box">
-                    • 강북구 미아동 &#x27;에스케이북한산시티&#x27; 전용 59㎡는 지난 1월 5억9000만원에 새 주인을 찾았는데 지난달엔<br>• 강남권 초고가 단지는 여전히 신고가 거래가 이어지고 있고, 재건축 기대감이 큰 대형 평형도 별도의 시장을
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/015/0005304282?sid=101" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 6월 29일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64281" target="_blank">미아동 130번지, 재개발 추진위원회 승인</a>
-                </h3>
-                <div class="summary-box">
-                    • 서울 강북구 미아동 130번지 일대가 재개발 추진위원회 승인을 받았다<br>• 김혜진 위원장과 손석헌
-                </div>
-                <div class="card-footer">
-                    <a href="https://www.arunews.com/news/articleView.html?idxno=64281" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            <div class="notion-card" data-district="강북구">
-                <div class="card-meta">
-                    <span class="tag district-tag">📍 강북구</span>
-                    <span class="tag source-tag">📰 네이버뉴스</span>
-                    <span class="tag date-tag">📅 2026년 6월 29일</span>
-                </div>
-                <h3 class="news-title">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002801003?sid=102" target="_blank">서울 5개 권역별 ‘맞춤 재건축’… ‘닥공’ 속도 낸다</a>
-                </h3>
-                <div class="summary-box">
-                    • ‘다시 강북 전성시대’ 정책에 맞춰 동북권에는 사업성 보정계수와 현황용적률 인정 등을 적용해 강북구 미아동과 노원구 상계동 일대 사업성을 높였다<br>• 사업성 보정계수 적용은 사업성이 낮은 지역의 정비사업 추진을
-                </div>
-                <div class="card-footer">
-                    <a href="https://n.news.naver.com/mnews/article/021/0002801003?sid=102" target="_blank">상세 원문 보기 →</a>
-                </div>
-            </div>
-            
-            </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 10일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607071733047870318" target="_blank">성수 재개발 내려다본 ‘이곳’…정비사업 속도</a></h3>
+            <div class="summary-box">• 응봉동 일대 정비사업 속속 윤곽 금호현대, 1년만에 신통기획 접수 응봉대림2차, 정비구역 지정 돌입 응봉1구역, 내년 이주 본격 착수 [대한경제=이종무 기자]서울 성동구 응봉동 일대 정비사업들이 잇달아 가시화하고</div>
+            <div class="card-footer"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607071733047870318" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/011/0004640091?sid=102" target="_blank">노원구, 공공·재개발 임대아파트까지 공동관리비 지원</a></h3>
+            <div class="summary-box">• 공동관리비 전액을 서울시가 70%, 노원구가 30%씩 분담해 지원한다<br>• 공공·재개발 임대아파트는 노원구가 자체 예산으로 공동관리비의 50%를 지원한다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/011/0004640091?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.cnbizm.com/news/articleView.html?idxno=308184" target="_blank">주말에도 편안하게 이용...성동구, &#x27;성동 필수·플랫폼 노동자 쉼터&#x27;를...</a></h3>
+            <div class="summary-box">• 서울 성동구(구청장 유보화)는 여름철 폭염으로부터 필수노동자와 이동노동자를 보호하기 위해 7월과 8월 두<br>• 위한 재정비를 지원한다</div>
+            <div class="card-footer"><a href="https://www.cnbizm.com/news/articleView.html?idxno=308184" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ksilbo.co.kr/news/articleView.html?idxno=1061710" target="_blank">&#x27;멸실 위기&#x27; 오윤 테라코타 해체·보관키로…자금마련 펀딩 시작</a></h3>
+            <div class="summary-box">• 멸실 위기에 놓인 &#x27;민중 판화가&#x27; 오윤(1946~1986)의 서울 광진구 구의동 테라코타 벽화가 보존을 위한 해체<br>• 그러나 건물이 재건축될 예정이어서 다시 철거 위기에 놓이자 추진위가 구성돼 해체와 보존 작업을 추진하고</div>
+            <div class="card-footer"><a href="https://www.ksilbo.co.kr/news/articleView.html?idxno=1061710" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/243/0000100251?sid=101" target="_blank">서울 분양가 3년 새 66%↑…강남3구·한강벨트 양극화 심화</a></h3>
+            <div class="summary-box">• 이는 강남권 분양가가 하락한 것이 아니라 동작구와 성동구, 용산구 등 한강변 핵심 지역에서도 고분양가<br>• 정비사업 중심의 신규 공급이 이어질 예정이어서 당분간 높은 분양가와 지역별 가격 격차는 지속될</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/243/0000100251?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/001/0016186209?sid=103" target="_blank">&#x27;멸실 위기&#x27; 오윤 테라코타 해체·보관키로…자금마련 펀딩 시작</a></h3>
+            <div class="summary-box">• 서울 광진구 구의동 테라코타 벽화가 보존을 위한 해체 작업에 들어간다<br>• 9일 오윤 구의동 테라코타</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/001/0016186209?sid=103" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ngetnews.com/news/articleView.html?idxno=551294" target="_blank">KT, 3년간 18조원 투자…통신 넘어 AX 플랫폼 기업 전환 속도</a></h3>
+            <div class="summary-box">• 6일 업계에 따르면 박윤영 KT 대표는 서울 광진구 풀만 앰배서더 이스트폴에서 취임 후 첫 기자간담회를<br>• 제로 트러스트 원칙을 적용해 전사 보안 체계를 재정비하고 AI 시대에 맞는 보안 경쟁력을 확보한다는</div>
+            <div class="card-footer"><a href="https://www.ngetnews.com/news/articleView.html?idxno=551294" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/016/0002668262?sid=101" target="_blank">‘핫플 성수’에 래미안 쇼핑 스트리트 뜬다…삼성물산, 성수3지구 상가...</a></h3>
+            <div class="summary-box">• 성수3지구는 성동구 성수동2가 572-7번지 일대 약 11만4193㎡ 면적을 재개발하는 정비사업이다<br>• 공사비만 약 1조8000억원에 달하며 2200여 가구가 들어설 예정이다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/016/0002668262?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://realty.chosun.com/site/data/html_dir/2026/07/09/2026070902898.html" target="_blank">&quot;입주 반년 됐는데&quot;…&#x27;평당 8000만원&#x27; 이문아이파크자이 상가 누수 논란</a></h3>
+            <div class="summary-box">• 이문아이파크자이는 동대문구 이문3구역 재정비촉진구역을 재개발해 조성한 대단지다<br>• IPARK현대산업개발과 GS건설이 컨소시엄으로 공동 시공했으며, 아파트 4321가구와 오피스텔 594실을 합쳐 총 4915가구 규모다</div>
+            <div class="card-footer"><a href="https://realty.chosun.com/site/data/html_dir/2026/07/09/2026070902898.html" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.smartbizn.com/news/articleView.html?idxno=148211" target="_blank">서울 집값 다시 탄력···동탄 1.29% &#x27;질주&#x27;·전세도 동반 상승, 하반기...</a></h3>
+            <div class="summary-box">• 최근 가격 부담에도 불구하고 교통망 개선과 재개발 기대감, 생활 인프라를 갖춘 지역으로 매수세가<br>• 서울에서는 성동구가 0.46% 올라 가장 높은 상승률을 기록했고 노원구 0.44%, 강북구 0.43%, 강동구 0.43%, 송파구 0.42</div>
+            <div class="card-footer"><a href="https://www.smartbizn.com/news/articleView.html?idxno=148211" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/417/0001151050?sid=102" target="_blank">서울시 1급 핵심 4인 행정국에 발령…&quot;신상필벌 방점&quot;</a></h3>
+            <div class="summary-box">• 명 기획관은 공공주택과장을 거치며 오 시장의 신속통합기획을 이끈 인물이다<br>• 김창규 균형발전본부장은</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/417/0001151050?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.viva100.com/article/20260709501197" target="_blank">서울시, 모아주택 규제 손질…용적률 최대 500%·층수 제한 완화</a></h3>
+            <div class="summary-box">• 저층주거지 정비와 도심 주택 공급을 이끄는 대표 사업으로 자리 잡을 수 있도록 제도를 지속적으로 보완하겠다”고 말했다<br>• 한편 서울시는 최근 광진구 자양1동 일대 모아타운 관리계획을 확정하고 ‘세대구분형</div>
+            <div class="card-footer"><a href="https://www.viva100.com/article/20260709501197" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/011/0004639938?sid=101" target="_blank">수도권 분양가 1년 새 27.2%↑…서울은 3.3㎡당 6000만원 눈앞</a></h3>
+            <div class="summary-box">• 다만 올들어 동작구와 성동구 등 한강 벨트에서 고분양가 단지가 여럿 등장하며 강남 3구(강남·서초<br>• 랩장은 “고유가에서 파생된 공사비 부담이 쉽게 가라앉지 않고 있고 서울은 정비사업을 중심으로 한</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/011/0004639938?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64751" target="_blank">상계한신3차, 재건축 정비구역 지정 &#x27;목전&#x27;</a></h3>
+            <div class="summary-box">• 서울 노원구 상계한신3차아파트가 재건축 정비구역 지정을 목적에 두고 있다<br>• 구는 9일 상계한신3차아파트 재건축사업 정비구역 지정 및 정비계획 수립(안)에 대한 재공람을 내달 10일까지 진행한다고 공고했다</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64751" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://news.einfomax.co.kr/news/articleView.html?idxno=4424221" target="_blank">KB부동산 &quot;서울 아파트값 상승률 2주 연속 둔화…동탄 오름폭 축소&quot;</a></h3>
+            <div class="summary-box">• 일대 재건축 추진 단지 위주로 가격이 올랐다&quot;고 진단했다<br>• 경기권은 전주 대비 0.2% 상승했다</div>
+            <div class="card-footer"><a href="https://news.einfomax.co.kr/news/articleView.html?idxno=4424221" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ebn.co.kr/news/articleView.html?idxno=1715757" target="_blank">[Game &amp; Now] 무신사 손잡은 로스트아크, 스토리 다듬은 카제나…스마일...</a></h3>
+            <div class="summary-box">• 이번 팝업은 오는 22일부터 31일까지 서울 성동구 무신사 스토어 성수에서 운영되며, 오전 11시부터 오후<br>• 라이브 서비스 게임에서 초반 서사를 전면 재정비하는 것은 흔치 않은 결정으로, 작품 완성도에 대한 재투자</div>
+            <div class="card-footer"><a href="https://www.ebn.co.kr/news/articleView.html?idxno=1715757" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.goodkyung.com/news/articleView.html?idxno=289083" target="_blank">[줌! 이 기업] 롯데건설, &#x27;턴어라운드 원년&#x27;…선별수주·재무개선 &#x27;투트...</a></h3>
+            <div class="summary-box">• 지난 5일 롯데건설은 총 공사비 1조3492억원 규모의 서울 성동구 &#x27;성수전략정비구역 제4지구(성수4지구)&#x27; 재개발 사업의 시공사로 최종 선정됐다<br>• 치열한 경쟁 속에서 조합원 72.4%의 압도적인 지지를 받았다</div>
+            <div class="card-footer"><a href="https://www.goodkyung.com/news/articleView.html?idxno=289083" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/022/0004141805?sid=101" target="_blank">급등하던 화성 동탄 오름폭 축소… 수도권 아파트 시장 숨고르기 양상</a></h3>
+            <div class="summary-box">• 노원구의 경우 매수자와 매도자 간 희망 가격 격차로 거래가 쉽지 않지만, 상계동 일대 재건축 추진<br>• 서울은 성북구(0.92%)와 광진구(0.66%)의 상승세가 가팔랐으며, 경기는 구리시(0.95%)와 수원시 영통구(0.86%)의</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/022/0004141805?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.smartbizn.com/news/articleView.html?idxno=148183" target="_blank">&quot;서울 집값 더 뛰었다&quot;···수도권 상승폭 확대, 지방은 회복 조짐</a></h3>
+            <div class="summary-box">• 재건축 기대감과 교통 접근성이 좋은 단지를 중심으로 매수세가 이어진 영향으로 풀이된다<br>• 서울에서는 성동구(0.46%), 노원구(0.44%), 강북구(0.43%), 강동구(0.43%), 송파구(0.42%) 등이 높은 상승률을 기록했다</div>
+            <div class="card-footer"><a href="https://www.smartbizn.com/news/articleView.html?idxno=148183" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ekn.kr/web/view.php?key=20260709028000872" target="_blank">[르포] 국평 ‘17억’ 장위 푸르지오 마크원 건설 현장 가보니</a></h3>
+            <div class="summary-box">• 장위 푸르지오 마크원은 장위동 10구역을 재개발하는 단지다<br>• 지하 5층~지상 32층, 25개 단지, 총 1931 가구</div>
+            <div class="card-footer"><a href="https://www.ekn.kr/web/view.php?key=20260709028000872" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/003/0014056901?sid=102" target="_blank">노원구, 전국 지자체 유일 공공·재개발 임대아파트 관리비 지원</a></h3>
+            <div class="summary-box">• 공공·재개발 임대 아파트는 노원구가 자체 예산을 투입해 공동 관리비 50%를 지원한다<br>• 지원금은 아파트 관리 주체 신청을 받아 매달 지급된다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/003/0014056901?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.theguru.co.kr/news/article.html?no=104191" target="_blank">서울 아파트 평당 분양가 6000만원 육박… 강남 넘어 &#x27;한강 벨트&#x27;로 고분...</a></h3>
+            <div class="summary-box">• 동작구(7844만원)를 비롯해 성동구, 용산구 등 한강변 주요<br>• 입지에서 초고가 단지 분양이 잇따르면서</div>
+            <div class="card-footer"><a href="https://www.theguru.co.kr/news/article.html?no=104191" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ekn.kr/web/view.php?key=20260709020030856" target="_blank">서울 아파트값 0.30% 상승…성북·구로·동탄·영통 ‘불장 축’ 넓어졌...</a></h3>
+            <div class="summary-box">• 서울에서는 성동구(0.46%), 노원구(0.44%), 강북구(0.43%), 강동구(0.43%), 송파구(0.42%) 등이 높은 상승률을<br>• 개발 호재와 정비사업이 예정된 지역, 산업 배후 수요가 풍부한 지역으로 매수세가 집중되면서 지역 간 가격</div>
+            <div class="card-footer"><a href="https://www.ekn.kr/web/view.php?key=20260709020030856" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.pointdaily.co.kr/news/articleView.html?idxno=311332" target="_blank">서울 분양가, 이제 &#x27;동네값&#x27;이 됐다</a></h3>
+            <div class="summary-box">• 이는 강남권 분양가가 하락했다기보다<br>• 동작구, 성동구, 용산구 등 비강남 핵심 입지에서도 고분양가</div>
+            <div class="card-footer"><a href="https://www.pointdaily.co.kr/news/articleView.html?idxno=311332" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/366/0001178011?sid=101" target="_blank">서울시는 밀고, 성동구는 “로드맵 없다”… 행당8구역 네 번째 재개발...</a></h3>
+            <div class="summary-box">• 성동구는 그동안 서울시 중심의 정비사업 운영 방식에 대해 자치구 권한을 더 확대해야 한다는 입장을 보여왔다<br>• 정비사업은 지역별 여건과 주민 의견이 중요한 만큼, 정비구역 지정 등 주요</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/366/0001178011?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.thevaluenews.co.kr/news/view.php?idx=199984" target="_blank">대우건설, 적자 털어낼 사상 최대 &#x27;2.9조&#x27; 수주... 하반기까지 &#x27;18조&#x27; 총...</a></h3>
+            <div class="summary-box">• 지난 5일 마감된 서울 성동구 성수전략정비구역 4지구(성수4지구) 주택재개발정비사업 시공사 선정 총회에서 경쟁사인 롯데건설에 시공권을 내줬다<br>• 서울 성동구 성수4지구 설계안</div>
+            <div class="card-footer"><a href="http://www.thevaluenews.co.kr/news/view.php?idx=199984" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.lecturernews.com/news/articleView.html?idxno=205864" target="_blank">이마트·홈플러스·롯데마트·코스트코 휴무일, 7월 11일(토) 대형마트 ...</a></h3>
+            <div class="summary-box">• 그러나 성수점 재개발에 따라 2023년 5월 서울 중구 오렌지센터로 본사를 이전했다<br>• 현재 본사는 독립</div>
+            <div class="card-footer"><a href="https://www.lecturernews.com/news/articleView.html?idxno=205864" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a></h3>
+            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원[서울25]</a></h3>
+            <div class="summary-box">• 서울 노원구가 공공·재개발 임대아파트 공동 관리비를 지원한다고 9일 밝혔다<br>• 공공·재개발 임대아파트의 공동 관리비를 자체 예산으로 지원하는 곳은 전국 시도에서 노원구가 유일하다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ajunews.com/view/20260709122615634" target="_blank">강남 아닌 성북·구로가 올렸다…서울 집값 상승축 이동</a></h3>
+            <div class="summary-box">• 상대적으로 가격 부담이 낮은 지역으로 실수요가 유입되고 재개발 등 개발 기대감이 반영된 영향으로<br>• 성동구(0.46%), 노원구(0.44%), 강동구(0.43%), 송파구(0.42%) 등을 중심으로 학군과 역세권, 대단지 선호가 이어지며</div>
+            <div class="card-footer"><a href="https://www.ajunews.com/view/20260709122615634" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607091329241650572" target="_blank">노원구, 전국 유일 공공ㆍ재개발 임대아파트 관리비 지원</a></h3>
+            <div class="summary-box">• 서울시 사업 외 자체 재원으로 지원 확대 노원구가 3년째 공공ㆍ재개발 임대아파트 공동관리비 지원을 이어간다<br>• 자체 재원으로 공공ㆍ재개발 아파트를 지원하는 지자체는 노원구가 유일하다</div>
+            <div class="card-footer"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607091329241650572" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.naeil.com/news/read/594821?ref=naver" target="_blank">공공·재개발 임대아파트 관리비 뚝↓</a></h3>
+            <div class="summary-box">• 서울 노원구 공공·재개발 임대아파트에 거주하는 주민들이 관리비를 아낄 수 있게 됐다<br>• 노원구는 영구임대아파트뿐 아니라 공공·재개발 임대까지 공동관리비를 지원해 취약계층 주거비 부담 완화에 앞장선다고 9일</div>
+            <div class="card-footer"><a href="https://www.naeil.com/news/read/594821?ref=naver" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64740" target="_blank">상봉9구역, 최고 49층 아파트 999세대로 재개발</a></h3>
+            <div class="summary-box">• 서울 중랑구 상봉9구역이 최고 49층 아파트 999세대로 재개발된다<br>• 구는 상봉9재정비촉진구역 도시정비형 재개발 사업시행자인 우리자산신탁이 신청한 사업시행변경계획을 9일 인가·고시했다</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64740" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/629/0000514624?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a></h3>
+            <div class="summary-box">• 영구임대아파트는 공동관리비 전액을 지원하며 서울시가 70%, 노원구가 30%를 부담한다<br>• 공공·재개발 임대아파트의 경우 구가 자체 예산을 투입해 공동관리비의 50%를 지원한다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/629/0000514624?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.newstnt.com/news/articleView.html?idxno=709576" target="_blank">영구임대 넘어 공공임대까지…노원구 공동관리비 지원 확대</a></h3>
+            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산으로 공동관리비의 50%를 지원한다<br>• 지원 대상은 영구임대아파트 7개 단지와 공공·재개발 임대아파트 17개 단지다</div>
+            <div class="card-footer"><a href="https://www.newstnt.com/news/articleView.html?idxno=709576" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.newspim.com/news/view/20260709000576" target="_blank">&#x27;위기의 모아주택·모아타운&#x27; 개선…용적률 상향·층수제한 사실상 폐지</a></h3>
+            <div class="summary-box">• 이동훈 선임기자 = 노후 저층주거지를 대상으로 하는 소규모 정비사업인 &#x27;모아주택·모아타운&#x27;의 사업성이<br>• 모아주택·모아타운 사업 개선 방안이 발표됐다</div>
+            <div class="card-footer"><a href="https://www.newspim.com/news/view/20260709000576" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64725" target="_blank">면목10구역, 재개발 추정비례율 100.87%로 추산</a></h3>
+            <div class="summary-box">• 서울 중랑구 면목10구역 추정비례율이 100.87%로 추산됐다<br>• 앞으로 치고 35층 아파트 959세대로</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64725" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/001/0016184665?sid=101" target="_blank">[서미숙의 집수다] 자동말소되는 등록임대, 임대주택 지위 두고 논란</a></h3>
+            <div class="summary-box">• 양천구 목동, 노원구 상계동 등지의 아파트는 8년 전에는 정비사업 추진 움직임이 없었지만 최근 속도전에 들어가며 조합인가를 받은 단지들이 줄을 잇고 있다<br>• 대한주택임대인협회 성창엽 회장은 &quot;양도세 중과 배제와</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/001/0016184665?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/215/0001258135?sid=102" target="_blank">노원구, 임대아파트 공동관리비 10억 지원…2만2천 세대 혜택</a></h3>
+            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산으로 공동관리비의 50%를 지원하며, 관리주체의 신청을 받아 매월 지급한다<br>• 지원 대상은 영구임대아파트 7개 단지와 공공임대 8개 단지, 재개발임대 9개 단지 등 총 24개</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/215/0001258135?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.hg-times.com/news/articleView.html?idxno=303450" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원 확대...전국 유일</a></h3>
+            <div class="summary-box">• 영구임대아파트는 공동관리비 전액을 지원하며, 이 중 70%는 서울시가, 30%는 노원구가 부담한다<br>• 공공·재개발 임대아파트의 경우 노원구가 자체 예산으로 공동관리비의 50%를 지원한다</div>
+            <div class="card-footer"><a href="https://www.hg-times.com/news/articleView.html?idxno=303450" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.rcast.co.kr/news/articleView.html?idxno=31224" target="_blank">2년 멈췄던 GTX-C 본공사 착수... 창동에서 병점까지 집값 상승 잇따라</a></h3>
+            <div class="summary-box">• 도봉구 창동역 인근 &#x27;동아청솔&#x27; 전용 84㎡ 역시 2025년 4월 9억9,000만원(12층)에서 올해 5월 11억5,000만원(19층)<br>• 단지는 의왕 우성4차아파트 및 가로주택정비사업을 통해 공급되며, 지하 3층~지상 29층 4개 동 규모로 총</div>
+            <div class="card-footer"><a href="https://www.rcast.co.kr/news/articleView.html?idxno=31224" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.gukjenews.com/news/articleView.html?idxno=3630618" target="_blank">노원구, 임대아파트 공동관리비 지원 확대…주거 취약계층 부담 완화</a></h3>
+            <div class="summary-box">• 공공임대아파트와 재개발임대아파트에는 노원구가 예산을 투입해 공동관리비의 절반을 지원한다<br>• 지원금은 각 아파트 관리주체의 신청을 받아 매월 지급된다</div>
+            <div class="card-footer"><a href="https://www.gukjenews.com/news/articleView.html?idxno=3630618" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5039070" target="_blank">노원구, 공공·재개발 임대아파트까지 공동관리비 지원 확대</a></h3>
+            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산으로 공동관리비의 50%를 지원하고 있으며, 지원금은 아파트 관리주체의 신청을 받아 매월 지급된다<br>• 지원 대상은 영구임대아파트 7개 단지와 공공임대 8개 단지</div>
+            <div class="card-footer"><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5039070" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.housingherald.co.kr/news/articleView.html?idxno=62149" target="_blank">재개발·재건축 시공자 선정 &#x27;1회 유찰 시 수의계약&#x27;?…경쟁입찰 소멸 ...</a></h3>
+            <div class="summary-box">• 동대문구 신설1구역 공공재개발을 시작으로 성남 신흥1구역, 수진1구역, 그리고 민간 정비사업인 송파구 잠실우성4차와 가락삼익맨숀 등 수많은 사업지가 이 방식을 택했다<br>• 문제는 조합들이 대개 현장설명회 개최 후 불과</div>
+            <div class="card-footer"><a href="https://www.housingherald.co.kr/news/articleView.html?idxno=62149" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/021/0002803412?sid=102" target="_blank">노원구 “전국 지자체 유일 공공·재개발 임대아파트 공동관리비 지원”</a></h3>
+            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/021/0002803412?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 9일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/005/0001859881?sid=101" target="_blank">아파트 사기 어려운 30대 연립·다세대 매수 늘었다</a></h3>
+            <div class="summary-box">• 아파트 대비 상대적으로 적은 자금으로 내집 마련이 가능한데다<br>• 정비사업 기대감까지 더해진 영향으로</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/005/0001859881?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/469/0000941166?sid=102" target="_blank">[클릭! 자치뉴스] 서울 중랑구, 면목행정복합타운 통합개발 본격화</a></h3>
+            <div class="summary-box">• 서울 중랑구(구청장 류경기)는 서울시 제2차 공공주택통합심의를 통과한 면목행정복합타운 통합개발 사업<br>• 구는 면목동 378-10번지 일대 지하철 7호선 용마산역 인근 공공시설 부지를 활용해 행정·문화시설을 재정비하</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/469/0000941166?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.cnbizm.com/news/articleView.html?idxno=307974" target="_blank">중랑구, 면목행정복합타운 통합개발 사업 추진에 속도...지난달 서울시...</a></h3>
+            <div class="summary-box">• 서울 중랑구(구청장 류경기)가 지난달 서울시 제2차 공공주택통합심의를 통과하며 면목행정복합타운<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다</div>
+            <div class="card-footer"><a href="https://www.cnbizm.com/news/articleView.html?idxno=307974" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="http://tbs.seoul.kr/news/newsView.do?typ_800=7&idx_800=3537212&seq_800=20530087" target="_blank">[변상욱쇼:서울25, 직-터뷰] 정창수 강북구청장</a></h3>
+            <div class="summary-box">• 도시 정비사업 신속추진으로 도시환경개선도 이루어질것 주3-4회 지하철역으로 출근해서 주민 의견청취중<br>• 주변에 있는 도봉구나 노원구나 성북구 수준으로 올리는 것에 첫 발을 디디려고 합니다</div>
+            <div class="card-footer"><a href="http://tbs.seoul.kr/news/newsView.do?typ_800=7&idx_800=3537212&seq_800=20530087" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/011/0004639447?sid=101" target="_blank">중랑구, 면목행정복합타운 사업 추진 본격화</a></h3>
+            <div class="summary-box">• 8일 중랑구에 따르면 면목행정복합타운 통합개발 사업은 면목동 378-10번지 일대 7호선 용마산역 인근 공공시설 부지를 활용해 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다<br>• 지하 4층~지상 47층 규모로</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/011/0004639447?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/003/0014053900?sid=102" target="_blank">중랑구, 면목행정복합타운 통합개발 속도…내년 착공</a></h3>
+            <div class="summary-box">• 서울 중랑구(구청장 류경기)가 지난달 서울시 제2차 공공주택통합심의를 통과하며 면목행정복합타운<br>• 시설을 재정비하고 공공 주택을 함께 조성하는 사업이다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/003/0014053900?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/018/0006325342?sid=102" target="_blank">경실련 &quot;공공주택 절반은 무늬만 공공…&#x27;진짜 공공임대&#x27; 늘려야&quot;</a></h3>
+            <div class="summary-box">• 이어 “재건축·재개발 규제 완화에만 의존할 것이 아니라 LH와 SH가 보유한 공공택지를 활용해 저렴한<br>• 서울 동대문구 장안동의 한 오피스텔이 인근에서 2억9000만원에 거래됐는데도 LH는 같은 지역 오피스텔을</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/018/0006325342?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272622" target="_blank">중랑구, 면목행정복합타운 통합개발사업 &#x27;속도 낸다&#x27;</a></h3>
+            <div class="summary-box">• 중랑구 서울시 제2차 공공주택통합심의를 통과하면서 면목행정복합타운 통합개발 사업 추진에 속도를 내고<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다</div>
+            <div class="card-footer"><a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272622" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/021/0002803239?sid=101" target="_blank">6월 서울 아파트, 월세 8247건 &gt; 전세 7108건</a></h3>
+            <div class="summary-box">• 동대문구 용두동 래미안엘리니티 전용 84㎡는 지난달 30일 보증금 1억 원, 월세 340만 원에 거래됐다<br>• 서울에서 진행 중인 여러 정비사업도 월세 추가 급등을 촉발할 뇌관으로 분석된다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/021/0002803239?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.hg-times.com/news/articleView.html?idxno=303422" target="_blank">중랑구, 47층 712세대 면목행정복합타운 조성...2027년 착공 목표</a></h3>
+            <div class="summary-box">• 한강타임즈 백진아 기자 = 중랑구(구청장 류경기)는 서울시 제2차 공공주택통합심의 통과를 계기로<br>• 이번 사업은 면목동 378-10번지 일대 7호선 용마산역 인근의 공공시설 부지를 활용해, 행정·문화시설 재정비와</div>
+            <div class="card-footer"><a href="https://www.hg-times.com/news/articleView.html?idxno=303422" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.etoday.co.kr/news/view/2601489" target="_blank">[단독] 통합심의 넉 달 만에…광진 자양2동 모아타운 무산</a></h3>
+            <div class="summary-box">• 이투데이=이난희 기자 | 727가구 공급계획 통과했지만 주민 반대·동의 철회 3개 구역 줄줄이 제외…광진구, 서울시에 취소 요청 한강 변 배후 주거지로 대형 개발 호재가 맞물려 정비사업 시장의 주목을 받던 서울 광진구</div>
+            <div class="card-footer"><a href="https://www.etoday.co.kr/news/view/2601489" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.job-post.co.kr/news/articleView.html?idxno=220396" target="_blank">중랑구, 면목행정복합타운 개발 본궤도…공공주택통합심의 통과</a></h3>
+            <div class="summary-box">• 서울 중랑구가 면목행정복합타운 통합개발 사업의 핵심 행정절차를 통과하며 사업 추진에 속도를 낸다<br>• 문화시설을 재정비하고 공공주택을 함께 조성하는 대규모 복합개발 사업이다</div>
+            <div class="card-footer"><a href="https://www.job-post.co.kr/news/articleView.html?idxno=220396" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/277/0005786931?sid=102" target="_blank">중랑구, 면목행정복합타운 통합개발 본격화</a></h3>
+            <div class="summary-box">• 서울 중랑구(구청장 류경기)가 지난달 서울시 제2차 공공주택통합심의를 통과하며 면목행정복합타운<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/277/0005786931?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272486" target="_blank">최동민 동대문구청장, 용두동 주민 만나 현안 해결 의지 밝혀</a></h3>
+            <div class="summary-box">• [사진=김종영 기자] 최동민 동대문구청장이 용두동주민센터에서 &#x27;동민과의 대화&#x27;를 열고 주민들과의 현장<br>• [사진=김종영 기자] 문홍식 전 주민자치위원회 위원장은 &quot;주택 재개발 정책 지속성이 있는지 궁금하고, 경동시장</div>
+            <div class="card-footer"><a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1272486" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.thebell.co.kr/free/content/ArticleView.asp?key=202607061123594760105928" target="_blank">[더벨]박윤영 KT 대표 공식무대 데뷔 &#x27;AI 총력전 예고&#x27;</a></h3>
+            <div class="summary-box">• ◇단단한 본질에 확실한 성장 더한다<br>• KT는 6일 서울 광진구 풀만 앰배서더 이스트폴 호텔에서</div>
+            <div class="card-footer"><a href="https://www.thebell.co.kr/free/content/ArticleView.asp?key=202607061123594760105928" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/021/0002803097?sid=102" target="_blank">중랑구, 면목행정복합타운 통합개발 본격화…2030년 준공 목표</a></h3>
+            <div class="summary-box">• 중랑구청 제공 서울 중랑구는 면목행정복합타운 통합개발 사업이 최근 서울시 제2차 공공주택통합심의를<br>• 행정·문화시설을 재정비하고 공공주택을 함께 조성하는 사업이다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/021/0002803097?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/003/0014052430?sid=101" target="_blank">&quot;월세 낼 바엔 집 산다&quot;…2030 몰리자 서울 중저가 &#x27;귀한 몸&#x27;</a></h3>
+            <div class="summary-box">• 자치구별로는 도봉구(0.37%), 동대문구(0.36%), 성북구(0.36%), 구로구(0.35%), 노원구(0.33%), 중랑구(0.32%) 등의 상승폭이 두드러졌다<br>• 부동산원은 &quot;재건축 추진 단지와 선호도가 높은 역세권, 대단지 등을 중심으로 수요가</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/003/0014052430?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607061257003410076" target="_blank">[재개발ㆍ재건축 탐방] (22) 27세 청년 조합장의 도전… “모든 세대가...</a></h3>
+            <div class="summary-box">• 서울 광진구 자양역과 한강공원 앞에서 추진 중인 ‘자양동 92-1번지 일원 소규모재개발정비사업’을 이끌고 있는 박 조합장은 정비사업 조합장으로는 이례적으로 젊은 나이지만, 조합원 지지로 선출된 뒤 관련 법령과</div>
+            <div class="card-footer"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607061257003410076" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/081/0003659240?sid=102" target="_blank">“서울시와 원팀 이뤄 직주락 도시로… 4년 후 광진 확 달라질 것” [민...</a></h3>
+            <div class="summary-box">• 광진구 전역에서는 재개발·재건축과 모아타운, 신속통합기획 등 62곳의 정비사업이 추진되고 있다<br>• 정비사업은 단순히 새집을 짓는 것이 아니다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/081/0003659240?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 8일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/008/0005382812?sid=101" target="_blank">&quot;5억 환급&quot; &quot;1+1 분양&quot; 갈등 끝 결국...&#x27;대형평형&#x27; 1개 동 빼고 재건축</a></h3>
+            <div class="summary-box">• 정비사업 과정에서 일부 토지나 건축물을 정비구역에서 제외한 사례가 적지 않다<br>• 상가나 종교시설 소유주와 보상·이전 조건을 두고 갈등을 빚은 경우가 대표적이다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/008/0005382812?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/024/0000106725?sid=101" target="_blank">똘똘한 보류지 어디…6가구 모집에 수천명 [감평사의 부동산 현장진단]</a></h3>
+            <div class="summary-box">• 내손라구역 주택재개발정비사업 조합은 6월 18일부터 조달청 누리장터와 조합 홈페이지를 통해<br>• 서울 동대문구 이문동 ‘래미안라그란데’ 보류지 매각 또한 12가구 중 10가구가 주인을 찾으며 인기를 끌었다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/024/0000106725?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/014/0005544953?sid=101" target="_blank">&quot;반대하는 동 빼고 재건축&quot; 삼익맨션 일몰 리스크 털었다</a></h3>
+            <div class="summary-box">• 심의 통과에 따라 올해 하반기 사업시행인가 신청을 계획 중이다<br>• 자양7구역은 광진구의 자양3동 일대 통합 개발에 따라 정비계획 변경 절차를 밟으며 기한을 넘길 위기다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/014/0005544953?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.areyou.co.kr/news/articleView.html?idxno=94385" target="_blank">[아유경제_재건축] 장안현대 재건축 &#x27;관리처분인가&#x27;</a></h3>
+            <div class="summary-box">• 동대문구는 장현현대 재건축 정비사업조합(조합장 김수규ㆍ이하 조합)이 신청한 관리처분계획(안)을 「도시 및 주거환경정비법」 제74조 및 제78조에 따라 지난달(6월) 18일 인가하고, 이를 같은 날 고시했다</div>
+            <div class="card-footer"><a href="http://www.areyou.co.kr/news/articleView.html?idxno=94385" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/008/0005382664?sid=101" target="_blank">&quot;같은 단지인데 나만 구축&quot;…&#x27;5동만 빼고 재건축&#x27; 명일삼익맨숀, 왜?</a></h3>
+            <div class="summary-box">• 정비사업 과정에서 일부 토지나 건축물을 정비구역에서 제외하는 사례는 적지 않다<br>• 상가나 종교시설 소유주와 보상·이전 조건을 두고 갈등을 빚는 경우가 대표적이다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/008/0005382664?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.queen.co.kr/news/articleView.html?idxno=459912" target="_blank">&#x27;영끌족 성지&#x27; 노도강에 30대 수요 유입 ... 생애 첫 주택 매수 증가</a></h3>
+            <div class="summary-box">• 이어 동대문구와 성북구가 각각 0.36%, 구로구 0.35%, 노원구 0.33%, 중랑구 0.32% 순으로 상승하며 중저가 지역이<br>• 서울 외곽 지역은 상대적으로 가격 부담이 낮고 교통망 개선과 재개발 기대감 등이 맞물려 실거주 수요가</div>
+            <div class="card-footer"><a href="http://www.queen.co.kr/news/articleView.html?idxno=459912" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64634" target="_blank">중랑구, 상봉7구역 사업시행변경인가 고시</a></h3>
+            <div class="summary-box">• 서울 중랑구가 상봉7재정비촉진구역 도시정비형 재개발사업의 사업시행계획변경인가를 지난 2일 고시했다<br>• 이번 변경인가에 따라 상봉7구역은 최고 49층 규모의 주상복합단지로 조성되며 공동주택과 오피스텔</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64634" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.job-post.co.kr/news/articleView.html?idxno=220255" target="_blank">중랑구 상봉7구역, 최고 49층 복합단지로 재탄생…동북권 랜드마크 조성...</a></h3>
+            <div class="summary-box">• 중랑구는 지난 2일 상봉7재정비촉진구역 도시정비형 재개발사업의 사업시행계획 변경인가를 고시했다고 밝혔다<br>• 이번 변경인가를 통해 주택 공급을 확대하고 문화시설과 상업시설을 함께 갖춘 복합개발이 본격</div>
+            <div class="card-footer"><a href="https://www.job-post.co.kr/news/articleView.html?idxno=220255" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.youthdaily.co.kr/news/article.html?no=222351" target="_blank">[재계부] &#x27;목화아파트&#x27; 첫 입찰 마감…여의도發 재건축 수주 &#x27;전초전&#x27; 임...</a></h3>
+            <div class="summary-box">• 둔촌동, 강북구 번동 등 모아타운 사업지에서도 입찰 접수가 대기 중이다<br>• 신규 시공사 확보를 위한 현장설명회도 서울 핵심지와 전국 재개발 구역을 중심으로 잇따른다</div>
+            <div class="card-footer"><a href="https://www.youthdaily.co.kr/news/article.html?no=222351" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/018/0006324194?sid=102" target="_blank">&quot;물 새고 옹벽에 금가도 재개발 앞뒀다고 보수도 안해줘&quot;</a></h3>
+            <div class="summary-box">• 강북구 미아동 재개발 예정지에서도 균열이 간 옹벽과 담장이 곳곳에서 확인됐고, 솔샘 일대 재개발·재건축 지역에서도 장마철마다<br>• 담벼락 붕괴와 전선 화재 신고가 반복된다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/018/0006324194?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/003/0014049713?sid=101" target="_blank">&quot;부동산 불패는 끝났다&quot;…31년 전문가가 본 한국 주택 시장의 균열</a></h3>
+            <div class="summary-box">• 수도권 중심부의 초고가 재건축 단지나 한강벨트 등 이른바 고가 입지 시장 역시 향후 2~3년 동안 약세를<br>• 반면 부모 세대와 경제적으로 분리된 30대 실수요층은 자신들의 소득 수준으로 감당할 수 있는 동대문구, 성북구</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/003/0014049713?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 7일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/081/0003658873?sid=102" target="_blank">“실용과 협치로 도봉 대전환… 거대한 ‘창동 엔진’ 돌린다”[민선 9...</a></h3>
+            <div class="summary-box">• (60) 도봉구청장은 지난달 30일 창동 구민회관 인수위원회 사무실에서 당선인 신분으로 진행한 서울신문<br>• 서울주택도시개발공사(SH) 등과 협의해 나가겠다.” -재개발·재건축 등 도시정비사업의 추진 방향은</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/081/0003658873?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/011/0004638694?sid=101" target="_blank">상봉7구역, 최고 49층 주상복합 재탄생…“841가구 공급”</a></h3>
+            <div class="summary-box">• 중랑구는 상봉7재정비촉진구역 도시정비형 재개발사업의 사업시행계획 변경인가를 고시했다고 2일 밝혔다<br>• 상봉7구역은 상봉역과 망우역 일대 상업지역에 위치한 재정비촉진구역으로, 2015년 최고 43층 2개 동 총</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/011/0004638694?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160288216122135" target="_blank">동대문구, 재개발 신축 공동주택 재산세 예측 서비스</a></h3>
+            <div class="summary-box">• ▲ (사진=동대문구청 제공)  동대문구(구청장 최동민)의 ‘우리집 재산세 예측 서비스’가 주민들의 큰 호응 속에 마무리됐다<br>• 6일 구에 따르면 재개발 신축 공동주택 입주민들의 세금 불안과 궁금증을 덜어주기 위해</div>
+            <div class="card-footer"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160288216122135" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/015/0005306764?sid=101" target="_blank">9조 투입 강북 경전철 &#x27;속도&#x27;…성북·관악·서대문 들썩</a></h3>
+            <div class="summary-box">• 이어 강서구(7.53%), 구로구(7.05%), 관악구(6.92%), 영등포구(6.66%), 동대문구(6.65%), 서대문구(6.60%) 등 외곽 지역이<br>• 목동 신시가지 아파트와 강서구 가양·화곡동, 영등포구 일대 등 정비사업 지역도 기대가 커지고 있다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/015/0005306764?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.beyondpost.co.kr/view.php?ud=202607061703042562205868f676_30" target="_blank">상봉7구역, 841세대 규모 고층 복합단지로 바뀐다</a></h3>
+            <div class="summary-box">• 상봉7구역은 중랑구 상봉동 일대 상업지역에 있는 재정비 사업지다<br>• 상봉역과 망우역을 중심으로 지하철 7호선, 경춘선, 중앙선이 지나는 곳이다</div>
+            <div class="card-footer"><a href="http://www.beyondpost.co.kr/view.php?ud=202607061703042562205868f676_30" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.econovill.com/news/articleView.html?idxno=742378" target="_blank">[정경구號 IPARK ②] &#x27;35층 족쇄&#x27; 풀고 초고속 질주…메가 정비사업, 서...</a></h3>
+            <div class="summary-box">• 이들 정책은 정비사업의 판을 흔들 수 있다고 업계는 평가한다<br>• 특히, 강남을 비롯해 여의도, 목동 등 서울 내</div>
+            <div class="card-footer"><a href="https://www.econovill.com/news/articleView.html?idxno=742378" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202437" target="_blank">HJ중공업, 2572억 규모 &#x27;부산 벡스코 제3전시장 건립사업&#x27; 수주 [건설오...</a></h3>
+            <div class="summary-box">• 현대엔지니어링은 지난해 서울 강북구 북서울꿈의숲에 첫 플랜비 정원을 조성했다<br>• 올해는 보라매공원에</div>
+            <div class="card-footer"><a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202437" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.areyou.co.kr/news/articleView.html?idxno=94364" target="_blank">[아유경제_부동산] 서울시, 도솔학교 재건축 확정… 2031년 개교 예정</a></h3>
+            <div class="summary-box">• 도솔학교 재건축 위치도<br>• &lt;제공=서울시&gt; [아유경제=조명의 기자] 서울 도봉구 도봉동 381-1 일원 서울도솔학교(특수학교) 본관동과 체육관동이 지상 4층 규모로 재건축된다</div>
+            <div class="card-footer"><a href="http://www.areyou.co.kr/news/articleView.html?idxno=94364" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.topdaily.kr/articles/110839" target="_blank">[TOP&#x27;s Pick] [건설] 롯데건설, 성수전략정비구역 제4지구 재개발 수주 ...</a></h3>
+            <div class="summary-box">• 주택재개발정비사업(이하 성수4지구)’ 수주<br>• 성수4지구는 서울시 성동구 성수2가1동 219-4번지 일대에 지하</div>
+            <div class="card-footer"><a href="https://www.topdaily.kr/articles/110839" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64550" target="_blank">쌍문5구역, 최고 35층 아파트 1,087세대로 재개발</a></h3>
+            <div class="summary-box">• 서울 도봉구 쌍문5구역이 최고 35층 아파트 1,087세대로 재개발된다<br>• 구는 쌍문5구역 주택정비형 재개발사업 정비계획 결정 및 정비구역 지정안에 대해 내달 3일까지 공람을 진행한다고 지난 2일 공고했다</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64550" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 6일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607050156126960924" target="_blank">[이번주 재개발ㆍ재건축] 의정부 가재울ㆍ성남 태평3구역 시공사 ‘윤곽...</a></h3>
+            <div class="summary-box">• 이밖에 강서구와 강동구, 강북구 등 서울 모아타운 사업지에서 입찰이 예정됐다<br>• 현설=현설은 서울 마천5구역(마천5재정비촉진구역)과 한강로구역, 남양주 퇴계원4구역, 의정부 장암2구역, 부산 하단2구역, 울산</div>
+            <div class="card-footer"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607050156126960924" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 4일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/031/0001039767?sid=101" target="_blank">&#x27;지정만 132곳&#x27; 멈춰 선 모아타운…한화 &#x27;연속수주&#x27;로 물꼬트나</a></h3>
+            <div class="summary-box">• 인접구역 정비사업 계획을 함께 수립할 수 있게 되면서 석관1차 사업전반이 탄력을 받을 전망이다<br>• 현재 서울내 모아타운 대상지는 132곳에 달하지만 실제 착공에 들어간 곳은 1호 시범사업지인 강북구 번동이</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/031/0001039767?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 3일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.businesspost.co.kr/BP?command=article_view&num=441518" target="_blank">실수요자 &#x27;포모&#x27;에 서울 성북 집값 상반기 8% 껑충, 길음뉴타운 국민평...</a></h3>
+            <div class="summary-box">• &lt;비즈니스포스트&gt; &quot;성북구 물건을 강북구에서 물어보시네요<br>• 도로 건너 여기는 센트레빌은</div>
+            <div class="card-footer"><a href="https://www.businesspost.co.kr/BP?command=article_view&num=441518" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 3일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/031/0001039623?sid=101" target="_blank">&#x27;학군지 16억·초소형 8억&#x27;⋯GTX 호재에 달아오른 &#x27;노도강&#x27; [현장]</a></h3>
+            <div class="summary-box">• GTX-C 노선 착공이랑 재건축 진행 속도가 빨라지면서 하루가 다르게 분위기가 바뀌고 있어요.&quot; (서울 도봉구 창동 A공인중개사무소 관계자) 수도권광역급행철도(GTX) 재건축 기대감이 맞물리면서 서울 강북권(강북·도봉</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/031/0001039623?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 3일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64531" target="_blank">창동 상아1차, 재건축 시공자 현설에 5개사</a></h3>
+            <div class="summary-box">• 서울 도봉구 창동 상아1차아파트의 재건축사업 시공자 현장설명회에 5개사가 참석했다<br>• 창동 상아1차아파트 재건축 사업시행자인 대한토지신탁은 지난 2일 시공자 선정을 위한 현장설명회를 개최했다</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64531" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 3일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64529" target="_blank">미아동 345-1번지, 재개발 추정비례율 110.33%로 추산</a></h3>
+            <div class="summary-box">• 서울 강북구 미아동 345-1번지 일대 재개발 추정비례율이 110.33%로 추산됐다<br>• 앞으로 최고 25층 아파트</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64529" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/293/0000087148?sid=101" target="_blank">[정비사업 스케치]창동 상아1차, 시공사 선정 열쇠 &#x27;공사비 절감&#x27;</a></h3>
+            <div class="summary-box">• 대한토지신탁이 사업시행자를 맡은 도봉구 첫 신탁방식 정비사업이지만 일반분양 물량이 많지 않아 공사비와 추가 이주비 조건이 토지등소유자 분담금 부담과 연결된다<br>• 대한토지신탁은 현장설명회에서 예정가격 없는</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/293/0000087148?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://daily.hankooki.com/news/articleView.html?idxno=1382334" target="_blank">창동 상아1차 재건축, 호반·KCC·두산 등 5개사 현설 참석</a></h3>
+            <div class="summary-box">• 사진=도봉구 제공  서울 도봉구 창동 상아1차아파트 재건축사업이 시공사 선정 절차에 들어갔다<br>• 2일 정비업계에 따르면 이날 서울 강남구 대한토지신탁 사무실에서 열린 상아1차 재건축사업 시공사 현장설명회에는</div>
+            <div class="card-footer"><a href="https://daily.hankooki.com/news/articleView.html?idxno=1382334" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ekn.kr/web/view.php?key=20260702028158703" target="_blank">“토허제 확대에도 상승세 지속”…서울 아파트값 0.27%↑, 동탄 1.46% 급...</a></h3>
+            <div class="summary-box">• 서울은 전주(0.30%)보다<br>• 상승폭이 0.03%포인트 축소됐지만 재건축 추진 단지와 역세권, 대단지를 중심으로 매수세가 이어지며 24주 연속 상승세를 이어갔다</div>
+            <div class="card-footer"><a href="https://www.ekn.kr/web/view.php?key=20260702028158703" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.smartbizn.com/news/articleView.html?idxno=147626" target="_blank">&quot;서울 집값 0.27% 상승&quot;···수도권 오름세 지속, 지방은 &#x27;숨고르기&#x27;</a></h3>
+            <div class="summary-box">• 서울은 재건축 추진 단지와 역세권, 대단지 등 선호 지역을 중심으로 매수 문의와 거래가 이어지며 상승세를 유지했다<br>• 도봉구와 동대문구, 성북구, 송파구 등이 비교적 높은 상승률을 보였다</div>
+            <div class="card-footer"><a href="https://www.smartbizn.com/news/articleView.html?idxno=147626" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5036914" target="_blank">재건축·역세권 매수세 계속…서울 아파트값 73주 연속↑</a></h3>
+            <div class="summary-box">• 재건축 추진 단지와 역세권 등 선호 단지를 중심으로 매수세가 이어졌지만 상승 폭은 지난주보다<br>• 자치구 중에선 성북구가 0.45%로 상승 폭이 가장 컸고 강서구와 강북구가 각각 0.41%로 뒤를 이었다</div>
+            <div class="card-footer"><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5036914" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202362" target="_blank">&#x27;창동 선두주자&#x27; 상아1차 재건축 시공권 누가 노리나</a></h3>
+            <div class="summary-box">• 서울 도봉구 창동 상아1차아파트 재건축 수주를 노리는 건설사의 윤곽이 드러났다<br>• 상아1차 재건축은 창동 일대에서 추진되는 정비사업 가운데 가장 앞선 속도를 보이고 있는 만큼 향후 인근 노후 단지 정비사업의</div>
+            <div class="card-footer"><a href="https://www.sisaon.co.kr/news/articleView.html?idxno=202362" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.naeil.com/news/read/593964?ref=naver" target="_blank">딱딱한 ‘취임식’ 주민잔치로 탈바꿈</a></h3>
+            <div class="summary-box">• 대표했고 재개발·재건축 주민 대표도 감사와 축하 인사를 전했다<br>• 2일 서울 각 자치구에 따르면 딱딱하기만</div>
+            <div class="card-footer"><a href="https://www.naeil.com/news/read/593964?ref=naver" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/011/0004637341?sid=101" target="_blank">분양가 27억인데도 완판 기대…노량진 청약 흥행</a></h3>
+            <div class="summary-box">• 마포구(171.5%), 성동구(138.4%) 등 핵심지는 낙찰가율이 크게 치솟은 반면 도봉구(85.7%), 중랑구(86.2%) 등<br>• “3기 신도시 특공이 기회…정비사업은 자금 계획 중요” - 핵심 요약: 박지민 월용청약연구소 대표는 1일</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/011/0004637341?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.cnbizm.com/news/articleView.html?idxno=307361" target="_blank">정창수 강북구청장, 첫 결재는 &#x27;지역경제&#x27;… 취임 첫날 수유재래시장, ...</a></h3>
+            <div class="summary-box">• 서울 강북구(구청장 정창수)는 정창수 구청장이 취임 첫날인 지난 1일 국립4·19민주묘지 참배를 시작으로, 첫<br>• 등 정비사업 적극지원, 수유1동은 코아빌라,삼흥연립, 수유동 486번지, 수유일대 모아타운 등 정비사업 적극</div>
+            <div class="card-footer"><a href="https://www.cnbizm.com/news/articleView.html?idxno=307361" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/025/0003534830?sid=101" target="_blank">“4억 전세 살바엔 ‘이곳’ 사라”…15억 아파트 입주권 쥐는 법</a></h3>
+            <div class="summary-box">• 실제 강북구 미아동 ‘한화포레나미아’ 84㎡(이하 전용면적) 월세가 지난 5월 310만원(보증금 5000만원<br>• 「 “예산 적을수록 비규제, 재개발 관심 둬야” 」 그럼 어떤 집을 사야 할까</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/025/0003534830?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 2일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.queen.co.kr/news/articleView.html?idxno=459605" target="_blank">소규모 정비사업 추가 이주비 확보 나서 ... 조기 소진에 여유기금 끌어...</a></h3>
+            <div class="summary-box">• 서울 강북구 번동 전경.(자료사진) 정부가 수도권 주택 공급 확대의 핵심 사업인 소규모 주택정비사업의 공급 차질을 막기 위해 추가 이주비 확보에 나선다<br>• 올해 이주비 지원 예산이 예상보다</div>
+            <div class="card-footer"><a href="http://www.queen.co.kr/news/articleView.html?idxno=459605" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 6월 30일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/015/0005304282?sid=101" target="_blank">&quot;집은 클수록 좋다?&quot;…소형 아파트 몸값 뛴 뜻밖의 이유 [돈앤톡]</a></h3>
+            <div class="summary-box">• 강북구 미아동 &#x27;에스케이북한산시티&#x27; 전용 59㎡는 지난 1월 5억9000만원에 새 주인을 찾았는데 지난달엔<br>• 강남권 초고가 단지는 여전히 신고가 거래가 이어지고 있고, 재건축 기대감이 큰 대형 평형도 별도의 시장을</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/015/0005304282?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 6월 29일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64281" target="_blank">미아동 130번지, 재개발 추진위원회 승인</a></h3>
+            <div class="summary-box">• 서울 강북구 미아동 130번지 일대가 재개발 추진위원회 승인을 받았다<br>• 김혜진 위원장과 손석헌</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64281" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 6월 29일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/021/0002801003?sid=102" target="_blank">서울 5개 권역별 ‘맞춤 재건축’… ‘닥공’ 속도 낸다</a></h3>
+            <div class="summary-box">• ‘다시 강북 전성시대’ 정책에 맞춰 동북권에는 사업성 보정계수와 현황용적률 인정 등을 적용해 강북구 미아동과 노원구 상계동 일대 사업성을 높였다<br>• 사업성 보정계수 적용은 사업성이 낮은 지역의 정비사업 추진을</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/021/0002801003?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card fallback-card" data-type="notice" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+                <span class="tag dept-tag">🏢 자동 수집 실패</span>
+                <span class="tag date-tag">📅 2026년 7월 10일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.sd.go.kr/main/selectBbsNttList.do?bbsNo=184&key=1473" target="_blank">성동구 고시공고 게시판 직접 확인</a></h3>
+            <div class="summary-box">• 자동 수집에 실패해 구청 게시판으로 직접 연결합니다. 아래 링크에서 최신 고시를 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.sd.go.kr/main/selectBbsNttList.do?bbsNo=184&key=1473" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card fallback-card" data-type="notice" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+                <span class="tag dept-tag">🏢 자동 수집 실패</span>
+                <span class="tag date-tag">📅 2026년 7월 10일</span>
+            </div>
+            <h3 class="news-title"><a href="https://search.naver.com/search.naver?query=동대문구+고시공고" target="_blank">동대문구 고시공고 게시판 직접 확인</a></h3>
+            <div class="summary-box">• 자동 수집에 실패해 구청 게시판으로 직접 연결합니다. 아래 링크에서 최신 고시를 확인하세요.</div>
+            <div class="card-footer"><a href="https://search.naver.com/search.naver?query=동대문구+고시공고" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card fallback-card" data-type="notice" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+                <span class="tag dept-tag">🏢 자동 수집 실패</span>
+                <span class="tag date-tag">📅 2026년 7월 10일</span>
+            </div>
+            <h3 class="news-title"><a href="https://search.naver.com/search.naver?query=중랑구+고시공고" target="_blank">중랑구 고시공고 게시판 직접 확인</a></h3>
+            <div class="summary-box">• 자동 수집에 실패해 구청 게시판으로 직접 연결합니다. 아래 링크에서 최신 고시를 확인하세요.</div>
+            <div class="card-footer"><a href="https://search.naver.com/search.naver?query=중랑구+고시공고" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card fallback-card" data-type="notice" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+                <span class="tag dept-tag">🏢 자동 수집 실패</span>
+                <span class="tag date-tag">📅 2026년 7월 10일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.dobong.go.kr/wdb_dev/gosigong_go/default.asp" target="_blank">도봉구 고시공고 게시판 직접 확인</a></h3>
+            <div class="summary-box">• 자동 수집에 실패해 구청 게시판으로 직접 연결합니다. 아래 링크에서 최신 고시를 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.dobong.go.kr/wdb_dev/gosigong_go/default.asp" target="_blank">게시판 바로가기 →</a></div>
+        </div></div>
         </div>
     </div>
 
+    <script>
+        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "notice": {"all": 4, "성동구": 1, "광진구": 0, "동대문구": 1, "중랑구": 1, "도봉구": 1, "노원구": 0, "강북구": 0}};
+        let tab = 'news', district = 'all';
+
+        function render() {
+            document.querySelectorAll('.notion-card').forEach(c => {
+                const show = c.dataset.type === tab && (district === 'all' || c.dataset.district === district);
+                c.style.display = show ? 'flex' : 'none';
+            });
+            document.querySelectorAll('.tab-btn').forEach(b =>
+                b.classList.toggle('active', b.dataset.tab === tab));
+            document.querySelectorAll('.sidebar-item').forEach(s => {
+                s.classList.toggle('active', s.dataset.district === district);
+                const name = s.dataset.district === 'all' ? '🌐 전체' : '📍 ' + s.dataset.district;
+                s.textContent = name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
+            });
+            document.getElementById('view-bar').textContent =
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : '📋 정비사업 관련 고시공고 — 최신순';
+        }
+
+        document.querySelectorAll('.tab-btn').forEach(b =>
+            b.addEventListener('click', () => { tab = b.dataset.tab; render(); }));
+        document.querySelectorAll('.sidebar-item').forEach(s =>
+            s.addEventListener('click', () => { district = s.dataset.district; render(); }));
+        render();
+    </script>
 </body>
 </html>
