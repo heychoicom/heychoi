@@ -42,6 +42,20 @@
         .card-footer { font-size: 13px; margin-top: 8px; border-top: 1px dashed #eaeaea; padding-top: 10px; }
         .card-footer a { color: #2383e2; text-decoration: none; font-weight: 500; }
         .card-footer a:hover { text-decoration: underline; }
+        .deal-card { grid-column: 1 / -1; }
+        .deal-list { background-color: #f7f7f5; border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; }
+        .deal-row { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-bottom: 1px solid #ececea; font-size: 13.5px; flex-wrap: wrap; }
+        .deal-row:last-child { border-bottom: none; }
+        .deal-type { font-size: 11.5px; font-weight: 700; padding: 2px 7px; border-radius: 4px; flex-shrink: 0; }
+        .deal-매매 { background-color: #fbe4e4; color: #9c3a3a; }
+        .deal-전세 { background-color: #e3ecf7; color: #1f497d; }
+        .deal-월세 { background-color: #e8f3ec; color: #2b6a46; }
+        .deal-name { font-weight: 600; min-width: 0; }
+        .deal-spec { color: #73726e; flex-shrink: 0; }
+        .deal-price { font-weight: 700; margin-left: auto; flex-shrink: 0; }
+        .deal-date { color: #acaba9; font-size: 12px; width: 34px; text-align: right; flex-shrink: 0; }
+        .deal-empty { color: #73726e; font-size: 13px; }
+        .deal-tag { background-color: #f3e8f7; color: #6b3f85; }
 
         @media (max-width: 768px) {
             #header { padding: 24px 16px 0 16px; }
@@ -66,10 +80,11 @@
 
     <div id="header">
         <h1>서울동부지사 관할 지역 정비사업 뉴스·고시</h1>
-        <div class="subtitle">📅 2026-07-10 기준 · 최근 30일 (2026-06-10 ~) · 갱신 2026-07-10 19:30 KST</div>
+        <div class="subtitle">📅 2026-07-10 기준 · 최근 30일 (2026-06-10 ~) · 갱신 2026-07-10 20:53 KST</div>
         <div class="tab-bar">
             <div class="tab-btn active" data-tab="news">📰 뉴스</div>
             <div class="tab-btn" data-tab="notice">📢 고시공고</div>
+            <div class="tab-btn" data-tab="deal">🏠 최근 실거래</div>
         </div>
     </div>
 
@@ -1131,44 +1146,130 @@
             <div class="summary-box">• 서울 강북구 미아동 130번지 일대가 재개발 추진위원회 승인을 받았다<br>• 김혜진 위원장과 손석헌</div>
             <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64281" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card fallback-card" data-type="notice" data-district="성동구">
+        <div class="notion-card" data-type="notice" data-district="성동구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 성동구</span>
                 <span class="tag notice-tag">📢 고시공고</span>
-                <span class="tag dept-tag">🏢 자동 수집 실패</span>
-                <span class="tag date-tag">📅 2026년 7월 10일</span>
             </div>
-            <h3 class="news-title"><a href="https://www.sd.go.kr/main/selectBbsNttList.do?bbsNo=184&key=1473" target="_blank">성동구 고시공고 게시판 직접 확인</a></h3>
-            <div class="summary-box">• 자동 수집에 실패해 구청 게시판으로 직접 연결합니다. 아래 링크에서 최신 고시를 확인하세요.</div>
+            <h3 class="news-title"><a href="https://www.sd.go.kr/main/selectBbsNttList.do?bbsNo=184&key=1473" target="_blank">성동구청 고시공고/입법예고 게시판</a></h3>
+            <div class="summary-box">• 구청 공식 홈페이지 고시공고 게시판으로 이동합니다.<br>• 정비사업 관련 고시문 원문과 첨부파일(PDF/HWP)을 게시판에서 확인하세요.</div>
             <div class="card-footer"><a href="https://www.sd.go.kr/main/selectBbsNttList.do?bbsNo=184&key=1473" target="_blank">게시판 바로가기 →</a></div>
         </div>
-        <div class="notion-card fallback-card" data-type="notice" data-district="동대문구">
+        <div class="notion-card" data-type="notice" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.gwangjin.go.kr/portal/bbs/B0000003/list.do?menuNo=200192" target="_blank">광진구청 고시공고 게시판</a></h3>
+            <div class="summary-box">• 구청 공식 홈페이지 고시공고 게시판으로 이동합니다.<br>• 정비사업 관련 고시문 원문과 첨부파일(PDF/HWP)을 게시판에서 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.gwangjin.go.kr/portal/bbs/B0000003/list.do?menuNo=200192" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="notice" data-district="동대문구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 동대문구</span>
                 <span class="tag notice-tag">📢 고시공고</span>
-                <span class="tag dept-tag">🏢 자동 수집 실패</span>
-                <span class="tag date-tag">📅 2026년 7월 10일</span>
             </div>
-            <h3 class="news-title"><a href="https://search.naver.com/search.naver?query=동대문구+고시공고" target="_blank">동대문구 고시공고 게시판 직접 확인</a></h3>
-            <div class="summary-box">• 자동 수집에 실패해 구청 게시판으로 직접 연결합니다. 아래 링크에서 최신 고시를 확인하세요.</div>
-            <div class="card-footer"><a href="https://search.naver.com/search.naver?query=동대문구+고시공고" target="_blank">게시판 바로가기 →</a></div>
+            <h3 class="news-title"><a href="https://www.ddm.go.kr/www/selectEminwonWebList.do?key=3291&searchNotAncmtSeCode=01,02,04,05,06,07" target="_blank">동대문구청 고시공고 게시판</a></h3>
+            <div class="summary-box">• 구청 공식 홈페이지 고시공고 게시판으로 이동합니다.<br>• 정비사업 관련 고시문 원문과 첨부파일(PDF/HWP)을 게시판에서 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.ddm.go.kr/www/selectEminwonWebList.do?key=3291&searchNotAncmtSeCode=01,02,04,05,06,07" target="_blank">게시판 바로가기 →</a></div>
         </div>
-        <div class="notion-card fallback-card" data-type="notice" data-district="중랑구">
+        <div class="notion-card" data-type="notice" data-district="중랑구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 중랑구</span>
                 <span class="tag notice-tag">📢 고시공고</span>
-                <span class="tag dept-tag">🏢 자동 수집 실패</span>
-                <span class="tag date-tag">📅 2026년 7월 10일</span>
             </div>
-            <h3 class="news-title"><a href="https://search.naver.com/search.naver?query=중랑구+고시공고" target="_blank">중랑구 고시공고 게시판 직접 확인</a></h3>
-            <div class="summary-box">• 자동 수집에 실패해 구청 게시판으로 직접 연결합니다. 아래 링크에서 최신 고시를 확인하세요.</div>
-            <div class="card-footer"><a href="https://search.naver.com/search.naver?query=중랑구+고시공고" target="_blank">게시판 바로가기 →</a></div>
+            <h3 class="news-title"><a href="https://www.jungnang.go.kr/portal/bbs/list/B0000117.do?menuNo=200475" target="_blank">중랑구청 공고/고시 게시판</a></h3>
+            <div class="summary-box">• 구청 공식 홈페이지 고시공고 게시판으로 이동합니다.<br>• 정비사업 관련 고시문 원문과 첨부파일(PDF/HWP)을 게시판에서 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.jungnang.go.kr/portal/bbs/list/B0000117.do?menuNo=200475" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="notice" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.dobong.go.kr/WDB_DEV/gosigong_go/" target="_blank">도봉구청 고시/공고 게시판</a></h3>
+            <div class="summary-box">• 구청 공식 홈페이지 고시공고 게시판으로 이동합니다.<br>• 정비사업 관련 고시문 원문과 첨부파일(PDF/HWP)을 게시판에서 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.dobong.go.kr/WDB_DEV/gosigong_go/" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="notice" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.nowon.kr/www/user/bbs/BD_selectBbsList.do?q_bbsCode=1003&q_clCode=0&q_estnColumn1=11&q_ntceSiteCode=11" target="_blank">노원구청 고시공고 게시판</a></h3>
+            <div class="summary-box">• 구청 공식 홈페이지 고시공고 게시판으로 이동합니다.<br>• 정비사업 관련 고시문 원문과 첨부파일(PDF/HWP)을 게시판에서 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.nowon.kr/www/user/bbs/BD_selectBbsList.do?q_bbsCode=1003&q_clCode=0&q_estnColumn1=11&q_ntceSiteCode=11" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="notice" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag notice-tag">📢 고시공고</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.gangbuk.go.kr/portal/bbs/B0000245/list.do?menuNo=200082" target="_blank">강북구청 고시공고 게시판</a></h3>
+            <div class="summary-box">• 구청 공식 홈페이지 고시공고 게시판으로 이동합니다.<br>• 정비사업 관련 고시문 원문과 첨부파일(PDF/HWP)을 게시판에서 확인하세요.</div>
+            <div class="card-footer"><a href="https://www.gangbuk.go.kr/portal/bbs/B0000245/list.do?menuNo=200082" target="_blank">게시판 바로가기 →</a></div>
+        </div>
+        <div class="notion-card deal-card" data-type="deal" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag deal-tag">🏠 아파트 실거래 0건</span>
+            </div>
+            <div class="deal-list"><div class="deal-row"><span class="deal-empty">최근 7일 계약분 없음 (신고 지연분은 이후 반영될 수 있음)</span></div></div>
+            <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="deal" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag deal-tag">🏠 아파트 실거래 0건</span>
+            </div>
+            <div class="deal-list"><div class="deal-row"><span class="deal-empty">최근 7일 계약분 없음 (신고 지연분은 이후 반영될 수 있음)</span></div></div>
+            <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="deal" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag deal-tag">🏠 아파트 실거래 0건</span>
+            </div>
+            <div class="deal-list"><div class="deal-row"><span class="deal-empty">최근 7일 계약분 없음 (신고 지연분은 이후 반영될 수 있음)</span></div></div>
+            <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="deal" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag deal-tag">🏠 아파트 실거래 0건</span>
+            </div>
+            <div class="deal-list"><div class="deal-row"><span class="deal-empty">최근 7일 계약분 없음 (신고 지연분은 이후 반영될 수 있음)</span></div></div>
+            <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="deal" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag deal-tag">🏠 아파트 실거래 0건</span>
+            </div>
+            <div class="deal-list"><div class="deal-row"><span class="deal-empty">최근 7일 계약분 없음 (신고 지연분은 이후 반영될 수 있음)</span></div></div>
+            <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="deal" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag deal-tag">🏠 아파트 실거래 0건</span>
+            </div>
+            <div class="deal-list"><div class="deal-row"><span class="deal-empty">최근 7일 계약분 없음 (신고 지연분은 이후 반영될 수 있음)</span></div></div>
+            <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="deal" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag deal-tag">🏠 아파트 실거래 0건</span>
+            </div>
+            <div class="deal-list"><div class="deal-row"><span class="deal-empty">최근 7일 계약분 없음 (신고 지연분은 이후 반영될 수 있음)</span></div></div>
+            <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
         </div></div>
         </div>
     </div>
 
     <script>
-        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "notice": {"all": 3, "성동구": 1, "광진구": 0, "동대문구": 1, "중랑구": 1, "도봉구": 0, "노원구": 0, "강북구": 0}};
+        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "deal": {"all": 0, "성동구": 0, "광진구": 0, "동대문구": 0, "중랑구": 0, "도봉구": 0, "노원구": 0, "강북구": 0}};
         let tab = 'news', district = 'all';
 
         function render() {
@@ -1181,10 +1282,10 @@
             document.querySelectorAll('.sidebar-item').forEach(s => {
                 s.classList.toggle('active', s.dataset.district === district);
                 const name = s.dataset.district === 'all' ? '🌐 전체' : '📍 ' + s.dataset.district;
-                s.textContent = name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
+                s.textContent = tab === 'notice' ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
             });
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : '📋 정비사업 관련 고시공고 — 최신순';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : '📋 구별 아파트 실거래 — 계약일 기준 최근 7일';
         }
 
         document.querySelectorAll('.tab-btn').forEach(b =>
