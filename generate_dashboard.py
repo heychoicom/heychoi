@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v5)
+서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v6)
 - 뉴스: 네이버 검색 API (최근 30일, 7개 구)
 - 고시공고: 구청별 공식 고시공고 게시판 바로가기 탭 제공
 - 최근 실거래: 국토부 실거래가 API로 구별 아파트 매매/전세/월세 (계약일 기준 최근 7일)
@@ -22,6 +22,9 @@ from email.utils import parsedate_to_datetime
 # ──────────────────────────────────────────────
 NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
+
+# 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -330,6 +333,8 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
     sidebar = ['<div class="sidebar-item active" data-district="all">🌐 전체</div>']
     sidebar += [f'<div class="sidebar-item" data-district="{d}">📍 {d}</div>' for d in DISTRICTS]
 
+    notice_bar = (f'<div class="update-bar">📌 <span>{html.escape(UPDATE_NOTICE)}</span></div>'
+                  if UPDATE_NOTICE.strip() else "")
     date_str = today.strftime("%Y-%m-%d")
     period_str = (today - timedelta(days=DAYS_BACK)).strftime("%Y-%m-%d")
     updated_str = today.strftime("%Y-%m-%d %H:%M")
@@ -341,14 +346,15 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#fbfbfa">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="정비사업뉴스">
+    <meta name="apple-mobile-web-app-title" content="동부 AI toolkit">
     <link rel="manifest" href="manifest.json">
-    <title>서울동부지사 관할 지역 정비사업 뉴스·고시</title>
+    <title>서울동부지사 AI toolkit</title>
     <style>
         body {{ margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, "Malgun Gothic", sans-serif; background-color: #fbfbfa; color: #37352f; }}
         #header {{ padding: 40px 50px 0 50px; background-color: #fbfbfa; border-bottom: 1px solid #edf2fa; }}
         #header h1 {{ font-size: 28px; font-weight: 700; margin: 0 0 8px 0; }}
-        #header .subtitle {{ color: #73726e; font-size: 14px; margin-bottom: 16px; }}
+        #header .subtitle {{ color: #73726e; font-size: 14px; margin-bottom: 12px; }}
+        .update-bar {{ background-color: #fdf6e3; border: 1px solid #f0e2b6; color: #6b5a1e; font-size: 13px; padding: 7px 12px; border-radius: 6px; margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
         .tab-bar {{ display: flex; gap: 4px; }}
         .tab-btn {{ padding: 10px 18px; font-size: 15px; font-weight: 600; color: #73726e; cursor: pointer; border-bottom: 2px solid transparent; }}
         .tab-btn.active {{ color: #37352f; border-bottom-color: #37352f; }}
@@ -397,6 +403,7 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
             #header {{ padding: 24px 16px 0 16px; }}
             #header h1 {{ font-size: 20px; }}
             #header .subtitle {{ font-size: 12px; }}
+            .update-bar {{ font-size: 12px; padding: 6px 10px; }}
             .tab-btn {{ flex: 1; text-align: center; padding: 10px 4px; font-size: 14px; }}
             #container {{ flex-direction: column; padding: 0 16px 30px 16px; }}
             #sidebar {{ width: 100%; padding-right: 0; border-right: none; border-bottom: 1px solid #eaeaea; margin-top: 12px; padding-bottom: 10px; position: sticky; top: 0; background-color: #fbfbfa; z-index: 10; }}
@@ -415,8 +422,9 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
 <body>
 
     <div id="header">
-        <h1>서울동부지사 관할 지역 정비사업 뉴스·고시</h1>
+        <h1>서울동부지사 AI toolkit</h1>
         <div class="subtitle">📅 {date_str} 기준 · 최근 {DAYS_BACK}일 ({period_str} ~) · 갱신 {updated_str} KST</div>
+        {notice_bar}
         <div class="tab-bar">
             <div class="tab-btn active" data-tab="news">📰 뉴스</div>
             <div class="tab-btn" data-tab="notice">📢 고시공고</div>\n            <div class="tab-btn" data-tab="deal">🏠 최근 실거래</div>
