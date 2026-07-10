@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#fbfbfa">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="정비사업뉴스">
+    <meta name="apple-mobile-web-app-title" content="동부 AI toolkit">
     <link rel="manifest" href="manifest.json">
-    <title>서울동부지사 관할 지역 정비사업 뉴스·고시</title>
+    <title>서울동부지사 AI toolkit</title>
     <style>
         body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Pretendard, "Malgun Gothic", sans-serif; background-color: #fbfbfa; color: #37352f; }
         #header { padding: 40px 50px 0 50px; background-color: #fbfbfa; border-bottom: 1px solid #edf2fa; }
         #header h1 { font-size: 28px; font-weight: 700; margin: 0 0 8px 0; }
-        #header .subtitle { color: #73726e; font-size: 14px; margin-bottom: 16px; }
+        #header .subtitle { color: #73726e; font-size: 14px; margin-bottom: 12px; }
+        .update-bar { background-color: #fdf6e3; border: 1px solid #f0e2b6; color: #6b5a1e; font-size: 13px; padding: 7px 12px; border-radius: 6px; margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .tab-bar { display: flex; gap: 4px; }
         .tab-btn { padding: 10px 18px; font-size: 15px; font-weight: 600; color: #73726e; cursor: pointer; border-bottom: 2px solid transparent; }
         .tab-btn.active { color: #37352f; border-bottom-color: #37352f; }
@@ -61,6 +62,7 @@
             #header { padding: 24px 16px 0 16px; }
             #header h1 { font-size: 20px; }
             #header .subtitle { font-size: 12px; }
+            .update-bar { font-size: 12px; padding: 6px 10px; }
             .tab-btn { flex: 1; text-align: center; padding: 10px 4px; font-size: 14px; }
             #container { flex-direction: column; padding: 0 16px 30px 16px; }
             #sidebar { width: 100%; padding-right: 0; border-right: none; border-bottom: 1px solid #eaeaea; margin-top: 12px; padding-bottom: 10px; position: sticky; top: 0; background-color: #fbfbfa; z-index: 10; }
@@ -79,8 +81,9 @@
 <body>
 
     <div id="header">
-        <h1>서울동부지사 관할 지역 정비사업 뉴스·고시</h1>
-        <div class="subtitle">📅 2026-07-10 기준 · 최근 30일 (2026-06-10 ~) · 갱신 2026-07-10 21:17 KST</div>
+        <h1>서울동부지사 AI toolkit</h1>
+        <div class="subtitle">📅 2026-07-10 기준 · 최근 30일 (2026-06-10 ~) · 갱신 2026-07-10 21:30 KST</div>
+        <div class="update-bar">📌 <span>🆕 2026-07-10 · &#x27;최근 실거래&#x27; 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공중 / heychoi</span></div>
         <div class="tab-bar">
             <div class="tab-btn active" data-tab="news">📰 뉴스</div>
             <div class="tab-btn" data-tab="notice">📢 고시공고</div>
@@ -482,9 +485,9 @@
                 <span class="tag source-tag">📰 네이버뉴스</span>
                 <span class="tag date-tag">📅 2026년 7월 9일</span>
             </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원[서울25]</a></h3>
-            <div class="summary-box">• 서울 노원구가 공공·재개발 임대아파트 공동 관리비를 지원한다고 9일 밝혔다<br>• 공공·재개발 임대아파트의 공동 관리비를 자체 예산으로 지원하는 곳은 전국 시도에서 노원구가 유일하다</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">상세 원문 보기 →</a></div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a></h3>
+            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="노원구">
             <div class="card-meta">
@@ -492,9 +495,9 @@
                 <span class="tag source-tag">📰 네이버뉴스</span>
                 <span class="tag date-tag">📅 2026년 7월 9일</span>
             </div>
-            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a></h3>
-            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다</div>
-            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">상세 원문 보기 →</a></div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원[서울25]</a></h3>
+            <div class="summary-box">• 서울 노원구가 공공·재개발 임대아파트 공동 관리비를 지원한다고 9일 밝혔다<br>• 공공·재개발 임대아파트의 공동 관리비를 자체 예산으로 지원하는 곳은 전국 시도에서 노원구가 유일하다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="노원구">
             <div class="card-meta">
