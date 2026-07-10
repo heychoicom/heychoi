@@ -499,7 +499,7 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
 
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
-        <div class="subtitle">📅 {date_str} 기준 · 최근 {DAYS_BACK}일 ({period_str} ~) · 갱신 {updated_str} KST</div>
+        <div class="subtitle">📅 {date_str} 기준 · 최근 {DAYS_BACK}일 ({period_str} ~) · 갱신 {updated_str} KST · by heychoi</div>
         {notice_bar}
         <div class="tab-bar">
             <div class="tab-btn active" data-tab="news">📰 뉴스</div>
