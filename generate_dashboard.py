@@ -25,7 +25,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-13 · '정비사업 추진현황' 및 '지가분석' 탭 신설, '지가분석' 탭은 적용 초기단계 입니다.
+UPDATE_NOTICE = "🆕 2026-07-13 · '정비사업 추진현황' 및 '지가분석' 탭 신설 / '지가분석' 탭은 적용 초기단계 입니다."
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
