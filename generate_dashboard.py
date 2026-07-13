@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v7)
+서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v8)
 - 뉴스: 네이버 검색 API (최근 30일, 7개 구)
 - 고시공고: 구청별 공식 고시공고 게시판 바로가기 탭 제공
 - 최근 실거래: 국토부 실거래가 API로 구별 아파트 매매/전세/월세 (계약일 기준 최근 7일)
+- 추진현황: 서울시 도시정비사업 통계 분기 엑셀(data/*.xlsx) 기반 구역별 단계 진행바
 - 결과를 docs/index.html 에 저장 (GitHub Pages 배포)
 
 필요 라이브러리: requests
@@ -24,7 +25,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-11 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -98,6 +99,14 @@ RENT_URL = "https://apis.data.go.kr/1613000/RTMSDataSvcAptRent/getRTMSDataSvcApt
 KAKAO_REST_KEY = os.environ.get("KAKAO_REST_KEY", "")
 KAKAO_JS_KEY = os.environ.get("KAKAO_JS_KEY", "")
 GEO_CACHE_PATH = os.path.join("data", "geocache.json")
+
+# 추진현황: 서울 열린데이터광장 '서울특별시 도시정비사업 통계' 분기 엑셀 (data/ 폴더에 업로드)
+PROGRESS_DIR = "data"
+PROGRESS_OVERRIDES = os.path.join("data", "progress_overrides.json")
+STAGES = ["구역지정", "추진위", "조합설립", "건축심의", "사업시행", "관리처분", "이주", "착공", "준공"]
+# 현재 단계별로 날짜를 읽을 엑셀 열 번호 (0-base)
+STAGE_DATE_COL = {"구역지정": 12, "추진위": 13, "조합설립": 14, "건축심의": 15,
+                  "사업시행": 17, "관리처분": 19, "이주": 20, "착공": 22}
 
 
 def _load_geocache() -> dict:
@@ -194,6 +203,96 @@ def _fetch_deal_xml(url: str, lawd: str, ymd: str) -> list:
     except Exception as e:
         print(f"    [실거래 조회 실패] {type(e).__name__}")
         return []
+
+
+def _find_progress_file():
+    try:
+        for f in sorted(os.listdir(PROGRESS_DIR)):
+            if f.endswith(".xlsx"):
+                return os.path.join(PROGRESS_DIR, f), f
+    except FileNotFoundError:
+        pass
+    return None, None
+
+
+def load_progress() -> tuple:
+    """분기 엑셀 → 구별 정비사업 추진현황. (data dict, 기준 표시 문자열)"""
+    path, fname = _find_progress_file()
+    result = {d: [] for d in DISTRICTS}
+    if not path:
+        print("▶ 추진현황 엑셀 없음 (data/*.xlsx) — 탭 생략")
+        return result, ""
+    try:
+        import openpyxl
+        wb = openpyxl.load_workbook(path, data_only=True)
+        ws = wb[wb.sheetnames[0]]
+    except Exception as e:
+        print(f"▶ 추진현황 엑셀 읽기 실패: {type(e).__name__}")
+        return result, ""
+
+    # 수동 보정 파일 (선택): {"구역명": {"단계": "...", "메모": "..."}}
+    overrides = {}
+    try:
+        with open(PROGRESS_OVERRIDES, encoding="utf-8") as f:
+            overrides = json.load(f)
+    except Exception:
+        pass
+
+    cnt = 0
+    for row in ws.iter_rows(min_row=5, values_only=True):
+        gu = row[2]
+        if gu not in result:
+            continue
+        name = str(row[3] or "").strip()
+        if not name:
+            continue
+        stage = str(row[9] or "").strip()
+        memo = ""
+        if name in overrides:
+            stage = overrides[name].get("단계", stage)
+            memo = overrides[name].get("메모", "")
+        # 현재 단계의 인가/처리 일자
+        dcol = STAGE_DATE_COL.get(stage)
+        sdate = row[dcol] if dcol is not None and dcol < len(row) else None
+        sdate_str = sdate.strftime("%Y-%m-%d") if hasattr(sdate, "strftime") else ""
+        hh = row[23]
+        result[gu].append({
+            "name": name, "loc": str(row[4] or ""),
+            "type": str(row[8] or ""), "pub": str(row[6] or ""),
+            "stage": stage, "stage_date": sdate_str,
+            "households": int(hh) if isinstance(hh, (int, float)) and hh else 0,
+            "memo": memo,
+        })
+        cnt += 1
+    # 단계가 늦은(진척된) 구역부터 정렬
+    for gu in result:
+        result[gu].sort(key=lambda x: (STAGES.index(x["stage"]) if x["stage"] in STAGES else -1, x["name"]), reverse=True)
+    asof = fname.replace(".xlsx", "").replace("_", " ").strip()
+    print(f"▶ 추진현황 로드: 관할 {cnt}개 구역 (기준: {asof})")
+    return result, asof
+
+
+def build_progress_card(p: dict, district: str) -> str:
+    idx = STAGES.index(p["stage"]) if p["stage"] in STAGES else -1
+    segs = "".join(
+        f'<span class="pg-seg{" pg-on" if i <= idx else ""}" title="{s}"></span>'
+        for i, s in enumerate(STAGES))
+    hh = f' · 건립 {p["households"]:,}세대' if p["households"] else ""
+    memo = f'<div class="pg-memo">📝 {html.escape(p["memo"])}</div>' if p["memo"] else ""
+    date_part = f' ({p["stage_date"]})' if p["stage_date"] else ""
+    return f"""
+        <div class="notion-card" data-type="prog" data-district="{district}">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 {district}</span>
+                <span class="tag prog-tag">🏗️ {html.escape(p['type'])}</span>
+                <span class="tag date-tag">{html.escape(p['pub'])}</span>
+            </div>
+            <h3 class="news-title">{html.escape(p['name'])}</h3>
+            <div class="pg-bar">{segs}</div>
+            <div class="pg-label">현재 단계: <b>{html.escape(p['stage'])}</b>{date_part}{hh}</div>
+            {memo}
+            <div class="card-footer">{html.escape(p['loc'])}</div>
+        </div>"""
 
 
 def collect_deals(today: datetime) -> dict:
@@ -382,16 +481,19 @@ def build_notice_card(district: str) -> str:
         </div>"""
 
 
-def build_html(news: dict, deals: dict, today: datetime) -> str:
+def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: datetime) -> str:
     counts = {"news": {"all": sum(len(v) for v in news.values()),
                        **{d: len(news[d]) for d in DISTRICTS}},
               "deal": {"all": sum(len(v) for v in deals.values()),
-                       **{d: len(deals[d]) for d in DISTRICTS}}}
+                       **{d: len(deals[d]) for d in DISTRICTS}},
+              "prog": {"all": sum(len(v) for v in progress.values()),
+                       **{d: len(progress[d]) for d in DISTRICTS}}}
 
     all_news = sorted((a for v in news.values() for a in v), key=lambda x: x["date"], reverse=True)
     cards = "".join(build_news_card(a) for a in all_news) + \
             "".join(build_notice_card(d) for d in DISTRICTS) + \
-            "".join(build_deal_card(d, deals[d], today) for d in DISTRICTS)
+            "".join(build_deal_card(d, deals[d], today) for d in DISTRICTS) + \
+            "".join(build_progress_card(p, d) for d in DISTRICTS for p in progress[d])
 
     sidebar = ['<div class="sidebar-item active" data-district="all">🌐 전체</div>']
     sidebar += [f'<div class="sidebar-item" data-district="{d}">📍 {d}</div>' for d in DISTRICTS]
@@ -473,6 +575,12 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
         #deal-map {{ width: 100%; height: 360px; border-radius: 8px; border: 1px solid #e9e9e6; }}
         .map-legend {{ font-size: 12.5px; color: #73726e; margin-top: 6px; }}
         .lg-매매 {{ color: #d94343; }} .lg-전세 {{ color: #2f6bd8; }} .lg-월세 {{ color: #2b8a4e; }}
+        .prog-tag {{ background-color: #e3ecf7; color: #1f497d; }}
+        .pg-bar {{ display: flex; gap: 3px; margin: 4px 0 10px 0; }}
+        .pg-seg {{ flex: 1; height: 8px; border-radius: 4px; background-color: #ececea; }}
+        .pg-on {{ background-color: #2f6bd8; }}
+        .pg-label {{ font-size: 13px; color: #37352f; margin-bottom: 10px; }}
+        .pg-memo {{ font-size: 12.5px; color: #8a6116; background-color: #fdf6e3; border-radius: 4px; padding: 5px 8px; margin-bottom: 10px; }}
 
         @media (max-width: 768px) {{
             #header {{ padding: 24px 16px 0 16px; }}
@@ -499,11 +607,11 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
 
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
-        <div class="subtitle">📅 {date_str} 기준 · 최근 {DAYS_BACK}일 ({period_str} ~) · 갱신 {updated_str} KST · by heychoi</div>
+        <div class="subtitle">📅 {date_str} 기준 · 최근 {DAYS_BACK}일 ({period_str} ~) · 갱신 {updated_str} KST</div>
         {notice_bar}
         <div class="tab-bar">
             <div class="tab-btn active" data-tab="news">📰 뉴스</div>
-            <div class="tab-btn" data-tab="notice">📢 고시공고</div>\n            <div class="tab-btn" data-tab="deal">🏠 최근 실거래</div>
+            <div class="tab-btn" data-tab="notice">📢 고시공고</div>\n            <div class="tab-btn" data-tab="deal">🏠 최근 실거래</div>\n            <div class="tab-btn" data-tab="prog">🏗️ 추진현황</div>
         </div>
     </div>
 
@@ -540,7 +648,7 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
             }});
             updateDealMap();
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : '📋 구별 아파트 실거래 — 계약일 기준 최근 7일';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
@@ -552,6 +660,7 @@ def build_html(news: dict, deals: dict, today: datetime) -> str:
     </script>
 </body>
 </html>"""
+    page = page.replace("__PROG_ASOF__", html.escape(prog_asof) or "기준 파일 없음")
     page = page.replace("__DEAL_MAP_JS__", DEAL_MAP_JS if KAKAO_JS_KEY else "function updateDealMap(){}")
     page = page.replace("__DEALS__", deals_json).replace("__KAKAO_JS_KEY__", KAKAO_JS_KEY)
     return page
@@ -627,10 +736,11 @@ def main():
     news = collect_news(today)
     deals = collect_deals(today)
     apply_geocoding(deals)
+    progress, prog_asof = load_progress()
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(build_html(news, deals, today))
+        f.write(build_html(news, deals, progress, prog_asof, today))
     total_news = sum(len(v) for v in news.values())
     total_deals = sum(len(v) for v in deals.values())
     print(f"\n✅ 생성 완료: {OUTPUT_PATH} (뉴스 {total_news}건 / 실거래 {total_deals}건 / 게시판 바로가기 {len(DISTRICTS)}개)")
