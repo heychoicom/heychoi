@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v8)
+서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v10)
 - 뉴스: 네이버 검색 API (최근 30일, 7개 구)
 - 고시공고: 구청별 공식 고시공고 게시판 바로가기 탭 제공
 - 최근 실거래: 국토부 실거래가 API로 구별 아파트 매매/전세/월세 (계약일 기준 최근 7일)
@@ -25,7 +25,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 26.7.13. · '추진현황' 탭 신설 — 구별 정비사업 진척도 파악용"
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -98,6 +98,19 @@ RENT_URL = "https://apis.data.go.kr/1613000/RTMSDataSvcAptRent/getRTMSDataSvcApt
 # 카카오맵: REST 키는 좌표 변환(서버측), JS 키는 지도 표시(페이지측)
 KAKAO_REST_KEY = os.environ.get("KAKAO_REST_KEY", "")
 KAKAO_JS_KEY = os.environ.get("KAKAO_JS_KEY", "")
+
+# 접속 게이트: GitHub Secret LOGIN_ACCOUNTS = "id1:pw1,id2:pw2" (비우면 게이트 비활성화)
+LOGIN_ACCOUNTS = os.environ.get("LOGIN_ACCOUNTS", "")
+
+
+def _auth_hashes() -> list:
+    import hashlib
+    hashes = []
+    for pair in LOGIN_ACCOUNTS.split(","):
+        pair = pair.strip()
+        if ":" in pair:
+            hashes.append(hashlib.sha256(pair.encode()).hexdigest())
+    return hashes
 GEO_CACHE_PATH = os.path.join("data", "geocache.json")
 
 # 추진현황: 서울 열린데이터광장 '서울특별시 도시정비사업 통계' 분기 엑셀 (data/ 폴더에 업로드)
@@ -107,6 +120,137 @@ STAGES = ["구역지정", "추진위", "조합설립", "건축심의", "사업�
 # 현재 단계별로 날짜를 읽을 엑셀 열 번호 (0-base)
 STAGE_DATE_COL = {"구역지정": 12, "추진위": 13, "조합설립": 14, "건축심의": 15,
                   "사업시행": 17, "관리처분": 19, "이주": 20, "착공": 22}
+
+# 지가분석: 국토부 토지 매매 실거래가 (지가변동률 조사 지원용)
+LAND_URL = "https://apis.data.go.kr/1613000/RTMSDataSvcLandTrade/getRTMSDataSvcLandTrade"
+LAND_MONTHS = 3               # 최근 몇 개월 사례를 볼지
+MAX_LAND_ROWS = 30            # 구별 표시 사례 상한
+
+
+def _txt_any(node, tags):
+    for t in tags:
+        v = _txt(node, t)
+        if v:
+            return v
+    return ""
+
+
+def _median(vals):
+    s = sorted(vals)
+    n = len(s)
+    return 0 if n == 0 else (s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2)
+
+
+def collect_land(today: datetime) -> dict:
+    """구별 토지 매매 사례 + 용도지역별 당월/전월 중위단가 요약"""
+    result = {d: {"rows": [], "summary": []} for d in DISTRICTS}
+    if not MOLIT_KEY:
+        print("▶ DATA_GO_KR_KEY 미설정 — 지가분석 수집 생략")
+        return result
+
+    months = []
+    y, m = today.year, today.month
+    for _ in range(LAND_MONTHS):
+        months.append(f"{y}{m:02d}")
+        m -= 1
+        if m == 0:
+            y, m = y - 1, 12
+    cur_ym, prev_ym = months[0], months[1]
+
+    debug_done = False
+    for district in DISTRICTS:
+        lawd = LAWD_CD[district]
+        print(f"▶ {district} 토지 실거래 수집 중...")
+        rows = []
+        for ymd in months:
+            items = _fetch_deal_xml(LAND_URL, lawd, ymd)
+            if items and not debug_done:
+                tags = sorted({el.tag for el in items[0]})
+                print(f"    [필드 확인] {tags}")
+                debug_done = True
+            for it in items:
+                try:
+                    day = datetime(int(_txt(it, "dealYear")), int(_txt(it, "dealMonth")), int(_txt(it, "dealDay")))
+                except ValueError:
+                    continue
+                area = 0.0
+                try:
+                    area = float(_txt_any(it, ["dealArea", "lndpclAr", "area"]) or 0)
+                except ValueError:
+                    pass
+                amount = _num(_txt(it, "dealAmount"))  # 만원
+                if area <= 0 or amount <= 0:
+                    continue
+                share = _txt_any(it, ["shareDealingType", "dealGbn", "sharDealingType"]).strip()
+                is_share = share not in ("", "-", "0", "전체")
+                rows.append({
+                    "ym": ymd, "date": day,
+                    "dong": _txt_any(it, ["umdNm", "dongNm", "sggNm"]),
+                    "jimok": _txt_any(it, ["jimok", "lndcgrNm", "landCategory"]),
+                    "use": _txt_any(it, ["landUse", "useArea", "useAreaNm", "prposArea1Nm"]),
+                    "area": area, "amount": amount,
+                    "unit": int(amount * 10000 / area),  # 원/㎡
+                    "share": is_share,
+                })
+        rows.sort(key=lambda x: x["date"], reverse=True)
+
+        # 용도지역별 당월 vs 전월 중위단가 (지분거래 제외, 3건 이상만)
+        summary = []
+        uses = sorted({r["use"] for r in rows if r["use"]})
+        for u in uses:
+            cur = [r["unit"] for r in rows if r["use"] == u and r["ym"] == cur_ym and not r["share"]]
+            prv = [r["unit"] for r in rows if r["use"] == u and r["ym"] == prev_ym and not r["share"]]
+            if len(cur) >= 3 and len(prv) >= 3:
+                cm, pm = _median(cur), _median(prv)
+                summary.append({"use": u, "cur": int(cm), "chg": (cm - pm) / pm * 100, "n": len(cur)})
+            elif len(cur) >= 3:
+                summary.append({"use": u, "cur": int(_median(cur)), "chg": None, "n": len(cur)})
+        result[district] = {"rows": rows[:MAX_LAND_ROWS], "summary": summary,
+                            "total": len(rows), "cur_n": sum(1 for r in rows if r["ym"] == cur_ym)}
+        print(f"  → 토지 사례 {len(rows)}건 (당월 {result[district]['cur_n']}건)")
+    return result
+
+
+def build_land_card(district: str, data: dict) -> str:
+    rows_html = ""
+    for r in data["rows"]:
+        d = r["date"]
+        share_tag = '<span class="ld-share">지분</span>' if r["share"] else ""
+        rows_html += (f'<div class="deal-row">'
+                      f'<span class="deal-date">{d.month}/{d.day}</span>'
+                      f'<span class="deal-name">{html.escape(r["dong"])}</span>'
+                      f'<span class="ld-tagchip">{html.escape(r["jimok"])}</span>'
+                      f'<span class="ld-tagchip">{html.escape(r["use"])}</span>{share_tag}'
+                      f'<span class="deal-spec">{r["area"]:,.0f}㎡</span>'
+                      f'<span class="deal-price">{r["unit"]:,}원/㎡</span>'
+                      f'</div>')
+    if not rows_html:
+        rows_html = '<div class="deal-row"><span class="deal-empty">최근 3개월 토지 매매 사례 없음</span></div>'
+
+    sm_html = ""
+    for s in data.get("summary", []):
+        if s["chg"] is None:
+            chg = '<span class="ld-flat">전월 사례부족</span>'
+        else:
+            cls = "ld-up" if s["chg"] > 0 else ("ld-down" if s["chg"] < 0 else "ld-flat")
+            chg = f'<span class="{cls}">{s["chg"]:+.1f}%</span>'
+        sm_html += (f'<div class="ld-sum-item"><b>{html.escape(s["use"])}</b> '
+                    f'중위 {s["cur"]:,}원/㎡ {chg} <span class="ld-n">({s["n"]}건)</span></div>')
+    if not sm_html:
+        sm_html = '<div class="ld-sum-item ld-flat">당월 3건 이상 용도지역 없음 — 중위단가 비교 생략</div>'
+
+    return f"""
+        <div class="notion-card deal-card" data-type="land" data-district="{district}">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 {district}</span>
+                <span class="tag land-tag">📐 토지 매매 {data.get("total", 0)}건 (최근 {LAND_MONTHS}개월)</span>
+            </div>
+            <div class="ld-summary">{sm_html}</div>
+            <div class="deal-list">{rows_html}</div>
+            <div class="card-footer">출처: 국토교통부 실거래가 · 단가 = 거래금액 ÷ 계약면적 · 중위단가 비교는 지분거래 제외, 당월·전월 각 3건 이상 시 표시 · 지가변동률 조사 참고용 가공자료</div>
+        </div>"""
+
+
 
 
 def _load_geocache() -> dict:
@@ -481,19 +625,22 @@ def build_notice_card(district: str) -> str:
         </div>"""
 
 
-def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: datetime) -> str:
+def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: dict, today: datetime) -> str:
     counts = {"news": {"all": sum(len(v) for v in news.values()),
                        **{d: len(news[d]) for d in DISTRICTS}},
               "deal": {"all": sum(len(v) for v in deals.values()),
                        **{d: len(deals[d]) for d in DISTRICTS}},
               "prog": {"all": sum(len(v) for v in progress.values()),
-                       **{d: len(progress[d]) for d in DISTRICTS}}}
+                       **{d: len(progress[d]) for d in DISTRICTS}},
+              "land": {"all": sum(land[d].get("total", 0) for d in DISTRICTS),
+                       **{d: land[d].get("total", 0) for d in DISTRICTS}}}
 
     all_news = sorted((a for v in news.values() for a in v), key=lambda x: x["date"], reverse=True)
     cards = "".join(build_news_card(a) for a in all_news) + \
             "".join(build_notice_card(d) for d in DISTRICTS) + \
             "".join(build_deal_card(d, deals[d], today) for d in DISTRICTS) + \
-            "".join(build_progress_card(p, d) for d in DISTRICTS for p in progress[d])
+            "".join(build_progress_card(p, d) for d in DISTRICTS for p in progress[d]) + \
+            "".join(build_land_card(d, land[d]) for d in DISTRICTS)
 
     sidebar = ['<div class="sidebar-item active" data-district="all">🌐 전체</div>']
     sidebar += [f'<div class="sidebar-item" data-district="{d}">📍 {d}</div>' for d in DISTRICTS]
@@ -506,7 +653,11 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: d
     ]
     deals_json = json.dumps(deal_points, ensure_ascii=False)
 
-    notice_bar = (f'<div class="update-bar">📌 <span>{html.escape(UPDATE_NOTICE)}</span></div>'
+    _n = html.escape(UPDATE_NOTICE.strip())
+    _dur = max(12, int(len(UPDATE_NOTICE) * 0.45))  # 문구가 길수록 천천히
+    notice_bar = ((f'<div class="update-bar"><div class="update-track" style="animation-duration:{_dur}s">'
+                   f'<span class="update-item">📌 {_n}</span><span class="update-item">📌 {_n}</span>'
+                   f'</div></div>')
                   if UPDATE_NOTICE.strip() else "")
     date_str = today.strftime("%Y-%m-%d")
     period_str = (today - timedelta(days=DAYS_BACK)).strftime("%Y-%m-%d")
@@ -527,8 +678,13 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: d
         #header {{ padding: 40px 50px 0 50px; background-color: #fbfbfa; border-bottom: 1px solid #edf2fa; }}
         #header h1 {{ font-size: 28px; font-weight: 700; margin: 0 0 8px 0; }}
         #header .subtitle {{ color: #73726e; font-size: 14px; margin-bottom: 12px; }}
-        .update-bar {{ background-color: #fdf6e3; border: 1px solid #f0e2b6; color: #6b5a1e; font-size: 13px; padding: 7px 12px; border-radius: 6px; margin-bottom: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-        .tab-bar {{ display: flex; gap: 4px; }}
+        .update-bar {{ background-color: #fdf6e3; border: 1px solid #f0e2b6; color: #6b5a1e; font-size: 13px; padding: 7px 0; border-radius: 6px; margin-bottom: 14px; overflow: hidden; }}
+        .update-track {{ display: inline-flex; white-space: nowrap; animation: marquee linear infinite; will-change: transform; }}
+        .update-item {{ padding-right: 80px; }}
+        .update-bar:hover .update-track {{ animation-play-state: paused; }}
+        @keyframes marquee {{ from {{ transform: translateX(0); }} to {{ transform: translateX(-50%); }} }}
+        .tab-bar {{ display: flex; flex-direction: column; }}
+        .tab-row {{ display: flex; gap: 4px; }}
         .tab-btn {{ padding: 10px 18px; font-size: 15px; font-weight: 600; color: #73726e; cursor: pointer; border-bottom: 2px solid transparent; }}
         .tab-btn.active {{ color: #37352f; border-bottom-color: #37352f; }}
         #container {{ display: flex; padding: 0 50px 50px 50px; }}
@@ -581,6 +737,19 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: d
         .pg-on {{ background-color: #2f6bd8; }}
         .pg-label {{ font-size: 13px; color: #37352f; margin-bottom: 10px; }}
         .pg-memo {{ font-size: 12.5px; color: #8a6116; background-color: #fdf6e3; border-radius: 4px; padding: 5px 8px; margin-bottom: 10px; }}
+        .land-tag {{ background-color: #e8ecf3; color: #3a4a6b; }}
+        .ld-summary {{ display: flex; flex-wrap: wrap; gap: 8px 18px; background-color: #f1f4f9; border-radius: 6px; padding: 10px 12px; margin-bottom: 12px; }}
+        .ld-sum-item {{ font-size: 13px; }}
+        .ld-up {{ color: #d94343; font-weight: 700; }}
+        .ld-down {{ color: #2f6bd8; font-weight: 700; }}
+        .ld-flat {{ color: #73726e; }}
+        .ld-n {{ color: #acaba9; font-size: 12px; }}
+        .ld-tagchip {{ font-size: 11.5px; background-color: #f1f1ef; color: #5a5a57; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }}
+        .ld-share {{ font-size: 11.5px; background-color: #fdecc8; color: #8a6116; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }}
+        .deal-date {{ color: #acaba9; font-size: 12px; width: 34px; flex-shrink: 0; }}
+        #lab-box {{ display: none; text-align: center; padding: 90px 20px; }}
+        .lab-icon {{ font-size: 64px; margin-bottom: 18px; }}
+        .lab-text {{ font-size: 15px; color: #73726e; }}
 
         @media (max-width: 768px) {{
             #header {{ padding: 24px 16px 0 16px; }}
@@ -604,14 +773,22 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: d
     </style>
 </head>
 <body>
-
+__GATE__
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
         <div class="subtitle">📅 {date_str} 기준 · 최근 {DAYS_BACK}일 ({period_str} ~) · 갱신 {updated_str} KST</div>
         {notice_bar}
         <div class="tab-bar">
-            <div class="tab-btn active" data-tab="news">📰 뉴스</div>
-            <div class="tab-btn" data-tab="notice">📢 고시공고</div>\n            <div class="tab-btn" data-tab="deal">🏠 최근 실거래</div>\n            <div class="tab-btn" data-tab="prog">🏗️ 추진현황</div>
+            <div class="tab-row">
+                <div class="tab-btn active" data-tab="news">📰 뉴스</div>
+                <div class="tab-btn" data-tab="notice">📢 고시공고</div>
+                <div class="tab-btn" data-tab="deal">🏠 최근 실거래</div>
+            </div>
+            <div class="tab-row">
+                <div class="tab-btn" data-tab="prog">🏗️ 추진현황</div>
+                <div class="tab-btn" data-tab="land">📐 지가분석</div>
+                <div class="tab-btn" data-tab="lab">🧪 실험실</div>
+            </div>
         </div>
     </div>
 
@@ -625,6 +802,10 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: d
             <div id="deal-map-wrap">
                 <div id="deal-map"></div>
                 <div class="map-legend"><span class="lg lg-매매">● 매매</span> <span class="lg lg-전세">● 전세</span> <span class="lg lg-월세">● 월세</span> — 핀을 누르면 상세 표시</div>
+            </div>
+            <div id="lab-box">
+                <div class="lab-icon">🔬</div>
+                <div class="lab-text">아직 실험중이에요.</div>
             </div>
             <div class="card-grid">{cards}</div>
         </div>
@@ -644,11 +825,12 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: d
             document.querySelectorAll('.sidebar-item').forEach(s => {{
                 s.classList.toggle('active', s.dataset.district === district);
                 const name = s.dataset.district === 'all' ? '🌐 전체' : '📍 ' + s.dataset.district;
-                s.textContent = tab === 'notice' ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
+                s.textContent = (tab === 'notice' || tab === 'lab') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
             }});
             updateDealMap();
+            document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : '🧪 실험실 — 준비 중인 기능';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
@@ -660,10 +842,85 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, today: d
     </script>
 </body>
 </html>"""
+    hashes = _auth_hashes()
+    logo = ('<div class="gate-logo gate-logo-google" role="img" aria-label="symbol"></div>'
+            if os.path.exists(os.path.join("docs", "logo.png")) else GATE_LOGO_FALLBACK)
+    gate = (GATE_BLOCK.replace("__AUTH_HASHES__", json.dumps(hashes)).replace("__GATE_LOGO__", logo)
+            if hashes else "")
+    page = page.replace("__GATE__", gate)
     page = page.replace("__PROG_ASOF__", html.escape(prog_asof) or "기준 파일 없음")
     page = page.replace("__DEAL_MAP_JS__", DEAL_MAP_JS if KAKAO_JS_KEY else "function updateDealMap(){}")
     page = page.replace("__DEALS__", deals_json).replace("__KAKAO_JS_KEY__", KAKAO_JS_KEY)
     return page
+
+
+GATE_LOGO_FALLBACK = """<svg class="gate-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 8 A42 42 0 0 1 92 50" fill="none" stroke="#4285F4" stroke-width="13" stroke-linecap="round"/>
+            <path d="M92 50 A42 42 0 0 1 50 92" fill="none" stroke="#34A853" stroke-width="13" stroke-linecap="round"/>
+            <path d="M50 92 A42 42 0 0 1 8 50" fill="none" stroke="#FBBC05" stroke-width="13" stroke-linecap="round"/>
+            <path d="M8 50 A42 42 0 0 1 50 8" fill="none" stroke="#EA4335" stroke-width="13" stroke-linecap="round"/>
+        </svg>"""
+
+GATE_BLOCK = r"""
+    <div id="gate">
+__GATE_LOGO__
+        <div class="gate-box">
+            <input id="gate-id" type="text" placeholder="아이디" autocomplete="username">
+            <input id="gate-pw" type="password" placeholder="비밀번호" autocomplete="current-password">
+            <button id="gate-btn">접속</button>
+            <div id="gate-msg"></div>
+        </div>
+    </div>
+    <style>
+        #gate { position: fixed; inset: 0; z-index: 9999; background-color: #fbfbfa;
+                display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 34px; }
+        .gate-logo { width: 92px; height: 92px; object-fit: contain; }
+        .gate-logo-google {
+            background: conic-gradient(from -45deg, #4285F4 0 25%, #EA4335 25% 50%, #FBBC05 50% 75%, #34A853 75% 100%);
+            -webkit-mask: url(logo.png) center / contain no-repeat;
+            mask: url(logo.png) center / contain no-repeat;
+        }
+        .gate-box { display: flex; flex-direction: column; gap: 10px; width: 240px; }
+        .gate-box input { padding: 11px 14px; border: 1px solid #e0e0dd; border-radius: 8px; font-size: 14px;
+                          background-color: #ffffff; outline: none; }
+        .gate-box input:focus { border-color: #4285F4; }
+        #gate-btn { padding: 11px; border: none; border-radius: 8px; background-color: #37352f; color: #fff;
+                    font-size: 14px; font-weight: 600; cursor: pointer; }
+        #gate-btn:hover { background-color: #1f1e1b; }
+        #gate-msg { min-height: 18px; font-size: 12.5px; color: #d94343; text-align: center; }
+    </style>
+    <script>
+    (function(){
+        const HASHES = __AUTH_HASHES__;
+        const KEY = 'toolkit_auth';
+        const gate = document.getElementById('gate');
+        async function sha(t){
+            const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+            return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('');
+        }
+        function pass(h){
+            try { localStorage.setItem(KEY, JSON.stringify({h: h, exp: Date.now() + 7*24*3600*1000})); } catch(e) {}
+            gate.remove();
+        }
+        try {
+            const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+            if (s && s.exp > Date.now() && HASHES.includes(s.h)) { gate.remove(); return; }
+        } catch(e) {}
+        async function tryLogin(){
+            const id = document.getElementById('gate-id').value.trim();
+            const pw = document.getElementById('gate-pw').value;
+            const h = await sha(id + ':' + pw);
+            if (HASHES.includes(h)) { pass(h); }
+            else {
+                document.getElementById('gate-msg').textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
+                document.getElementById('gate-pw').value = '';
+            }
+        }
+        document.getElementById('gate-btn').addEventListener('click', tryLogin);
+        document.getElementById('gate-pw').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+    })();
+    </script>
+"""
 
 
 DEAL_MAP_JS = r"""
@@ -737,10 +994,11 @@ def main():
     deals = collect_deals(today)
     apply_geocoding(deals)
     progress, prog_asof = load_progress()
+    land = collect_land(today)
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(build_html(news, deals, progress, prog_asof, today))
+        f.write(build_html(news, deals, progress, prog_asof, land, today))
     total_news = sum(len(v) for v in news.values())
     total_deals = sum(len(v) for v in deals.values())
     print(f"\n✅ 생성 완료: {OUTPUT_PATH} (뉴스 {total_news}건 / 실거래 {total_deals}건 / 게시판 바로가기 {len(DISTRICTS)}개)")
