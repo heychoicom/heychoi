@@ -61,6 +61,12 @@
         #deal-map { width: 100%; height: 360px; border-radius: 8px; border: 1px solid #e9e9e6; }
         .map-legend { font-size: 12.5px; color: #73726e; margin-top: 6px; }
         .lg-매매 { color: #d94343; } .lg-전세 { color: #2f6bd8; } .lg-월세 { color: #2b8a4e; }
+        .prog-tag { background-color: #e3ecf7; color: #1f497d; }
+        .pg-bar { display: flex; gap: 3px; margin: 4px 0 10px 0; }
+        .pg-seg { flex: 1; height: 8px; border-radius: 4px; background-color: #ececea; }
+        .pg-on { background-color: #2f6bd8; }
+        .pg-label { font-size: 13px; color: #37352f; margin-bottom: 10px; }
+        .pg-memo { font-size: 12.5px; color: #8a6116; background-color: #fdf6e3; border-radius: 4px; padding: 5px 8px; margin-bottom: 10px; }
 
         @media (max-width: 768px) {
             #header { padding: 24px 16px 0 16px; }
@@ -87,12 +93,13 @@
 
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
-        <div class="subtitle">📅 2026-07-13 기준 · 최근 30일 (2026-06-13 ~) · 갱신 2026-07-13 17:37 KST · by heychoi</div>
-        <div class="update-bar">📌 <span>🆕 2026-07-11 · &#x27;최근 실거래&#x27; 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공</span></div>
+        <div class="subtitle">📅 2026-07-13 기준 · 최근 30일 (2026-06-13 ~) · 갱신 2026-07-13 21:13 KST</div>
+        <div class="update-bar">📌 <span>🆕 2026-07-10 · &#x27;최근 실거래&#x27; 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공</span></div>
         <div class="tab-bar">
             <div class="tab-btn active" data-tab="news">📰 뉴스</div>
             <div class="tab-btn" data-tab="notice">📢 고시공고</div>
             <div class="tab-btn" data-tab="deal">🏠 최근 실거래</div>
+            <div class="tab-btn" data-tab="prog">🏗️ 추진현황</div>
         </div>
     </div>
 
@@ -108,6 +115,46 @@
                 <div class="map-legend"><span class="lg lg-매매">● 매매</span> <span class="lg lg-전세">● 전세</span> <span class="lg lg-월세">● 월세</span> — 핀을 누르면 상세 표시</div>
             </div>
             <div class="card-grid">
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 13일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/022/0004142762?sid=101" target="_blank">서울 아파트 상승거래 중저가 지역 확산</a></h3>
+            <div class="summary-box">• 선호와 정비사업, 교통망 개선 기대감이 맞물리면서 높은 가격의 거래가 늘어난 영향”이라고 분석했다<br>• 상승거래 비중이 50%를 넘는 자치구도 5월 5곳에서 6월에는 강남구와 광진구를 제외한 23곳으로 확대됐다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/022/0004142762?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 13일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160284121869513" target="_blank">중랑구, 옛 상봉터미널 상봉9구역 재개발 사업시행계획 인가 고시</a></h3>
+            <div class="summary-box">• (사진=중랑구청 제공)  중랑구(구청장 류경기)는 옛 상봉터미널 부지인 상봉9재정비촉진구역 도시정비형 재개발사업의 사업시행계획(변경) 인가를 지난 9일 고시했다고 밝혔다<br>• 구에 따르면 이번 변경 인가를 통해</div>
+            <div class="card-footer"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160284121869513" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 13일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.newspim.com/news/view/20260713001127" target="_blank">[AI 부동산 투데이] 경기 신축 &#x27;국평&#x27;도 8.5억 있어야 산다…1년 새 1억원...</a></h3>
+            <div class="summary-box">• 강남구와 광진구를 제외한 모든 자치구에서 상승거래가 전체의 절반을 넘었습니다<br>• 상승거래 증가 폭은</div>
+            <div class="card-footer"><a href="https://www.newspim.com/news/view/20260713001127" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 13일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ajunews.com/view/20260713174049266" target="_blank">목동12단지·성수2지구 시공사 선정 돌입…하반기 정비사업 수주전 본격...</a></h3>
+            <div class="summary-box">• 아주경제=홍승우 기자 hongscoop@ajunews.com 목동 신시가지 재건축 사업[그래픽=아주경제] 서울 주요<br>• 정비사업지로 꼽히는 양천구 목동12단지와 성동구 성수전략정비구역 2지구가 시공사 선정 절차에 들어갔다</div>
+            <div class="card-footer"><a href="https://www.ajunews.com/view/20260713174049266" target="_blank">상세 원문 보기 →</a></div>
+        </div>
         <div class="notion-card" data-type="news" data-district="도봉구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 도봉구</span>
@@ -125,7 +172,7 @@
                 <span class="tag date-tag">📅 2026년 7월 13일</span>
             </div>
             <h3 class="news-title"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607131653168470001" target="_blank">성동구, 정비사업 총괄에 외부 전문가 채용</a></h3>
-            <div class="summary-box">• 7월 중 공고 예정 성동구 정비사업 컨트롤타워 ‘신속관리추진단’이 외부 전문가를 단장으로 채용한다<br>• 관내 정비사업 총 책임자에 전문가를 배치해 지원 역량을 강화한다</div>
+            <div class="summary-box">• 7월 중 공고 예정 성동구 정비사업 컨트롤타워 ‘신속관리추진단’이 외부 전문가를 단장으로 채용한다<br>• 구는 ‘재개발ㆍ재건축 신속관리추진단’의 전문성 확보를 위해 외부 전문가를 채용할 계획이라고 13일 밝혔다</div>
             <div class="card-footer"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607131653168470001" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
@@ -135,7 +182,7 @@
                 <span class="tag date-tag">📅 2026년 7월 13일</span>
             </div>
             <h3 class="news-title"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607131658288370002" target="_blank">동대문구청장 “정비사업 갈등 신속하게 해결할 것”</a></h3>
-            <div class="summary-box">• 동민과의 대화…“구청장 직속 정비사업조직 곧 출범” 최동민 동대문구청장이 이문동을 찾아 주민들의 애로사항을 청취했다<br>• 이문동은 이문1ㆍ3ㆍ4구역 등 재개발이 진행 중이고, 최근 래미안 라그란데 단지 입주가</div>
+            <div class="summary-box">• 동민과의 대화…“구청장 직속 정비사업조직 곧 출범” 최동민 동대문구청장이 이문동을 찾아 주민들의 애로사항을 청취했다<br>• 최 구청장은 13일이문동재림교회에서 ‘동민과의 대화’ 5번째 행보를 이어갔다</div>
             <div class="card-footer"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607131658288370002" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="중랑구">
@@ -287,16 +334,6 @@
             <h3 class="news-title"><a href="https://www.newspim.com/news/view/20260713000804" target="_blank">삼성물산, 성수3지구 재개발 수의계약 수주 유력…우선협상자 지정 돌입</a></h3>
             <div class="summary-box">• 삼성물산이 서울 성동구 성수전략정비구역 제3주택정비형 재개발정비사업(성수3지구)의 유력한 시공사로 부상했다<br>• 시공사 선정을 위한 재입찰에 삼성물산이 단독으로 참여하면서 조합은 삼성을 우선협상대상자로</div>
             <div class="card-footer"><a href="https://www.newspim.com/news/view/20260713000804" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="성동구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 성동구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 13일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/003/0014063448?sid=101" target="_blank">삼성물산, 성수3지구 수의계약 눈앞…현장설명회 단독 참석</a></h3>
-            <div class="summary-box">• 강세훈 기자, 신연경 인턴기자 = 서울 성동구 성수전략정비구역 제3지구(성수3지구) 재개발 사업 시공사로 삼성물산 건설부문이 유력해졌다<br>• 13일 성수3지구 재개발 조합이 개최한 시공사 입찰재공고를 위한</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/003/0014063448?sid=101" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="중랑구">
             <div class="card-meta">
@@ -565,18 +602,8 @@
                 <span class="tag date-tag">📅 2026년 7월 13일</span>
             </div>
             <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/008/0005384944?sid=101" target="_blank">중랑구, 상봉9구역 재개발 사업시행계획 변경 인가…&quot;중앙광장 확대&quot;</a></h3>
-            <div class="summary-box">• 서울 중랑구는 지난 9일 옛 상봉터미널 부지인 상봉9재정비촉진구역 도시정비형 재개발사업의 사업시행계획(변경) 인가를 고시했다고 13일 밝혔다<br>• 이번 변경인가는 중앙광장의 열린 공간을 확대하는 등 주민 편의성을</div>
+            <div class="summary-box">• 류경기 중랑구청장은 &quot;상봉9구역 재개발 사업은 중랑구의 주거환경 개선과 지역 활성화를 이끌 핵심 사업&quot;이라며 &quot;사업이 계획대로 차질 없이 추진될 수 있도록 행정적 지원을 아끼지 않겠다<br>• 주민들이 만족하는 지역의</div>
             <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/008/0005384944?sid=101" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="중랑구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 중랑구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 13일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/016/0002669290?sid=101" target="_blank">집 보러 갔더니 절반 이상 매매가 높인 곳, 서울 5개구→23개구로 확대됐...</a></h3>
-            <div class="summary-box">• 자치구별로는 용산구(+17.7%p), 마포구(+15.8%p), 중랑구(+15.5%p), 서초구(+14.6%p), 관악구(+13.3%p), 영등포구(+13.0<br>• 직방은 성남·과천·광명은 기존 규제지역임에도 서울 접근성과 신축 선호, 정비사업 및 교통망 개선</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/016/0002669290?sid=101" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="중랑구">
             <div class="card-meta">
@@ -718,26 +745,6 @@
             <div class="summary-box">• 그러나 성수점 재개발에 따라 2023년 5월 서울 중구 오렌지센터로 본사를 이전했다<br>• 현재 본사는 독립</div>
             <div class="card-footer"><a href="https://www.lecturernews.com/news/articleView.html?idxno=206082" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="광진구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 광진구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 11일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/016/0002668902?sid=102" target="_blank">민선 9기 첫 서울시 인사 의미와 자치구 부구청장 역할</a></h3>
-            <div class="summary-box">• 백운석 도봉구 부구청장은 서초구로, 김기현 동대문구 부구청장은 광진구로, 김광덕 영등포구 부구청장은<br>• 오세훈 시장과 구청장들의 재건축 등 주택 공급 등 각종 현안 사업과 예산 협의, 인사와 조직 운영, 재난 대응 등</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/016/0002668902?sid=102" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="광진구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 광진구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 11일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/018/0006327492?sid=101" target="_blank">주담대 규제가 바꾼 돈의 흐름, 빌라로 향하게 된다 [손바닥 부동산]</a></h3>
-            <div class="summary-box">• 송파구는 거여·마천뉴타운과 풍납동, 은평구는 갈현동과 불광동, 광진구는 중곡동과 자양동, 강서구는 화곡동, 동작구는 상도동, 양천구는 신월동과 신정동 등 서울의 대표적인 정비사업 대상지가 밀집해 있다</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/018/0006327492?sid=101" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 동대문구</span>
@@ -874,9 +881,9 @@
                 <span class="tag source-tag">📰 네이버뉴스</span>
                 <span class="tag date-tag">📅 2026년 7월 9일</span>
             </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원[서울25]</a></h3>
-            <div class="summary-box">• 서울 노원구가 공공·재개발 임대아파트 공동 관리비를 지원한다고 9일 밝혔다<br>• 공공·재개발 임대아파트의 공동 관리비를 자체 예산으로 지원하는 곳은 전국 시도에서 노원구가 유일하다</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">상세 원문 보기 →</a></div>
+            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a></h3>
+            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다</div>
+            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="노원구">
             <div class="card-meta">
@@ -884,9 +891,9 @@
                 <span class="tag source-tag">📰 네이버뉴스</span>
                 <span class="tag date-tag">📅 2026년 7월 9일</span>
             </div>
-            <h3 class="news-title"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원</a></h3>
-            <div class="summary-box">• 공공·재개발 임대아파트는 노원구가 자체 예산을 투입해 공동관리비의 50%를 지원한다<br>• 지원금은 아파트 관리주체의 신청을 받아 매월 지급한다</div>
-            <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=64741" target="_blank">상세 원문 보기 →</a></div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">노원구, 공공·재개발 임대아파트 공동관리비 지원[서울25]</a></h3>
+            <div class="summary-box">• 서울 노원구가 공공·재개발 임대아파트 공동 관리비를 지원한다고 9일 밝혔다<br>• 공공·재개발 임대아파트의 공동 관리비를 자체 예산으로 지원하는 곳은 전국 시도에서 노원구가 유일하다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/032/0003457096?sid=102" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="도봉구">
             <div class="card-meta">
@@ -1276,12 +1283,1032 @@
             </div>
             <div class="deal-list"><div class="deal-row"><span class="deal-type deal-전세">전세</span><span class="deal-name">미아동 삼성래미안트리베라2단지</span><span class="deal-spec">84㎡ 12층</span><span class="deal-price">6억 8,000</span><span class="deal-date">7/10</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">수유동 비젼캐슬</span><span class="deal-spec">15㎡ 4층</span><span class="deal-price">1,000/90</span><span class="deal-date">7/9</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">미아동 래미안트리베라2단지(임대)</span><span class="deal-spec">42㎡ 15층</span><span class="deal-price">5,376/14</span><span class="deal-date">7/9</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">미아동 래미안트리베라1단지</span><span class="deal-spec">59㎡ 5층</span><span class="deal-price">2억 5,000/145</span><span class="deal-date">7/9</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">미아동 래미안트리베라1단지</span><span class="deal-spec">59㎡ 11층</span><span class="deal-price">5,000/153</span><span class="deal-date">7/8</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">미아동 래미안트리베라2단지(임대)</span><span class="deal-spec">42㎡ 19층</span><span class="deal-price">9,092/11</span><span class="deal-date">7/8</span></div><div class="deal-row"><span class="deal-type deal-전세">전세</span><span class="deal-name">미아동 두산위브트레지움</span><span class="deal-spec">59㎡ 13층</span><span class="deal-price">4억 7,000</span><span class="deal-date">7/8</span></div><div class="deal-row"><span class="deal-type deal-매매">매매</span><span class="deal-name">수유동 북한산네이처파크</span><span class="deal-spec">59㎡ 5층</span><span class="deal-price">4억 2,500</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-전세">전세</span><span class="deal-name">미아동 삼각산아이원</span><span class="deal-spec">59㎡ 5층</span><span class="deal-price">4억 3,000</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">수유동 비젼캐슬</span><span class="deal-spec">16㎡ 5층</span><span class="deal-price">500/90</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-전세">전세</span><span class="deal-name">번동 주공4단지</span><span class="deal-spec">84㎡ 2층</span><span class="deal-price">4억</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">미아동 에스케이북한산시티</span><span class="deal-spec">84㎡ 19층</span><span class="deal-price">2억/98</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-전세">전세</span><span class="deal-name">미아동 송천센트레빌</span><span class="deal-spec">114㎡ 3층</span><span class="deal-price">8억</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">번동 선경타워</span><span class="deal-spec">13㎡ 11층</span><span class="deal-price">1,000/90</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-전세">전세</span><span class="deal-name">미아동 미아동부센트레빌</span><span class="deal-spec">84㎡ 2층</span><span class="deal-price">5억 3,500</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">번동 신원</span><span class="deal-spec">59㎡ 2층</span><span class="deal-price">3,000/50</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-전세">전세</span><span class="deal-name">미아동 삼각산아이원</span><span class="deal-spec">59㎡ 5층</span><span class="deal-price">4억 3,000</span><span class="deal-date">7/7</span></div><div class="deal-row"><span class="deal-type deal-월세">월세</span><span class="deal-name">번동 선경타워</span><span class="deal-spec">25㎡ 6층</span><span class="deal-price">1,000/140</span><span class="deal-date">7/7</span></div></div>
             <div class="card-footer">출처: 국토교통부 실거래가 공개시스템 · 계약일 기준 최근 7일 (금액 단위: 만원)</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">장미아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg pg-on" title="이주"></span><span class="pg-seg pg-on" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>착공</b> (2024-10-23) · 건립 287세대</div>
+            
+            <div class="card-footer">성수동1가656-421</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용답동</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg pg-on" title="이주"></span><span class="pg-seg pg-on" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>착공</b> (2023-10-24) · 건립 1,670세대</div>
+            
+            <div class="card-footer">용답동108-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">금호16</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 595세대</div>
+            
+            <div class="card-footer">금호동2가501-31</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">한남하이츠</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> (2020-05-21) · 건립 790세대</div>
+            
+            <div class="card-footer">옥수동220-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 단독주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">응봉1</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> (2023-04-20) · 건립 525세대</div>
+            
+            <div class="card-footer">응봉동193-162</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">장안평중고차매매센터</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2023-02-14)</div>
+            
+            <div class="card-footer">용답동234</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">성수전략4</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2026-02-26) · 건립 1,439세대</div>
+            
+            <div class="card-footer">성수동2가219-4</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 단독주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">성수1</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2021-03-09) · 건립 322세대</div>
+            
+            <div class="card-footer">성수동1가656-1267</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">성수전략3</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2019-02-27) · 건립 2,213세대</div>
+            
+            <div class="card-footer">성수동2가572-7</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">성수전략2</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2020-03-06) · 건립 2,609세대</div>
+            
+            <div class="card-footer">성수동2가506</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">성수전략1</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2017-07-18) · 건립 3,014세대</div>
+            
+            <div class="card-footer">성수동1가72-10</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">마장세림아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2023-12-22) · 건립 996세대</div>
+            
+            <div class="card-footer">마장동784</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">금호21구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2024-10-18) · 건립 1,219세대</div>
+            
+            <div class="card-footer">금호동3가1번지일대</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">왕십리역세권4</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2024-03-25) · 건립 631세대</div>
+            
+            <div class="card-footer">행당동248번지</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">마장동382번지일대</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2026-03-19) · 건립 1,000세대</div>
+            
+            <div class="card-footer">마장동382</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">중곡아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2022-07-19) · 건립 348세대</div>
+            
+            <div class="card-footer">중곡동190-26</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag prog-tag">🏗️ 단독주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">자양7</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2021-10-03) · 건립 917세대</div>
+            
+            <div class="card-footer">자양동464-40</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">자양한양아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2025-04-07) · 건립 859세대</div>
+            
+            <div class="card-footer">자양동695</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">워커힐아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2025-09-10) · 건립 982세대</div>
+            
+            <div class="card-footer">광장동145-8</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">자양5재정비촉진구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> (2026-02-26) · 건립 925세대</div>
+            
+            <div class="card-footer">자양동680-81</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">자양4동A구역주택재개발사업</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> · 건립 2,999세대</div>
+            
+            <div class="card-footer">자양4동57-90번지일대</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">신향빌라</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> (2022-06-02) · 건립 339세대</div>
+            
+            <div class="card-footer">중곡4동18-24</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">청량리7</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg pg-on" title="이주"></span><span class="pg-seg pg-on" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>착공</b> (2022-12-29) · 건립 761세대</div>
+            
+            <div class="card-footer">청량리동199</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">제기1(경동미주아파트)</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg pg-on" title="이주"></span><span class="pg-seg pg-on" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>착공</b> (2025-03-31) · 건립 351세대</div>
+            
+            <div class="card-footer">제기동892-68</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">청량리8</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 610세대</div>
+            
+            <div class="card-footer">청량리동435</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">제기6</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 453세대</div>
+            
+            <div class="card-footer">제기동120-104</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">제기4</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> (2022-08-25) · 건립 909세대</div>
+            
+            <div class="card-footer">제기동288</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">이문4</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 3,488세대</div>
+            
+            <div class="card-footer">이문동86-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">청량리6</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> · 건립 1,493세대</div>
+            
+            <div class="card-footer">청량리동205</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">전농</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> · 건립 1,122세대</div>
+            
+            <div class="card-footer">전농동494-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">장안현대</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> (2024-08-13) · 건립 746세대</div>
+            
+            <div class="card-footer">장안동95-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용두1-2</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> (2026-02-10) · 건립 243세대</div>
+            
+            <div class="card-footer">용두동23-8</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">신설1</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> · 건립 299세대</div>
+            
+            <div class="card-footer">신설동92-5</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">답십리자동자부품상가</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> · 건립 618세대</div>
+            
+            <div class="card-footer">답십리동952</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">전농8</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2026-01-15) · 건립 1,760세대</div>
+            
+            <div class="card-footer">전농동204</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">용두1-6</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2025-06-19) · 건립 958세대</div>
+            
+            <div class="card-footer">용두동14-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용두1-4</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2025-03-25) · 건립 58세대</div>
+            
+            <div class="card-footer">용두동26-3</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">전농9</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2023-07-13) · 건립 1,159세대</div>
+            
+            <div class="card-footer">전농동103-236</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">전농12</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2022-01-14) · 건립 297세대</div>
+            
+            <div class="card-footer">전농동643-51</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용두1-5</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2026-03-19) · 건립 324세대</div>
+            
+            <div class="card-footer">용두동23-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">신이문역세권</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2024-09-12) · 건립 1,265세대</div>
+            
+            <div class="card-footer">이문동168-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">청량리미주아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2024-10-07) · 건립 1,370세대</div>
+            
+            <div class="card-footer">청량리동235-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">청량리9</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2026-01-13) · 건립 843세대</div>
+            
+            <div class="card-footer">청량리동19</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용두구역7지구</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2012-04-05)</div>
+            
+            <div class="card-footer">용두동53-6</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용두구역6지구</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2012-04-05)</div>
+            
+            <div class="card-footer">용두동52-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">휘경5</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> · 건립 634세대</div>
+            
+            <div class="card-footer">휘경동43-8</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">전농13</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> · 건립 949세대</div>
+            
+            <div class="card-footer">전농동295-29</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용두3</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> · 건립 695세대</div>
+            
+            <div class="card-footer">용두동 39-361번지 일대</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">용두1-1</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> (2007-05-17)</div>
+            
+            <div class="card-footer">용두동24-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">중화3</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg pg-on" title="이주"></span><span class="pg-seg pg-on" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>착공</b> (2025-12-08) · 건립 176세대</div>
+            
+            <div class="card-footer">중화동303-9</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상봉9</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg pg-on" title="이주"></span><span class="pg-seg pg-on" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>착공</b> (2024-12-09) · 건립 999세대</div>
+            
+            <div class="card-footer">상봉동83-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상봉7</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> · 건립 841세대</div>
+            
+            <div class="card-footer">상봉동88</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">중화동우성타운</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2025-12-18) · 건립 219세대</div>
+            
+            <div class="card-footer">중화동195-2</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">중화5구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2024-01-18) · 건립 1,610세대</div>
+            
+            <div class="card-footer">중화1동122</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">면목9구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2026-01-08) · 건립 1,057세대</div>
+            
+            <div class="card-footer">면목7동527</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">면목7구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2024-09-11) · 건립 1,510세대</div>
+            
+            <div class="card-footer">면목본동69-14</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">망우1(염광아파트)</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2012-05-29) · 건립 581세대</div>
+            
+            <div class="card-footer">망우본동178-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상봉13구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2025-10-28) · 건립 1,249세대</div>
+            
+            <div class="card-footer">망우본동461-12</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상봉10</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2024-01-05) · 건립 498세대</div>
+            
+            <div class="card-footer">상봉동50-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">면목8구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2025-12-05) · 건립 1,260세대</div>
+            
+            <div class="card-footer">면목5동172-1</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">창동상아1차아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2025-10-30) · 건립 962세대</div>
+            
+            <div class="card-footer">창동299</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">쌍문한양1차아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2025-12-30) · 건립 1,158세대</div>
+            
+            <div class="card-footer">쌍문동388-33</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">쌍문3</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2025-09-26) · 건립 320세대</div>
+            
+            <div class="card-footer">쌍문동724</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">삼환도봉아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2026-02-12) · 건립 993세대</div>
+            
+            <div class="card-footer">도봉동87</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">방학신동아1단지아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> · 건립 4,099세대</div>
+            
+            <div class="card-footer">방학동272</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">방학3구역</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> · 건립 1,650세대</div>
+            
+            <div class="card-footer">방학동685일대</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 단독주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">월계동(재해관리구역)</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg pg-on" title="이주"></span><span class="pg-seg pg-on" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>착공</b> (2025-12-23) · 건립 355세대</div>
+            
+            <div class="card-footer">월계동487-17</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">중계본동(백사마을)</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 2,437세대</div>
+            
+            <div class="card-footer">중계본동30-3</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">월계동신아파트</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> (2023-09-06) · 건립 1,029세대</div>
+            
+            <div class="card-footer">월계동436</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상계1</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 1,388세대</div>
+            
+            <div class="card-footer">상계동5-16</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 공동주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상계주공5단지</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> (2025-12-01) · 건립 996세대</div>
+            
+            <div class="card-footer">상계동721</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상계2</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> (2023-07-17) · 건립 2,200세대</div>
+            
+            <div class="card-footer">상계동111-206</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상계5</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2025-12-18) · 건립 2,042세대</div>
+            
+            <div class="card-footer">상계동109-43</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">상계3</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2025-10-30) · 건립 2,550세대</div>
+            
+            <div class="card-footer">상계동71-183</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">상계5동일대</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>구역지정</b> (2025-04-17) · 건립 4,591세대</div>
+            
+            <div class="card-footer">상계동154-3</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 단독주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">미아4</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 493세대</div>
+            
+            <div class="card-footer">미아동1261</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">미아3(재촉)</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 1,051세대</div>
+            
+            <div class="card-footer">미아동439</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">강북3</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg pg-on" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>관리처분</b> · 건립 922세대</div>
+            
+            <div class="card-footer">미아동45-32번지일대</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 단독주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">미아9-2</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg pg-on" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>사업시행</b> · 건립 1,758세대</div>
+            
+            <div class="card-footer">미아동137-72</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">미아11</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg pg-on" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>건축심의</b> (2023-06-30) · 건립 604세대</div>
+            
+            <div class="card-footer">미아동791-108</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 단독주택재건축</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">미아4-1</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2020-04-20) · 건립 1,015세대</div>
+            
+            <div class="card-footer">미아동8-373</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">미아2</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2016-05-31) · 건립 4,003세대</div>
+            
+            <div class="card-footer">미아동403</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 도시정비형재개발</span>
+                <span class="tag date-tag">공공</span>
+            </div>
+            <h3 class="news-title">강북5</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg pg-on" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>조합설립</b> (2021-11-19) · 건립 688세대</div>
+            
+            <div class="card-footer">미아동61-79</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">번동441-3번지일대</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2026-01-27) · 건립 903세대</div>
+            
+            <div class="card-footer">번동441-3</div>
+        </div>
+        <div class="notion-card" data-type="prog" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag prog-tag">🏗️ 주택정비형재개발</span>
+                <span class="tag date-tag">민간</span>
+            </div>
+            <h3 class="news-title">번동148번지일대</h3>
+            <div class="pg-bar"><span class="pg-seg pg-on" title="구역지정"></span><span class="pg-seg pg-on" title="추진위"></span><span class="pg-seg" title="조합설립"></span><span class="pg-seg" title="건축심의"></span><span class="pg-seg" title="사업시행"></span><span class="pg-seg" title="관리처분"></span><span class="pg-seg" title="이주"></span><span class="pg-seg" title="착공"></span><span class="pg-seg" title="준공"></span></div>
+            <div class="pg-label">현재 단계: <b>추진위</b> (2025-12-16)</div>
+            
+            <div class="card-footer">번동148</div>
         </div></div>
         </div>
     </div>
 
     <script>
-        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "deal": {"all": 205, "성동구": 33, "광진구": 13, "동대문구": 38, "중랑구": 32, "도봉구": 31, "노원구": 40, "강북구": 18}};
+        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "deal": {"all": 205, "성동구": 33, "광진구": 13, "동대문구": 38, "중랑구": 32, "도봉구": 31, "노원구": 40, "강북구": 18}, "prog": {"all": 85, "성동구": 15, "광진구": 7, "동대문구": 27, "중랑구": 11, "도봉구": 6, "노원구": 9, "강북구": 10}};
         let tab = 'news', district = 'all';
 
         function render() {
@@ -1298,7 +2325,7 @@
             });
             updateDealMap();
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : '📋 구별 아파트 실거래 — 계약일 기준 최근 7일';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : '📋 정비사업 추진현황 — ★(26년 3월기준) 서울시 정비사업 추진현황 · 진척 단계순';
         }
 
         document.querySelectorAll('.tab-btn').forEach(b =>
