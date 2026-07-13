@@ -30,6 +30,7 @@ jobs:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
           KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
           KAKAO_JS_KEY: ${{ secrets.KAKAO_JS_KEY }}
+          LOGIN_ACCOUNTS: ${{ secrets.LOGIN_ACCOUNTS }}
         run: python generate_dashboard.py
 
       - name: 결과 커밋 & 푸시
