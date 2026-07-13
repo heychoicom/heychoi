@@ -21,8 +21,8 @@ jobs:
           python-version: "3.12"
 
       - name: 라이브러리 설치
-        run: pip install requests beautifulsoup4
-
+        run: pip install requests beautifulsoup4 openpyxl
+        
       - name: 대시보드 생성
         env:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
