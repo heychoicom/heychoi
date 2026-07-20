@@ -311,7 +311,7 @@ def build_toheo_card(district: str, t: dict) -> str:
                         if t["ok"] else "수집 실패 — 아래 링크에서 직접 확인하세요.")
                      + '</span></div>')
     return f"""
-        <div class="notion-card deal-card" data-type="land" data-district="{district}">
+        <div class="notion-card deal-card" data-type="toheo" data-district="{district}">
             <div class="card-meta">
                 <span class="tag district-tag">📍 {district}</span>
                 <span class="tag toheo-tag">🗂️ 토지거래허가 동향 (수급 지표)</span>
@@ -823,7 +823,9 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
               "prog": {"all": sum(len(v) for v in progress.values()),
                        **{d: len(progress[d]) for d in DISTRICTS}},
               "land": {"all": sum(land[d].get("total", 0) for d in DISTRICTS),
-                       **{d: land[d].get("total", 0) for d in DISTRICTS}}}
+                       **{d: land[d].get("total", 0) for d in DISTRICTS}},
+              "toheo": {"all": sum(toheo[d].get("total", 0) for d in DISTRICTS),
+                        **{d: toheo[d].get("total", 0) for d in DISTRICTS}}}
 
     all_news = sorted((a for v in news.values() for a in v), key=lambda x: x["date"], reverse=True)
     cards = "".join(build_news_card(a) for a in all_news) + \
@@ -995,6 +997,9 @@ __GATE__
             <div class="tab-row">
                 <div class="tab-btn" data-tab="prog">🏗️ 추진현황</div>
                 <div class="tab-btn" data-tab="land">📐 지가분석</div>
+                <div class="tab-btn" data-tab="toheo">🗂️ 토허동향</div>
+            </div>
+            <div class="tab-row">
                 <div class="tab-btn" data-tab="lab">🧪 실험실</div>
             </div>
         </div>
@@ -1035,7 +1040,7 @@ __GATE__
             updateDealMap();
             document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : '🧪 실험실 — 준비 중인 기능';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
