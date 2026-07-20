@@ -59,7 +59,6 @@
         .deal-name { font-weight: 600; min-width: 0; }
         .deal-spec { color: #73726e; flex-shrink: 0; }
         .deal-price { font-weight: 700; margin-left: auto; flex-shrink: 0; }
-        .deal-date { color: #acaba9; font-size: 12px; width: 34px; text-align: right; flex-shrink: 0; }
         .deal-empty { color: #73726e; font-size: 13px; }
         .deal-tag { background-color: #f3e8f7; color: #6b3f85; }
         #deal-map-wrap { display: none; margin-bottom: 20px; }
@@ -82,10 +81,9 @@
         .ld-tagchip { font-size: 11.5px; background-color: #f1f1ef; color: #5a5a57; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
         .ld-share { font-size: 11.5px; background-color: #fdecc8; color: #8a6116; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
         .deal-date { color: #acaba9; font-size: 12px; width: 34px; flex-shrink: 0; }
-        #lab-box { display: none; text-align: center; padding: 90px 20px; }
+        #lab-box { display: none; text-align: left; padding: 10px 0 40px 0; max-width: 760px; }
         .lab-icon { font-size: 64px; margin-bottom: 18px; }
         .lab-text { font-size: 15px; color: #73726e; }
-        #lab-box { text-align: left; padding: 10px 0 40px 0; max-width: 760px; }
         .rt-head { font-size: 17px; margin-bottom: 8px; }
         .rt-beta { font-size: 11px; background-color: #f3e8f7; color: #6b3f85; padding: 2px 7px; border-radius: 4px; vertical-align: middle; }
         .rt-guide { font-size: 13px; color: #73726e; margin-bottom: 10px; line-height: 1.6; }
@@ -194,7 +192,7 @@
 
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
-        <div class="subtitle">📅 2026-07-20 기준 · 최근 30일 (2026-06-20 ~) · 갱신 2026-07-20 21:12 KST</div>
+        <div class="subtitle">📅 2026-07-20 기준 · 최근 30일 (2026-06-20 ~) · 갱신 2026-07-20 21:48 KST</div>
         <div class="update-bar"><div class="update-track" style="animation-duration:26s"><span class="update-item">📌 🆕 2026-07-10 · &#x27;최근 실거래&#x27; 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공</span><span class="update-item">📌 🆕 2026-07-10 · &#x27;최근 실거래&#x27; 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공</span></div></div>
         <div class="tab-bar">
             <div class="tab-row">
@@ -2660,7 +2658,6 @@
         }
 
         (function loadKakao() {
-            if (!DEALS.length) return;
             const s = document.createElement('script');
             s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=691d711b404fccd4eaabe1ec6e7bd165&autoload=false&libraries=services';
             s.onload = () => kakao.maps.load(() => { sdkLoaded = true; updateDealMap(); });
