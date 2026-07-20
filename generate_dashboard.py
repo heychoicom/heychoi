@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
+UPDATE_NOTICE = "🆕 2026-07-20 · '토지거래허가 동향' 탭 신설"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -129,7 +129,7 @@ MAX_LAND_ROWS = 30            # 구별 표시 사례 상한
 
 # 토지거래허가 동향 (서울부동산정보광장, 수급 활동량 지표 — 가격정보 없음)
 TOHEO_PAGE = "https://land.seoul.go.kr/land/other/contractStatus.do"
-TOHEO_LIST_URL = "https://land.seoul.go.kr/land/other/getContractList.do"  # DevTools 확인 완료
+TOHEO_LIST_URL = "https://land.seoul.go.kr/land/wsklis/getContractList.do"  # DevTools Request URL 확인 완료
 TOHEO_DAYS_BACK = 61  # 원본 보관 한도(62일)에 맞춤
 TOHEO_ARCHIVE = os.path.join("data", "toheo_archive.json")
 TOHEO_TREND_DAYS = 14
