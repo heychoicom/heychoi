@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-20 · '토지거래허가내역' 탭 신설"
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -151,7 +151,30 @@ def _median(vals):
 
 
 def _toheo_from_json(items: list, district: str) -> list:
-    """필드명 미문서화 — 값 패턴으로 해석 (첫 실행 로그의 [응답 필드]로 보정 가능)"""
+    """K-Geo 응답 확정 필드(ADDRESS/JIMOK/HNDL_YMD/USE_PURP) 우선 매핑, 미확인 형식은 패턴 폴백"""
+    ymd8 = re.compile(r"^(20\d{2})(\d{2})(\d{2})")
+    if items and "ADDRESS" in items[0]:
+        rows = []
+        for it in items:
+            job = str(it.get("JOB_GBN_NM") or "").strip()
+            if "불허" in job:  # 불허가 건은 수급 지표에서 제외
+                continue
+            m = ymd8.match(str(it.get("HNDL_YMD") or it.get("EXEC_YMD") or ""))
+            if not m:
+                continue
+            try:
+                date = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+            except ValueError:
+                continue
+            addr = str(it.get("ADDRESS") or "").strip()
+            if len(addr) < 5:
+                continue
+            rows.append({"gu": district, "addr": addr,
+                         "jimok": str(it.get("JIMOK") or "").strip(),
+                         "date": date.strftime("%Y-%m-%d"),
+                         "purpose": str(it.get("USE_PURP") or "").strip()})
+        return rows
+    # ── 이하: 필드명이 다른 경우를 위한 패턴 추측 폴백
     ymd_re = re.compile(r"^(20\d{2})[.\-/]?(\d{2})[.\-/]?(\d{2})$")
     jibun_re = re.compile(r"^\d{1,4}(-\d{1,4})?$")
     JIMOKS = ("대", "전", "답", "임야", "잡종지", "도로", "구거", "주차장", "창고용지", "공장용지", "학교용지", "종교용지")
