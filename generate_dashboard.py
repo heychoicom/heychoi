@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-20 · '토지거래허가 동향' 탭 신설"
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -229,23 +229,36 @@ def collect_toheo(today: datetime) -> dict:
     end = today.strftime("%Y%m%d")
     ok_any = False
     keys_logged = False
-    # 브라우저처럼 페이지를 먼저 방문해 세션 쿠키 획득
+    # 브라우저처럼 페이지를 먼저 방문해 세션 쿠키 획득 (간헐 차단 대비 재시도)
+    import time
     sess = requests.Session()
     sess.headers.update(UA_TOHEO)
-    try:
-        pr = sess.get(TOHEO_PAGE, timeout=15)
-        print(f"    [세션 준비] 페이지 접속 {pr.status_code} · 쿠키 {len(sess.cookies)}개")
-    except Exception as e:
-        print(f"    [세션 준비 실패] {type(e).__name__}")
+    for attempt in range(3):
+        try:
+            pr = sess.get(TOHEO_PAGE, timeout=25)
+            print(f"    [세션 준비] 페이지 접속 {pr.status_code} · 쿠키 {len(sess.cookies)}개")
+            break
+        except Exception as e:
+            print(f"    [세션 준비 {attempt+1}차 실패] {type(e).__name__}" +
+                  (" — 재시도" if attempt < 2 else " — 이번 실행은 기존 아카이브로 표시 (62일 창이라 결손 없음)"))
+            time.sleep(5)
     ajax_headers = {"X-Requested-With": "XMLHttpRequest",
                     "Accept": "application/json, text/javascript, */*; q=0.01"}
     for district in DISTRICTS:
         print(f"▶ {district} 토지거래허가 수집 중...")
         rows = []
         try:
-            r = sess.post(TOHEO_LIST_URL,
-                          data={"sggCd": LAWD_CD[district], "beginDate": begin, "endDate": end},
-                          headers=ajax_headers, timeout=15)
+            r = None
+            for attempt in range(3):
+                try:
+                    r = sess.post(TOHEO_LIST_URL,
+                                  data={"sggCd": LAWD_CD[district], "beginDate": begin, "endDate": end},
+                                  headers=ajax_headers, timeout=25)
+                    break
+                except Exception:
+                    if attempt == 2:
+                        raise
+                    time.sleep(5)
             if r.status_code != 200:
                 print(f"    [조회 실패] HTTP {r.status_code}")
                 raise requests.HTTPError(str(r.status_code))
