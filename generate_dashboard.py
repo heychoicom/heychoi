@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v12)
+서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v12.1)
 - 뉴스: 네이버 검색 API (최근 30일, 7개 구)
 - 고시공고: 구청별 공식 고시공고 게시판 바로가기 탭 제공
 - 최근 실거래: 국토부 실거래가 API로 구별 아파트 매매/전세/월세 (계약일 기준 최근 7일)
 - 추진현황: 서울시 도시정비사업 통계 분기 엑셀(data/*.xlsx) 기반 구역별 단계 진행바
+- 토지거래허가 동향: 서울부동산정보광장 확정 엔드포인트(getContractList.do) 수집·아카이브
 - 결과를 docs/index.html 에 저장 (GitHub Pages 배포)
 
 필요 라이브러리: requests
@@ -148,6 +149,7 @@ def _median(vals):
     n = len(s)
     return 0 if n == 0 else (s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2)
 
+
 def _toheo_from_json(items: list, district: str) -> list:
     """필드명 미문서화 — 값 패턴으로 해석 (첫 실행 로그의 [응답 필드]로 보정 가능)"""
     ymd_re = re.compile(r"^(20\d{2})[.\-/]?(\d{2})[.\-/]?(\d{2})$")
@@ -181,6 +183,8 @@ def _toheo_from_json(items: list, district: str) -> list:
         rows.append({"gu": district, "addr": addr, "jimok": jimok,
                      "date": date.strftime("%Y-%m-%d"), "purpose": purpose})
     return rows
+
+
 def _toheo_parse_rows(html_text: str, district: str) -> list:
     try:
         from bs4 import BeautifulSoup
@@ -213,7 +217,7 @@ def _toheo_parse_rows(html_text: str, district: str) -> list:
 
 
 def collect_toheo(today: datetime) -> dict:
-    """구별 토지거래허가 내역 수집 → 아카이브 누적 → 동향 집계"""
+    """구별 토지거래허가 내역 수집(확정 엔드포인트) → 아카이브 누적 → 동향 집계"""
     # 아카이브 로드
     try:
         with open(TOHEO_ARCHIVE, encoding="utf-8") as f:
@@ -221,7 +225,7 @@ def collect_toheo(today: datetime) -> dict:
     except Exception:
         archive = {}
 
-   begin = (today - timedelta(days=TOHEO_DAYS_BACK)).strftime("%Y%m%d")
+    begin = (today - timedelta(days=TOHEO_DAYS_BACK)).strftime("%Y%m%d")
     end = today.strftime("%Y%m%d")
     ok_any = False
     keys_logged = False
@@ -233,6 +237,7 @@ def collect_toheo(today: datetime) -> dict:
                               data={"sggCd": LAWD_CD[district], "beginDate": begin, "endDate": end},
                               headers=UA_TOHEO, timeout=15)
             r.raise_for_status()
+            # 1) JSON 응답 시도
             try:
                 payload = r.json()
                 items = payload if isinstance(payload, list) else None
@@ -247,9 +252,11 @@ def collect_toheo(today: datetime) -> dict:
                         keys_logged = True
                     rows = _toheo_from_json(items, district)
             except ValueError:
+                # 2) HTML 표 응답 폴백
                 rows = _toheo_parse_rows(r.text, district)
         except Exception as e:
             print(f"    [조회 실패] {type(e).__name__}")
+
         if rows:
             ok_any = True
             new = 0
@@ -908,7 +915,6 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .deal-name {{ font-weight: 600; min-width: 0; }}
         .deal-spec {{ color: #73726e; flex-shrink: 0; }}
         .deal-price {{ font-weight: 700; margin-left: auto; flex-shrink: 0; }}
-        .deal-date {{ color: #acaba9; font-size: 12px; width: 34px; text-align: right; flex-shrink: 0; }}
         .deal-empty {{ color: #73726e; font-size: 13px; }}
         .deal-tag {{ background-color: #f3e8f7; color: #6b3f85; }}
         #deal-map-wrap {{ display: none; margin-bottom: 20px; }}
@@ -931,10 +937,9 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .ld-tagchip {{ font-size: 11.5px; background-color: #f1f1ef; color: #5a5a57; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }}
         .ld-share {{ font-size: 11.5px; background-color: #fdecc8; color: #8a6116; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }}
         .deal-date {{ color: #acaba9; font-size: 12px; width: 34px; flex-shrink: 0; }}
-        #lab-box {{ display: none; text-align: center; padding: 90px 20px; }}
+        #lab-box {{ display: none; text-align: left; padding: 10px 0 40px 0; max-width: 760px; }}
         .lab-icon {{ font-size: 64px; margin-bottom: 18px; }}
         .lab-text {{ font-size: 15px; color: #73726e; }}
-        #lab-box {{ text-align: left; padding: 10px 0 40px 0; max-width: 760px; }}
         .rt-head {{ font-size: 17px; margin-bottom: 8px; }}
         .rt-beta {{ font-size: 11px; background-color: #f3e8f7; color: #6b3f85; padding: 2px 7px; border-radius: 4px; vertical-align: middle; }}
         .rt-guide {{ font-size: 13px; color: #73726e; margin-bottom: 10px; line-height: 1.6; }}
@@ -1188,7 +1193,6 @@ DEAL_MAP_JS = r"""
         }
 
         (function loadKakao() {
-            if (!DEALS.length) return;
             const s = document.createElement('script');
             s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=__KAKAO_JS_KEY__&autoload=false&libraries=services';
             s.onload = () => kakao.maps.load(() => { sdkLoaded = true; updateDealMap(); });
