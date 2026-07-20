@@ -128,14 +128,8 @@ MAX_LAND_ROWS = 30            # 구별 표시 사례 상한
 
 # 토지거래허가 동향 (서울부동산정보광장, 수급 활동량 지표 — 가격정보 없음)
 TOHEO_PAGE = "https://land.seoul.go.kr/land/other/contractStatus.do"
-TOHEO_URL_CANDIDATES = [
-    ("POST", "https://land.seoul.go.kr/land/other/contractStatusList.do"),
-    ("POST", "https://land.seoul.go.kr/land/other/selectContractStatusList.do"),
-    ("POST", "https://land.seoul.go.kr/land/other/selectContractStatus.do"),
-    ("POST", "https://land.seoul.go.kr/land/other/contractStatus.do"),
-    ("GET", "https://land.seoul.go.kr/land/other/contractStatus.do"),
-]
-TOHEO_PARAM_KEYS = ["cggCd", "sggCd", "sigunguCd", "guCd", "atcSggCd"]
+TOHEO_LIST_URL = "https://land.seoul.go.kr/land/other/getContractList.do"  # DevTools 확인 완료
+TOHEO_DAYS_BACK = 61  # 원본 보관 한도(62일)에 맞춤
 TOHEO_ARCHIVE = os.path.join("data", "toheo_archive.json")
 TOHEO_TREND_DAYS = 14
 TOHEO_LIST_ROWS = 10
@@ -154,7 +148,39 @@ def _median(vals):
     n = len(s)
     return 0 if n == 0 else (s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2)
 
-
+def _toheo_from_json(items: list, district: str) -> list:
+    """필드명 미문서화 — 값 패턴으로 해석 (첫 실행 로그의 [응답 필드]로 보정 가능)"""
+    ymd_re = re.compile(r"^(20\d{2})[.\-/]?(\d{2})[.\-/]?(\d{2})$")
+    jibun_re = re.compile(r"^\d{1,4}(-\d{1,4})?$")
+    JIMOKS = ("대", "전", "답", "임야", "잡종지", "도로", "구거", "주차장", "창고용지", "공장용지", "학교용지", "종교용지")
+    rows = []
+    for it in items:
+        vals = [str(v).strip() for v in it.values() if v is not None and str(v).strip()]
+        date = None
+        for v in vals:
+            m = ymd_re.match(v)
+            if m:
+                try:
+                    date = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+                    break
+                except ValueError:
+                    pass
+        if not date:
+            continue
+        dong = next((v for v in vals if v.endswith("동") and len(v) <= 8), "")
+        jibun = next((v for v in vals if jibun_re.match(v) and not ymd_re.match(v)), "")
+        long_addr = max(vals, key=len)
+        if dong:
+            addr = f"{district} {dong} {jibun}".strip()
+        elif ("동" in long_addr or "구" in long_addr) and len(long_addr) >= 6:
+            addr = long_addr
+        else:
+            continue
+        jimok = next((v for v in vals if v in JIMOKS), "")
+        purpose = next((v for v in vals if v.endswith("용") and v not in JIMOKS and len(v) <= 12), "")
+        rows.append({"gu": district, "addr": addr, "jimok": jimok,
+                     "date": date.strftime("%Y-%m-%d"), "purpose": purpose})
+    return rows
 def _toheo_parse_rows(html_text: str, district: str) -> list:
     try:
         from bs4 import BeautifulSoup
@@ -195,31 +221,35 @@ def collect_toheo(today: datetime) -> dict:
     except Exception:
         archive = {}
 
-    working = None  # 성공한 (method, url, key) 조합 기억
+   begin = (today - timedelta(days=TOHEO_DAYS_BACK)).strftime("%Y%m%d")
+    end = today.strftime("%Y%m%d")
     ok_any = False
+    keys_logged = False
     for district in DISTRICTS:
         print(f"▶ {district} 토지거래허가 수집 중...")
-        rows, tried = [], 0
-        combos = ([working] if working else
-                  [(m, u, k) for m, u in TOHEO_URL_CANDIDATES for k in TOHEO_PARAM_KEYS])
-        for method, url, key in combos:
-            tried += 1
-            params = {key: LAWD_CD[district], "pageIndex": "1"}
+        rows = []
+        try:
+            r = requests.post(TOHEO_LIST_URL,
+                              data={"sggCd": LAWD_CD[district], "beginDate": begin, "endDate": end},
+                              headers=UA_TOHEO, timeout=15)
+            r.raise_for_status()
             try:
-                if method == "POST":
-                    r = requests.post(url, data=params, headers=UA_TOHEO, timeout=12)
-                else:
-                    r = requests.get(url, params=params, headers=UA_TOHEO, timeout=12)
-                if r.status_code != 200:
-                    continue
+                payload = r.json()
+                items = payload if isinstance(payload, list) else None
+                if items is None and isinstance(payload, dict):
+                    for v in payload.values():
+                        if isinstance(v, list) and v and isinstance(v[0], dict):
+                            items = v
+                            break
+                if items:
+                    if not keys_logged:
+                        print(f"    [응답 필드] {sorted(items[0].keys())}")
+                        keys_logged = True
+                    rows = _toheo_from_json(items, district)
+            except ValueError:
                 rows = _toheo_parse_rows(r.text, district)
-            except Exception:
-                continue
-            if rows:
-                if not working:
-                    print(f"    [엔드포인트 확정] {method} {url.split('/')[-1]} · 파라미터 {key}")
-                working = (method, url, key)
-                break
+        except Exception as e:
+            print(f"    [조회 실패] {type(e).__name__}")
         if rows:
             ok_any = True
             new = 0
@@ -230,7 +260,7 @@ def collect_toheo(today: datetime) -> dict:
                     new += 1
             print(f"  → 허가 {len(rows)}건 조회 (신규 {new}건 아카이브)")
         else:
-            print(f"  → 수집 실패 ({tried}개 조합 시도)")
+            print(f"  → 0건 (조회 실패 또는 해당 기간 허가 없음)")
 
     if ok_any:
         os.makedirs(os.path.dirname(TOHEO_ARCHIVE), exist_ok=True)
