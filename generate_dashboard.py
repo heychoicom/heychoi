@@ -229,14 +229,26 @@ def collect_toheo(today: datetime) -> dict:
     end = today.strftime("%Y%m%d")
     ok_any = False
     keys_logged = False
+    # 브라우저처럼 페이지를 먼저 방문해 세션 쿠키 획득
+    sess = requests.Session()
+    sess.headers.update(UA_TOHEO)
+    try:
+        pr = sess.get(TOHEO_PAGE, timeout=15)
+        print(f"    [세션 준비] 페이지 접속 {pr.status_code} · 쿠키 {len(sess.cookies)}개")
+    except Exception as e:
+        print(f"    [세션 준비 실패] {type(e).__name__}")
+    ajax_headers = {"X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json, text/javascript, */*; q=0.01"}
     for district in DISTRICTS:
         print(f"▶ {district} 토지거래허가 수집 중...")
         rows = []
         try:
-            r = requests.post(TOHEO_LIST_URL,
-                              data={"sggCd": LAWD_CD[district], "beginDate": begin, "endDate": end},
-                              headers=UA_TOHEO, timeout=15)
-            r.raise_for_status()
+            r = sess.post(TOHEO_LIST_URL,
+                          data={"sggCd": LAWD_CD[district], "beginDate": begin, "endDate": end},
+                          headers=ajax_headers, timeout=15)
+            if r.status_code != 200:
+                print(f"    [조회 실패] HTTP {r.status_code}")
+                raise requests.HTTPError(str(r.status_code))
             # 1) JSON 응답 시도
             try:
                 payload = r.json()
@@ -254,6 +266,8 @@ def collect_toheo(today: datetime) -> dict:
             except ValueError:
                 # 2) HTML 표 응답 폴백
                 rows = _toheo_parse_rows(r.text, district)
+        except requests.HTTPError:
+            pass
         except Exception as e:
             print(f"    [조회 실패] {type(e).__name__}")
 
