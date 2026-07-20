@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v10)
+서울동부지사 정비사업 뉴스+고시공고 대시보드 자동 생성기 (v12)
 - 뉴스: 네이버 검색 API (최근 30일, 7개 구)
 - 고시공고: 구청별 공식 고시공고 게시판 바로가기 탭 제공
 - 최근 실거래: 국토부 실거래가 API로 구별 아파트 매매/전세/월세 (계약일 기준 최근 7일)
@@ -25,7 +25,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-13 · '정비사업 추진현황' 및 '지가분석' 탭 신설 / '지가분석' 탭은 적용 초기단계 입니다."
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -126,6 +126,20 @@ LAND_URL = "https://apis.data.go.kr/1613000/RTMSDataSvcLandTrade/getRTMSDataSvcL
 LAND_MONTHS = 3               # 최근 몇 개월 사례를 볼지
 MAX_LAND_ROWS = 30            # 구별 표시 사례 상한
 
+# 토지거래허가 동향 (서울부동산정보광장, 수급 활동량 지표 — 가격정보 없음)
+TOHEO_PAGE = "https://land.seoul.go.kr/land/other/contractStatus.do"
+TOHEO_URL_CANDIDATES = [
+    ("POST", "https://land.seoul.go.kr/land/other/contractStatusList.do"),
+    ("POST", "https://land.seoul.go.kr/land/other/selectContractStatusList.do"),
+    ("POST", "https://land.seoul.go.kr/land/other/selectContractStatus.do"),
+    ("POST", "https://land.seoul.go.kr/land/other/contractStatus.do"),
+    ("GET", "https://land.seoul.go.kr/land/other/contractStatus.do"),
+]
+TOHEO_PARAM_KEYS = ["cggCd", "sggCd", "sigunguCd", "guCd", "atcSggCd"]
+TOHEO_ARCHIVE = os.path.join("data", "toheo_archive.json")
+TOHEO_TREND_DAYS = 14
+TOHEO_LIST_ROWS = 10
+
 
 def _txt_any(node, tags):
     for t in tags:
@@ -139,6 +153,145 @@ def _median(vals):
     s = sorted(vals)
     n = len(s)
     return 0 if n == 0 else (s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2)
+
+
+def _toheo_parse_rows(html_text: str, district: str) -> list:
+    try:
+        from bs4 import BeautifulSoup
+    except ImportError:
+        return []
+    soup = BeautifulSoup(html_text, "html.parser")
+    date_re = re.compile(r"(20\d{2})[.\-/](\d{1,2})[.\-/](\d{1,2})")
+    rows = []
+    for tr in soup.find_all("tr"):
+        tds = [td.get_text(" ", strip=True) for td in tr.find_all("td")]
+        if len(tds) < 5:
+            continue
+        joined = " ".join(tds)
+        m = date_re.search(joined)
+        if not m:
+            continue
+        # 표 구성: 연번 | 주소 | 지목 | 허가년월일 | 이용목적 | 이용의무종료일 | ...
+        addr = max(tds, key=len)  # 가장 긴 셀 = 주소
+        if len(addr) < 5:
+            continue
+        try:
+            d = datetime(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            continue
+        jimok = next((t for t in tds if t in ("대", "전", "답", "임야", "잡종지", "도로", "구거", "주차장", "창고용지", "공장용지")), "")
+        purpose = next((t for t in tds if any(k in t for k in ("주거", "자기", "이용", "사업", "임대", "경영", "복지", "편익"))), "")
+        rows.append({"gu": district, "addr": addr, "jimok": jimok,
+                     "date": d.strftime("%Y-%m-%d"), "purpose": purpose})
+    return rows
+
+
+def collect_toheo(today: datetime) -> dict:
+    """구별 토지거래허가 내역 수집 → 아카이브 누적 → 동향 집계"""
+    # 아카이브 로드
+    try:
+        with open(TOHEO_ARCHIVE, encoding="utf-8") as f:
+            archive = json.load(f)
+    except Exception:
+        archive = {}
+
+    working = None  # 성공한 (method, url, key) 조합 기억
+    ok_any = False
+    for district in DISTRICTS:
+        print(f"▶ {district} 토지거래허가 수집 중...")
+        rows, tried = [], 0
+        combos = ([working] if working else
+                  [(m, u, k) for m, u in TOHEO_URL_CANDIDATES for k in TOHEO_PARAM_KEYS])
+        for method, url, key in combos:
+            tried += 1
+            params = {key: LAWD_CD[district], "pageIndex": "1"}
+            try:
+                if method == "POST":
+                    r = requests.post(url, data=params, headers=UA_TOHEO, timeout=12)
+                else:
+                    r = requests.get(url, params=params, headers=UA_TOHEO, timeout=12)
+                if r.status_code != 200:
+                    continue
+                rows = _toheo_parse_rows(r.text, district)
+            except Exception:
+                continue
+            if rows:
+                if not working:
+                    print(f"    [엔드포인트 확정] {method} {url.split('/')[-1]} · 파라미터 {key}")
+                working = (method, url, key)
+                break
+        if rows:
+            ok_any = True
+            new = 0
+            for x in rows:
+                k = f"{x['gu']}|{x['addr']}|{x['date']}"
+                if k not in archive:
+                    archive[k] = x
+                    new += 1
+            print(f"  → 허가 {len(rows)}건 조회 (신규 {new}건 아카이브)")
+        else:
+            print(f"  → 수집 실패 ({tried}개 조합 시도)")
+
+    if ok_any:
+        os.makedirs(os.path.dirname(TOHEO_ARCHIVE), exist_ok=True)
+        with open(TOHEO_ARCHIVE, "w", encoding="utf-8") as f:
+            json.dump(archive, f, ensure_ascii=False)
+
+    # 집계
+    result = {}
+    for district in DISTRICTS:
+        recs = sorted((v for v in archive.values() if v["gu"] == district),
+                      key=lambda x: x["date"], reverse=True)
+        days = [(today - timedelta(days=i)).strftime("%Y-%m-%d") for i in range(TOHEO_TREND_DAYS - 1, -1, -1)]
+        daily = [sum(1 for r in recs if r["date"] == d) for d in days]
+        last7 = sum(daily[-7:])
+        prev7 = sum(1 for r in recs
+                    if (today - timedelta(days=13)).strftime("%Y-%m-%d") <= r["date"] <= (today - timedelta(days=7)).strftime("%Y-%m-%d"))
+        result[district] = {"recent": recs[:TOHEO_LIST_ROWS], "daily": daily, "days": days,
+                            "last7": last7, "prev7": prev7, "total": len(recs), "ok": ok_any}
+    return result
+
+
+def build_toheo_card(district: str, t: dict) -> str:
+    diff = t["last7"] - t["prev7"]
+    diff_cls = "ld-up" if diff > 0 else ("ld-down" if diff < 0 else "ld-flat")
+    diff_txt = f"{diff:+d}건" if diff else "±0건"
+    maxc = max(t["daily"]) if t["daily"] and max(t["daily"]) > 0 else 1
+    bars = "".join(
+        f'<span class="th-bar" style="height:{max(3, int(26 * c / maxc))}px" title="{d[5:]} · {c}건"></span>'
+        for d, c in zip(t["days"], t["daily"]))
+    rows_html = ""
+    for r in t["recent"]:
+        chip = f'<span class="ld-tagchip">{html.escape(r["jimok"])}</span>' if r["jimok"] else ""
+        purpose = f'<span class="deal-spec">{html.escape(r["purpose"])}</span>' if r["purpose"] else ""
+        rows_html += (f'<div class="deal-row">'
+                      f'<span class="deal-date">{r["date"][5:]}</span>'
+                      f'<span class="deal-name">{html.escape(r["addr"])}</span>'
+                      f'{chip}{purpose}</div>')
+    if not rows_html:
+        rows_html = ('<div class="deal-row"><span class="deal-empty">'
+                     + ("아카이브에 아직 데이터가 없습니다 — 첫 수집 후 누적됩니다."
+                        if t["ok"] else "수집 실패 — 아래 링크에서 직접 확인하세요.")
+                     + '</span></div>')
+    return f"""
+        <div class="notion-card deal-card" data-type="land" data-district="{district}">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 {district}</span>
+                <span class="tag toheo-tag">🗂️ 토지거래허가 동향 (수급 지표)</span>
+            </div>
+            <div class="ld-summary">
+                <div class="ld-sum-item">최근 7일 허가 <b>{t["last7"]}건</b> <span class="{diff_cls}">직전 7일 대비 {diff_txt}</span></div>
+                <div class="ld-sum-item ld-n">누적 아카이브 {t["total"]}건</div>
+            </div>
+            <div class="th-bars">{bars}</div>
+            <div class="th-bars-label">최근 {TOHEO_TREND_DAYS}일 일별 허가 건수</div>
+            <div class="deal-list">{rows_html}</div>
+            <div class="card-footer">출처: <a href="{TOHEO_PAGE}" target="_blank">서울부동산정보광장 토지거래허가 내역</a> (K-Geo 연계, 허가일 기준) · 가격정보가 없는 활동량 지표로, 수급 방향성 참고용입니다</div>
+        </div>"""
+
+
+UA_TOHEO = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Referer": TOHEO_PAGE}
 
 
 def collect_land(today: datetime) -> dict:
@@ -625,7 +778,7 @@ def build_notice_card(district: str) -> str:
         </div>"""
 
 
-def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: dict, today: datetime) -> str:
+def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: dict, toheo: dict, today: datetime) -> str:
     counts = {"news": {"all": sum(len(v) for v in news.values()),
                        **{d: len(news[d]) for d in DISTRICTS}},
               "deal": {"all": sum(len(v) for v in deals.values()),
@@ -640,7 +793,8 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
             "".join(build_notice_card(d) for d in DISTRICTS) + \
             "".join(build_deal_card(d, deals[d], today) for d in DISTRICTS) + \
             "".join(build_progress_card(p, d) for d in DISTRICTS for p in progress[d]) + \
-            "".join(build_land_card(d, land[d]) for d in DISTRICTS)
+            "".join(build_land_card(d, land[d]) for d in DISTRICTS) + \
+            "".join(build_toheo_card(d, toheo[d]) for d in DISTRICTS)
 
     sidebar = ['<div class="sidebar-item active" data-district="all">🌐 전체</div>']
     sidebar += [f'<div class="sidebar-item" data-district="{d}">📍 {d}</div>' for d in DISTRICTS]
@@ -750,6 +904,25 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         #lab-box {{ display: none; text-align: center; padding: 90px 20px; }}
         .lab-icon {{ font-size: 64px; margin-bottom: 18px; }}
         .lab-text {{ font-size: 15px; color: #73726e; }}
+        #lab-box {{ text-align: left; padding: 10px 0 40px 0; max-width: 760px; }}
+        .rt-head {{ font-size: 17px; margin-bottom: 8px; }}
+        .rt-beta {{ font-size: 11px; background-color: #f3e8f7; color: #6b3f85; padding: 2px 7px; border-radius: 4px; vertical-align: middle; }}
+        .rt-guide {{ font-size: 13px; color: #73726e; margin-bottom: 10px; line-height: 1.6; }}
+        #rt-input {{ width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #e0e0dd; border-radius: 8px; font-size: 13.5px; font-family: inherit; resize: vertical; }}
+        .rt-controls {{ display: flex; justify-content: space-between; align-items: center; margin: 10px 0; font-size: 13px; }}
+        #rt-btn {{ padding: 9px 18px; border: none; border-radius: 8px; background-color: #37352f; color: #fff; font-weight: 600; cursor: pointer; }}
+        #rt-btn:hover {{ background-color: #1f1e1b; }}
+        #rt-msg {{ min-height: 20px; font-size: 13px; color: #37352f; margin-bottom: 8px; }}
+        #rt-map {{ display: none; width: 100%; height: 360px; border-radius: 8px; border: 1px solid #e9e9e6; margin-bottom: 12px; }}
+        #rt-list {{ font-size: 13.5px; line-height: 1.9; padding-left: 22px; margin: 0 0 8px 0; }}
+        .rt-km {{ color: #2f6bd8; font-size: 12px; font-weight: 600; }}
+        .rt-note {{ font-size: 12px; color: #acaba9; }}
+        .rt-pin {{ background-color: #2f6bd8; color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }}
+        .rt-pin-start {{ background-color: #d94343; }}
+        .toheo-tag {{ background-color: #fdecc8; color: #8a6116; }}
+        .th-bars {{ display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-bottom: 2px; }}
+        .th-bar {{ width: 9px; background-color: #8aa8d8; border-radius: 2px 2px 0 0; }}
+        .th-bars-label {{ font-size: 11.5px; color: #acaba9; margin-bottom: 10px; }}
 
         @media (max-width: 768px) {{
             #header {{ padding: 24px 16px 0 16px; }}
@@ -803,10 +976,7 @@ __GATE__
                 <div id="deal-map"></div>
                 <div class="map-legend"><span class="lg lg-매매">● 매매</span> <span class="lg lg-전세">● 전세</span> <span class="lg lg-월세">● 월세</span> — 핀을 누르면 상세 표시</div>
             </div>
-            <div id="lab-box">
-                <div class="lab-icon">🔬</div>
-                <div class="lab-text">아직 실험중이에요.</div>
-            </div>
+            <div id="lab-box">__LAB_HTML__</div>
             <div class="card-grid">{cards}</div>
         </div>
     </div>
@@ -849,10 +1019,28 @@ __GATE__
             if hashes else "")
     page = page.replace("__GATE__", gate)
     page = page.replace("__PROG_ASOF__", html.escape(prog_asof) or "기준 파일 없음")
-    page = page.replace("__DEAL_MAP_JS__", DEAL_MAP_JS if KAKAO_JS_KEY else "function updateDealMap(){}")
+    page = page.replace("__LAB_HTML__", LAB_ROUTE_HTML if KAKAO_JS_KEY else LAB_PLACEHOLDER)
+    page = page.replace("__DEAL_MAP_JS__", (DEAL_MAP_JS + LAB_ROUTE_JS) if KAKAO_JS_KEY else "function updateDealMap(){}")
     page = page.replace("__DEALS__", deals_json).replace("__KAKAO_JS_KEY__", KAKAO_JS_KEY)
     return page
 
+
+LAB_PLACEHOLDER = """
+                <div class="lab-icon">🔬</div>
+                <div class="lab-text">아직 실험중이에요.</div>"""
+
+LAB_ROUTE_HTML = """
+                <div class="rt-head">🧭 <b>출장 표본지 최적동선</b> <span class="rt-beta">실험실 β</span></div>
+                <div class="rt-guide">표본지 주소를 한 줄에 하나씩 입력하세요. <b>첫 줄이 출발지</b>로 고정되고, 나머지 방문 순서를 최적화합니다. (지번·도로명 모두 가능, 예: 노원구 상계동 666-12)</div>
+                <textarea id="rt-input" rows="7" placeholder="서울 노원구 노해로 437 (출발지)&#10;노원구 상계동 666-12&#10;도봉구 창동 135-8&#10;강북구 미아동 234-5"></textarea>
+                <div class="rt-controls">
+                    <label><input type="checkbox" id="rt-round"> 출발지로 복귀(왕복)</label>
+                    <button id="rt-btn">최적 동선 계산</button>
+                </div>
+                <div id="rt-msg"></div>
+                <div id="rt-map"></div>
+                <ol id="rt-list"></ol>
+                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div>"""
 
 GATE_LOGO_FALLBACK = """<svg class="gate-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <path d="M50 8 A42 42 0 0 1 92 50" fill="none" stroke="#4285F4" stroke-width="13" stroke-linecap="round"/>
@@ -972,10 +1160,112 @@ DEAL_MAP_JS = r"""
         (function loadKakao() {
             if (!DEALS.length) return;
             const s = document.createElement('script');
-            s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=__KAKAO_JS_KEY__&autoload=false';
+            s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=__KAKAO_JS_KEY__&autoload=false&libraries=services';
             s.onload = () => kakao.maps.load(() => { sdkLoaded = true; updateDealMap(); });
             document.head.appendChild(s);
         })();
+"""
+
+
+LAB_ROUTE_JS = r"""
+        function haver(a, b) {
+            const R = 6371, dLa = (b.lat - a.lat) * Math.PI / 180, dLo = (b.lng - a.lng) * Math.PI / 180;
+            const h = Math.sin(dLa/2)**2 + Math.cos(a.lat*Math.PI/180) * Math.cos(b.lat*Math.PI/180) * Math.sin(dLo/2)**2;
+            return 2 * R * Math.asin(Math.sqrt(h));
+        }
+        function optimizeRoute(pts, roundTrip) {
+            const n = pts.length, D = pts.map(p => pts.map(q => haver(p, q)));
+            let order = [0]; const left = new Set([...Array(n).keys()].slice(1));
+            while (left.size) {  // 최근접 이웃
+                const last = order[order.length - 1];
+                let best = null, bd = Infinity;
+                left.forEach(i => { if (D[last][i] < bd) { bd = D[last][i]; best = i; } });
+                order.push(best); left.delete(best);
+            }
+            const cost = o => {  // 2-opt 개선
+                let s = 0;
+                for (let i = 0; i < o.length - 1; i++) s += D[o[i]][o[i+1]];
+                if (roundTrip) s += D[o[o.length-1]][o[0]];
+                return s;
+            };
+            let improved = true;
+            while (improved) {
+                improved = false;
+                for (let i = 1; i < order.length - 1; i++)
+                    for (let k = i + 1; k < order.length; k++) {
+                        const cand = order.slice(0, i).concat(order.slice(i, k+1).reverse(), order.slice(k+1));
+                        if (cost(cand) < cost(order) - 1e-9) { order = cand; improved = true; }
+                    }
+            }
+            return order;
+        }
+        function rtGeocode(q) {
+            return new Promise(res => {
+                const g = new kakao.maps.services.Geocoder();
+                g.addressSearch(q, (r, st) => {
+                    if (st === kakao.maps.services.Status.OK && r.length)
+                        return res({lat: +r[0].y, lng: +r[0].x});
+                    const p = new kakao.maps.services.Places();
+                    p.keywordSearch(q, (r2, st2) => {
+                        if (st2 === kakao.maps.services.Status.OK && r2.length)
+                            return res({lat: +r2[0].y, lng: +r2[0].x});
+                        res(null);
+                    });
+                });
+            });
+        }
+        let rtMap = null, rtObjs = [];
+        async function rtRun() {
+            if (!sdkLoaded) { document.getElementById('rt-msg').textContent = '지도 모듈 로딩 중 — 잠시 후 다시 눌러주세요.'; return; }
+            const lines = document.getElementById('rt-input').value.split('\n').map(s => s.trim()).filter(Boolean);
+            const msg = document.getElementById('rt-msg');
+            if (lines.length < 2) { msg.textContent = '출발지 포함 2곳 이상 입력하세요.'; return; }
+            if (lines.length > 40) { msg.textContent = '한 번에 40곳까지 지원합니다.'; return; }
+            msg.textContent = '주소 변환 중...';
+            const pts = [];
+            for (const q of lines) {
+                const c = await rtGeocode(q);
+                if (!c) { msg.textContent = '주소를 찾지 못했습니다: ' + q; return; }
+                pts.push({...c, name: q});
+            }
+            const roundTrip = document.getElementById('rt-round').checked;
+            const order = optimizeRoute(pts, roundTrip);
+            // 지도 렌더
+            const box = document.getElementById('rt-map'); box.style.display = 'block';
+            if (!rtMap) rtMap = new kakao.maps.Map(box, {center: new kakao.maps.LatLng(37.6, 127.06), level: 7});
+            rtObjs.forEach(o => o.setMap(null)); rtObjs = [];
+            rtMap.relayout();
+            const bounds = new kakao.maps.LatLngBounds(), path = [];
+            order.forEach((idx, i) => {
+                const p = pts[idx], pos = new kakao.maps.LatLng(p.lat, p.lng);
+                path.push(pos); bounds.extend(pos);
+                const ov = new kakao.maps.CustomOverlay({position: pos, yAnchor: 0.5,
+                    content: '<div class="rt-pin' + (i === 0 ? ' rt-pin-start' : '') + '">' + (i === 0 ? '출발' : i) + '</div>'});
+                ov.setMap(rtMap); rtObjs.push(ov);
+            });
+            if (roundTrip) path.push(path[0]);
+            const line = new kakao.maps.Polyline({path: path, strokeWeight: 3, strokeColor: '#2f6bd8', strokeOpacity: 0.85, strokeStyle: 'shortdash'});
+            line.setMap(rtMap); rtObjs.push(line);
+            rtMap.setBounds(bounds, 40);
+            // 목록 렌더
+            const list = document.getElementById('rt-list'); list.innerHTML = '';
+            let total = 0;
+            order.forEach((idx, i) => {
+                let leg = '';
+                if (i > 0) { const d = haver(pts[order[i-1]], pts[idx]); total += d; leg = ' <span class="rt-km">+' + d.toFixed(1) + 'km</span>'; }
+                const li = document.createElement('li');
+                li.innerHTML = (i === 0 ? '<b>[출발]</b> ' : '') + pts[idx].name + leg;
+                list.appendChild(li);
+            });
+            if (roundTrip) {
+                const d = haver(pts[order[order.length-1]], pts[order[0]]); total += d;
+                const li = document.createElement('li');
+                li.innerHTML = '<b>[복귀]</b> ' + pts[order[0]].name + ' <span class="rt-km">+' + d.toFixed(1) + 'km</span>';
+                list.appendChild(li);
+            }
+            msg.textContent = '✅ 총 ' + (order.length - 1 + (roundTrip ? 1 : 0)) + '개 구간 · 직선거리 합계 약 ' + total.toFixed(1) + 'km';
+        }
+        document.getElementById('rt-btn') && document.getElementById('rt-btn').addEventListener('click', rtRun);
 """
 
 
@@ -995,10 +1285,11 @@ def main():
     apply_geocoding(deals)
     progress, prog_asof = load_progress()
     land = collect_land(today)
+    toheo = collect_toheo(today)
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(build_html(news, deals, progress, prog_asof, land, today))
+        f.write(build_html(news, deals, progress, prog_asof, land, toheo, today))
     total_news = sum(len(v) for v in news.values())
     total_deals = sum(len(v) for v in deals.values())
     print(f"\n✅ 생성 완료: {OUTPUT_PATH} (뉴스 {total_news}건 / 실거래 {total_deals}건 / 게시판 바로가기 {len(DISTRICTS)}개)")
