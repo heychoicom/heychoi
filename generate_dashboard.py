@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-20 · '토지거래허가내역' 탭 신설"
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -134,6 +134,12 @@ TOHEO_DAYS_BACK = 61  # 원본 보관 한도(62일)에 맞춤
 TOHEO_ARCHIVE = os.path.join("data", "toheo_archive.json")
 TOHEO_TREND_DAYS = 14
 TOHEO_LIST_ROWS = 10
+
+# 고점대비: 단지별 ㎡당가 이력(2021.01~) 아카이브 → 전고점 대비 최근 3개월 회복률
+PEAK_START_YM = "202101"
+PEAK_ARCHIVE = os.path.join("data", "apt_price_history.json")
+PEAK_RECENT_MONTHS = 3
+PEAK_BACKFILL_PER_RUN = 100   # 1회 실행당 수집할 구·월 조합 상한 (백필 분할)
 
 
 def _txt_any(node, tags):
@@ -379,6 +385,138 @@ def build_toheo_card(district: str, t: dict) -> str:
 
 UA_TOHEO = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             "Referer": TOHEO_PAGE}
+
+
+def _norm_apt(dong: str, name: str) -> str:
+    return f"{dong.strip()} {re.sub(r'[\s]+', '', name.strip())}"
+
+
+def collect_peak(today: datetime) -> dict:
+    """단지별 월중위 ㎡당가 이력 수집(분할 백필) → 구별 대표단지 회복률 산출"""
+    try:
+        with open(PEAK_ARCHIVE, encoding="utf-8") as f:
+            arch = json.load(f)
+    except Exception:
+        arch = {"done": [], "apts": {}}
+    done = set(arch.get("done", []))
+    apts = arch.setdefault("apts", {})
+
+    months = []
+    y, m = int(PEAK_START_YM[:4]), int(PEAK_START_YM[4:])
+    while (y, m) <= (today.year, today.month):
+        months.append(f"{y}{m:02d}")
+        m += 1
+        if m == 13:
+            y, m = y + 1, 1
+    cur_set = set(months[-2:])  # 당월·전월은 항상 재수집(신고 지연 반영)
+
+    todo = ([] if not MOLIT_KEY else
+            [(gu, ym) for ym in months for gu in DISTRICTS if ym not in done or ym in cur_set])
+    if not MOLIT_KEY:
+        print("▶ DATA_GO_KR_KEY 미설정 — 고점대비 수집 생략")
+    capped = len(todo) > PEAK_BACKFILL_PER_RUN
+    run_todo = todo[:PEAK_BACKFILL_PER_RUN]
+    if run_todo:
+        print(f"▶ 고점대비 가격이력 수집: {len(run_todo)}개 구·월" +
+              (f" (백필 잔여 {len(todo) - len(run_todo)} — 다음 실행에서 계속)" if capped else " (백필 완료 상태)"))
+
+    for gu, ym in run_todo:
+        items = _fetch_deal_xml(TRADE_URL, LAWD_CD[gu], ym)
+        groups = {}
+        for it in items:
+            name = _txt(it, "aptNm")
+            dong = _txt(it, "umdNm")
+            try:
+                area = float(_txt(it, "excluUseAr") or 0)
+            except ValueError:
+                area = 0
+            amt = _num(_txt(it, "dealAmount"))
+            if not name or area <= 0 or amt <= 0:
+                continue
+            k = _norm_apt(dong, name)
+            g = groups.setdefault(k, {"u": [], "by": 0, "dp": f"{dong} {name}"})
+            g["u"].append(int(amt * 10000 / area))
+            g["by"] = max(g["by"], _num(_txt(it, "buildYear")))
+        g_apts = apts.setdefault(gu, {})
+        for k, v in groups.items():
+            rec = g_apts.setdefault(k, {"by": 0, "dp": v["dp"], "m": {}})
+            rec["m"][ym] = [int(_median(v["u"])), len(v["u"])]
+            rec["by"] = max(rec.get("by", 0), v["by"])
+            rec["dp"] = v["dp"]
+
+    # 이번 실행에서 7개 구 전부 처리된 과거 월만 '완료' 표시
+    run_set = set(run_todo)
+    for ym in {ym for _, ym in run_todo}:
+        if ym not in cur_set and all((g, ym) in run_set for g in DISTRICTS):
+            done.add(ym)
+    arch["done"] = sorted(done)
+    if run_todo:
+        os.makedirs("data", exist_ok=True)
+        with open(PEAK_ARCHIVE, "w", encoding="utf-8") as f:
+            json.dump(arch, f, ensure_ascii=False)
+
+    # 대표단지 선정 + 지표
+    recent3 = months[-PEAK_RECENT_MONTHS:]
+    result = {}
+    for gu in DISTRICTS:
+        stats = []
+        for k, rec in apts.get(gu, {}).items():
+            mm = rec.get("m", {})
+            total = sum(n for _, n in mm.values())
+            peaks = [(med, ym) for ym, (med, n) in mm.items() if n >= 2] or                     [(med, ym) for ym, (med, n) in mm.items()]
+            if not peaks:
+                continue
+            peak, peak_ym = max(peaks)
+            rvals = [(med, n) for ym2, (med, n) in mm.items() if ym2 in recent3]
+            rn = sum(n for _, n in rvals)
+            recent = int(sum(med * n for med, n in rvals) / rn) if rn else 0
+            stats.append({"k": k, "dp": rec.get("dp", k), "by": rec.get("by", 0), "total": total,
+                          "peak": peak, "peak_ym": peak_ym, "recent": recent, "rn": rn})
+        big5 = sorted([s for s in stats if s["total"] >= 5], key=lambda x: -x["total"])[:5]
+        used = {s["k"] for s in big5}
+        new5 = sorted([s for s in stats if s["k"] not in used and s["by"] > 0 and s["total"] >= 3],
+                      key=lambda x: (-x["by"], -x["total"]))[:5]
+        result[gu] = {"big": big5, "new": new5, "pending": capped}
+    return result
+
+
+def _peak_row(s: dict, badge: str) -> str:
+    peak_disp = f"{s['peak'] // 10000:,}만/㎡"
+    peak_when = f"{s['peak_ym'][2:4]}.{s['peak_ym'][4:]}"
+    if s["rn"]:
+        ratio = s["recent"] / s["peak"] * 100
+        cls = "ld-up" if ratio >= 100 else ("ld-flat" if ratio >= 90 else "ld-down")
+        recent_part = (f'<span class="deal-spec">최근3개월 {s["recent"] // 10000:,}만/㎡ ({s["rn"]}건)</span>'
+                       f'<span class="deal-price {cls}">{ratio:.1f}%</span>')
+    else:
+        recent_part = '<span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span>'
+    by = f'<span class="ld-tagchip">{s["by"]}년</span>' if s["by"] else ""
+    return (f'<div class="deal-row"><span class="pk-badge">{badge}</span>'
+            f'<span class="deal-name">{html.escape(s["dp"])}</span>{by}'
+            f'<span class="ld-tagchip">고점 {peak_disp} ({peak_when})</span>'
+            f'{recent_part}</div>')
+
+
+def build_peak_card(district: str, p: dict) -> str:
+    rows = "".join(_peak_row(s, "🏢") for s in p["big"]) +            "".join(_peak_row(s, "✨") for s in p["new"])
+    if not rows:
+        rows = ('<div class="deal-row"><span class="deal-empty">'
+                + ("가격이력 백필 진행 중 — 며칠간 매 실행마다 이어집니다." if p["pending"]
+                   else "표시할 단지 데이터가 아직 없습니다.")
+                + '</span></div>')
+    pend = ('<div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div>'
+            if p["pending"] else
+            '<div class="ld-sum-item ld-n">🏢 거래량 상위 5 (대단지) · ✨ 신축 순 5 · 기준 2021.01~</div>')
+    return f"""
+        <div class="notion-card deal-card" data-type="peak" data-district="{district}">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 {district}</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary">{pend}</div>
+            <div class="deal-list">{rows}</div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 {PEAK_RECENT_MONTHS}개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
+        </div>"""
 
 
 def collect_land(today: datetime) -> dict:
@@ -865,7 +1003,7 @@ def build_notice_card(district: str) -> str:
         </div>"""
 
 
-def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: dict, toheo: dict, today: datetime) -> str:
+def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: dict, toheo: dict, peak: dict, today: datetime) -> str:
     counts = {"news": {"all": sum(len(v) for v in news.values()),
                        **{d: len(news[d]) for d in DISTRICTS}},
               "deal": {"all": sum(len(v) for v in deals.values()),
@@ -875,7 +1013,9 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
               "land": {"all": sum(land[d].get("total", 0) for d in DISTRICTS),
                        **{d: land[d].get("total", 0) for d in DISTRICTS}},
               "toheo": {"all": sum(toheo[d].get("total", 0) for d in DISTRICTS),
-                        **{d: toheo[d].get("total", 0) for d in DISTRICTS}}}
+                        **{d: toheo[d].get("total", 0) for d in DISTRICTS}},
+              "peak": {"all": sum(len(peak[d]["big"]) + len(peak[d]["new"]) for d in DISTRICTS),
+                       **{d: len(peak[d]["big"]) + len(peak[d]["new"]) for d in DISTRICTS}}}
 
     all_news = sorted((a for v in news.values() for a in v), key=lambda x: x["date"], reverse=True)
     cards = "".join(build_news_card(a) for a in all_news) + \
@@ -883,7 +1023,8 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
             "".join(build_deal_card(d, deals[d], today) for d in DISTRICTS) + \
             "".join(build_progress_card(p, d) for d in DISTRICTS for p in progress[d]) + \
             "".join(build_land_card(d, land[d]) for d in DISTRICTS) + \
-            "".join(build_toheo_card(d, toheo[d]) for d in DISTRICTS)
+            "".join(build_toheo_card(d, toheo[d]) for d in DISTRICTS) + \
+            "".join(build_peak_card(d, peak[d]) for d in DISTRICTS)
 
     sidebar = ['<div class="sidebar-item active" data-district="all">🌐 전체</div>']
     sidebar += [f'<div class="sidebar-item" data-district="{d}">📍 {d}</div>' for d in DISTRICTS]
@@ -1010,6 +1151,8 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .th-bars {{ display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-bottom: 2px; }}
         .th-bar {{ width: 9px; background-color: #8aa8d8; border-radius: 2px 2px 0 0; }}
         .th-bars-label {{ font-size: 11.5px; color: #acaba9; margin-bottom: 10px; }}
+        .peak-tag {{ background-color: #e8e3f7; color: #4a3a85; }}
+        .pk-badge {{ flex-shrink: 0; }}
 
         @media (max-width: 768px) {{
             #header {{ padding: 24px 16px 0 16px; }}
@@ -1050,6 +1193,7 @@ __GATE__
                 <div class="tab-btn" data-tab="toheo">🗂️ 토허동향</div>
             </div>
             <div class="tab-row">
+                <div class="tab-btn" data-tab="peak">📊 고점대비</div>
                 <div class="tab-btn" data-tab="lab">🧪 실험실</div>
             </div>
         </div>
@@ -1090,7 +1234,7 @@ __GATE__
             updateDealMap();
             document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : '🧪 실험실 — 준비 중인 기능';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
@@ -1375,10 +1519,11 @@ def main():
     progress, prog_asof = load_progress()
     land = collect_land(today)
     toheo = collect_toheo(today)
+    peak = collect_peak(today)
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
-        f.write(build_html(news, deals, progress, prog_asof, land, toheo, today))
+        f.write(build_html(news, deals, progress, prog_asof, land, toheo, peak, today))
     total_news = sum(len(v) for v in news.values())
     total_deals = sum(len(v) for v in deals.values())
     print(f"\n✅ 생성 완료: {OUTPUT_PATH} (뉴스 {total_news}건 / 실거래 {total_deals}건 / 게시판 바로가기 {len(DISTRICTS)}개)")
