@@ -102,6 +102,26 @@ KAKAO_JS_KEY = os.environ.get("KAKAO_JS_KEY", "")
 
 # 접속 게이트: GitHub Secret LOGIN_ACCOUNTS = "id1:pw1,id2:pw2" (비우면 게이트 비활성화)
 LOGIN_ACCOUNTS = os.environ.get("LOGIN_ACCOUNTS", "")
+# 아래 숫자를 바꿔 커밋하면 모든 사용자가 강제 로그아웃되어 재로그인해야 합니다
+AUTH_SESSION_VERSION = "1"
+
+# 개발 업데이트 이력 (새 항목은 맨 앞에 추가)
+CHANGELOG = [
+    ("2026-07-21", ["📊 '고점대비' 탭 신설 — 구별 대표단지(거래량 상위·신축) 전고점 대비 최근 3개월 회복률",
+                     "🔐 세션 관리 도입 — 관리자 일괄 로그아웃(버전 방식) 및 개별 계정 차단 지원",
+                     "📝 '업데이트' 탭 신설 — 개발 이력 타임라인"]),
+    ("2026-07-20", ["🗂️ '토허동향' 탭 신설 — 서울부동산정보광장 토지거래허가 내역 매일 수집, 구별 수급 지표(7일 증감·14일 추이)와 자체 누적 아카이브"]),
+    ("2026-07-14", ["🧭 실험실 첫 기능 '출장 표본지 최적동선' — 주소 입력만으로 방문 순서 최적화(2-opt)·지도 경로 표시"]),
+    ("2026-07-13", ["🔑 접속 로그인 도입 — 승인 계정만 이용 가능, 기관 심볼(구글컬러) 오프닝 화면",
+                     "📢 상단 공지줄 흐름(마퀴) 효과 적용"]),
+    ("2026-07-12", ["🏗️ '추진현황' 탭 신설 — 관할 85개 정비구역 9단계 진행바(분기 통계 기반, 수시 보정 지원)",
+                     "📐 '지가분석' 탭 신설 — 토지 실거래 ㎡당 단가·용도지역별 중위단가 당월/전월 비교(지가변동률 조사 지원)"]),
+    ("2026-07-11", ["🗺️ 실거래 지도 연동 — 카카오맵에 매매/전세/월세 핀 표시, 구 필터 연동"]),
+    ("2026-07-10", ["🏠 '최근 실거래' 탭 신설 — 국토부 실거래가 API, 구별 아파트 매매/전세/월세 최근 7일 계약분",
+                     "📢 고시공고 탭을 구청 공식 게시판 바로가기로 개편",
+                     "✨ 서비스명 '서울동부지사 AI toolkit'으로 변경, 공지줄 신설"]),
+    ("2026-07-07", ["🚀 최초 구축 — 관할 7개 구 정비사업 뉴스 매일 자동 수집(네이버 API), GitHub Actions 자동 갱신, 모바일 홈화면 앱(PWA) 지원"]),
+]
 
 
 def _auth_hashes() -> list:
@@ -1037,6 +1057,11 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
     ]
     deals_json = json.dumps(deal_points, ensure_ascii=False)
 
+    log_html = "".join(
+        f'<div class="cl-item"><div class="cl-date">{d}</div><ul class="cl-list">'
+        + "".join(f"<li>{html.escape(x)}</li>" for x in items) + "</ul></div>"
+        for d, items in CHANGELOG)
+
     _n = html.escape(UPDATE_NOTICE.strip())
     _dur = max(12, int(len(UPDATE_NOTICE) * 0.45))  # 문구가 길수록 천천히
     notice_bar = ((f'<div class="update-bar"><div class="update-track" style="animation-duration:{_dur}s">'
@@ -1153,6 +1178,12 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .th-bars-label {{ font-size: 11.5px; color: #acaba9; margin-bottom: 10px; }}
         .peak-tag {{ background-color: #e8e3f7; color: #4a3a85; }}
         .pk-badge {{ flex-shrink: 0; }}
+        #log-box {{ display: none; padding: 10px 0 40px 0; max-width: 760px; }}
+        .cl-head {{ font-size: 17px; margin-bottom: 16px; }}
+        .cl-item {{ border-left: 3px solid #e0e0dd; padding: 2px 0 14px 16px; margin-left: 4px; position: relative; }}
+        .cl-item::before {{ content: ''; position: absolute; left: -7px; top: 6px; width: 11px; height: 11px; border-radius: 50%; background-color: #2f6bd8; border: 2px solid #fbfbfa; }}
+        .cl-date {{ font-weight: 700; font-size: 14px; margin-bottom: 6px; }}
+        .cl-list {{ margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.8; color: #37352f; }}
 
         @media (max-width: 768px) {{
             #header {{ padding: 24px 16px 0 16px; }}
@@ -1195,6 +1226,7 @@ __GATE__
             <div class="tab-row">
                 <div class="tab-btn" data-tab="peak">📊 고점대비</div>
                 <div class="tab-btn" data-tab="lab">🧪 실험실</div>
+                <div class="tab-btn" data-tab="log">📝 업데이트</div>
             </div>
         </div>
     </div>
@@ -1211,6 +1243,7 @@ __GATE__
                 <div class="map-legend"><span class="lg lg-매매">● 매매</span> <span class="lg lg-전세">● 전세</span> <span class="lg lg-월세">● 월세</span> — 핀을 누르면 상세 표시</div>
             </div>
             <div id="lab-box">__LAB_HTML__</div>
+            <div id="log-box">__LOG_HTML__</div>
             <div class="card-grid">{cards}</div>
         </div>
     </div>
@@ -1229,12 +1262,13 @@ __GATE__
             document.querySelectorAll('.sidebar-item').forEach(s => {{
                 s.classList.toggle('active', s.dataset.district === district);
                 const name = s.dataset.district === 'all' ? '🌐 전체' : '📍 ' + s.dataset.district;
-                s.textContent = (tab === 'notice' || tab === 'lab') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
+                s.textContent = (tab === 'notice' || tab === 'lab' || tab === 'log') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
             }});
             updateDealMap();
             document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
+            document.getElementById('log-box').style.display = tab === 'log' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : '🧪 실험실 — 준비 중인 기능';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
@@ -1251,9 +1285,11 @@ __GATE__
             if os.path.exists(os.path.join("docs", "logo.png")) else GATE_LOGO_FALLBACK)
     gate = (GATE_BLOCK.replace("__AUTH_HASHES__", json.dumps(hashes)).replace("__GATE_LOGO__", logo)
             if hashes else "")
+    gate = gate.replace("__AUTH_VER__", AUTH_SESSION_VERSION)
     page = page.replace("__GATE__", gate)
     page = page.replace("__PROG_ASOF__", html.escape(prog_asof) or "기준 파일 없음")
     page = page.replace("__LAB_HTML__", LAB_ROUTE_HTML if KAKAO_JS_KEY else LAB_PLACEHOLDER)
+    page = page.replace("__LOG_HTML__", '<div class="cl-head">📝 <b>개발 업데이트 이력</b></div>' + log_html)
     page = page.replace("__DEAL_MAP_JS__", (DEAL_MAP_JS + LAB_ROUTE_JS) if KAKAO_JS_KEY else "function updateDealMap(){}")
     page = page.replace("__DEALS__", deals_json).replace("__KAKAO_JS_KEY__", KAKAO_JS_KEY)
     return page
@@ -1292,6 +1328,7 @@ __GATE_LOGO__
             <button id="gate-btn">접속</button>
             <div id="gate-msg"></div>
         </div>
+        <div class="gate-motto">당신이 정말 원하는 것을 할 수 있는 시간을 벌어주기를 바라며</div>
     </div>
     <style>
         #gate { position: fixed; inset: 0; z-index: 9999; background-color: #fbfbfa;
@@ -1310,10 +1347,13 @@ __GATE_LOGO__
                     font-size: 14px; font-weight: 600; cursor: pointer; }
         #gate-btn:hover { background-color: #1f1e1b; }
         #gate-msg { min-height: 18px; font-size: 12.5px; color: #d94343; text-align: center; }
+        .gate-motto { font-size: 12.5px; color: #acaba9; text-align: center; letter-spacing: 0.2px;
+                      margin-top: -10px; padding: 0 24px; line-height: 1.6; }
     </style>
     <script>
     (function(){
         const HASHES = __AUTH_HASHES__;
+        const VER = '__AUTH_VER__';
         const KEY = 'toolkit_auth';
         const gate = document.getElementById('gate');
         async function sha(t){
@@ -1321,12 +1361,12 @@ __GATE_LOGO__
             return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('');
         }
         function pass(h){
-            try { localStorage.setItem(KEY, JSON.stringify({h: h, exp: Date.now() + 7*24*3600*1000})); } catch(e) {}
+            try { localStorage.setItem(KEY, JSON.stringify({h: h, v: VER, exp: Date.now() + 7*24*3600*1000})); } catch(e) {}
             gate.remove();
         }
         try {
             const s = JSON.parse(localStorage.getItem(KEY) || 'null');
-            if (s && s.exp > Date.now() && HASHES.includes(s.h)) { gate.remove(); return; }
+            if (s && s.v === VER && s.exp > Date.now() && HASHES.includes(s.h)) { gate.remove(); return; }
         } catch(e) {}
         async function tryLogin(){
             const id = document.getElementById('gate-id').value.trim();
