@@ -102,6 +102,8 @@
         .th-bars { display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-bottom: 2px; }
         .th-bar { width: 9px; background-color: #8aa8d8; border-radius: 2px 2px 0 0; }
         .th-bars-label { font-size: 11.5px; color: #acaba9; margin-bottom: 10px; }
+        .peak-tag { background-color: #e8e3f7; color: #4a3a85; }
+        .pk-badge { flex-shrink: 0; }
 
         @media (max-width: 768px) {
             #header { padding: 24px 16px 0 16px; }
@@ -192,8 +194,8 @@
 
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
-        <div class="subtitle">📅 2026-07-21 기준 · 최근 30일 (2026-06-21 ~) · 갱신 2026-07-21 16:41 KST</div>
-        <div class="update-bar"><div class="update-track" style="animation-duration:13s"><span class="update-item">📌 🆕 2026-07-20 · &#x27;토지거래허가내역&#x27; 탭 신설</span><span class="update-item">📌 🆕 2026-07-20 · &#x27;토지거래허가내역&#x27; 탭 신설</span></div></div>
+        <div class="subtitle">📅 2026-07-21 기준 · 최근 30일 (2026-06-21 ~) · 갱신 2026-07-21 19:55 KST</div>
+        <div class="update-bar"><div class="update-track" style="animation-duration:26s"><span class="update-item">📌 🆕 2026-07-10 · &#x27;최근 실거래&#x27; 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공</span><span class="update-item">📌 🆕 2026-07-10 · &#x27;최근 실거래&#x27; 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공</span></div></div>
         <div class="tab-bar">
             <div class="tab-row">
                 <div class="tab-btn active" data-tab="news">📰 뉴스</div>
@@ -206,6 +208,7 @@
                 <div class="tab-btn" data-tab="toheo">🗂️ 토허동향</div>
             </div>
             <div class="tab-row">
+                <div class="tab-btn" data-tab="peak">📊 고점대비</div>
                 <div class="tab-btn" data-tab="lab">🧪 실험실</div>
             </div>
         </div>
@@ -235,6 +238,36 @@
                 <ol id="rt-list"></ol>
                 <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div></div>
             <div class="card-grid">
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 21일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/215/0001259456?sid=101" target="_blank">“신축 못 살바엔”...영끌 막히자 ‘몸테크족’ 몰려간 곳</a></h3>
+            <div class="summary-box">• 신축아파트로 재개발될 가능성 높은 지역에서는 매물이 나오는 즉시 팔려나갈 정도입니다<br>• 지역별로는 광진구, 송파구, 관악구, 동작구 등에서 거래가 크게 늘었고, 매수수요가 몰리다보니 단기간에</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/215/0001259456?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 21일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.newstomato.com/ReadNews.aspx?no=1307773&inflow=N" target="_blank">(현장+)세제개편 발표 임박…강남 ‘대기수요 꿈틀’, 강북 ‘거래 잠잠...</a></h3>
+            <div class="summary-box">• 동시에 정비사업 속도를 높인다는 호재도 상존하기 때문에 수요가 꾸준하다&quot;고 말했습니다<br>• 3%)와 도봉구(-26.8%)는 감소 폭이 서울 평균의 절반에 그쳤습니다</div>
+            <div class="card-footer"><a href="http://www.newstomato.com/ReadNews.aspx?no=1307773&inflow=N" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 21일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160284845425920" target="_blank">강북구, 오현어린이공원 새단장··· 트램폴린등 설치</a></h3>
+            <div class="summary-box">• 강북구(구청장 정창수)는 번3동 &#x27;오현어린이공원&#x27;의 노후 시설을 전면 정비하고, 전 세대가 함께 이용할 수 있는 복합 휴식공간으로 새롭게 단장했다고 21일 밝혔다<br>• 총사업비 7억원을 투입한 이번 정비사업은 기존의</div>
+            <div class="card-footer"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160284845425920" target="_blank">상세 원문 보기 →</a></div>
+        </div>
         <div class="notion-card" data-type="news" data-district="광진구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 광진구</span>
@@ -585,6 +618,16 @@
             <div class="summary-box">• 최근 도시정비사업 시장에서 대형 건설사들의 &#x27;선택과 집중&#x27; 전략이 뚜렷해지고 있다<br>• 공사비 상승과 시장</div>
             <div class="card-footer"><a href="https://www.newspim.com/news/view/20260720000720" target="_blank">상세 원문 보기 →</a></div>
         </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 21일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.4th.kr/news/articleView.html?idxno=2114985" target="_blank">[유통소식] 신세계백화점, 가을학기 아카데미 접수 시작</a></h3>
+            <div class="summary-box">• 브랜드 &#x27;별빛청하&#x27;로 재정비한다고 21일 밝혔다<br>• 기존 제품명은 각각 &#x27;별빛청하 오리지널&#x27;과 &#x27;별빛청하 로제</div>
+            <div class="card-footer"><a href="http://www.4th.kr/news/articleView.html?idxno=2114985" target="_blank">상세 원문 보기 →</a></div>
+        </div>
         <div class="notion-card" data-type="news" data-district="중랑구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 중랑구</span>
@@ -624,16 +667,6 @@
             <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/020/0003735232?sid=102" target="_blank">민선 9기 서울 구청장들 ‘주택 공급’부터 챙겼다</a></h3>
             <div class="summary-box">• 이날 결재와 함께 성동구는 정비사업의 컨트롤타워 역할을 맡을 재개발·재건축 신속관리추진단을 본격 운영한다<br>• 추진단은 도시계획 및 정비사업 분야의 외부 전문가 위원회를 운영하고 사업장별 맞춤형 컨설팅과 주민</div>
             <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/020/0003735232?sid=102" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="광진구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 광진구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 20일</span>
-            </div>
-            <h3 class="news-title"><a href="https://www.iusm.co.kr/news/articleView.html?idxno=1065597" target="_blank">[기고] 오윤의 테라코타 벽화, 울산이 품어 &#x27;문화 도시&#x27;의 품격을 높이...</a></h3>
-            <div class="summary-box">• 최근 서울 광진구 구의동 옛 상업은행 건물에 설치된 그의 테라코타 벽화가 건물 철거로 인해 사라질 위기에<br>• 서울의 재개발 현장에서 사라져 버린다면 이는 우리 문화예술계의 뼈아픈 손실이 될 것이다</div>
-            <div class="card-footer"><a href="https://www.iusm.co.kr/news/articleView.html?idxno=1065597" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="도봉구">
             <div class="card-meta">
@@ -764,16 +797,6 @@
             <h3 class="news-title"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160285169144213" target="_blank">노원구, 민선9기 ‘공약 공감 토크’ 개최</a></h3>
             <div class="summary-box">• (사진=노원구청 제공)  노원구(구청장 서준오)가 최근 구청 대강당에서 민선 9기 주요<br>• 공약을 구민과 공유하고</div>
             <div class="card-footer"><a href="https://www.siminilbo.co.kr/news/newsview.php?ncode=1160285169144213" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="광진구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 광진구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 20일</span>
-            </div>
-            <h3 class="news-title"><a href="https://www.smartbizn.com/news/articleView.html?idxno=148899" target="_blank">서울은 웃고 수도권은 식었다···아파트 경매시장 &#x27;선별 투자&#x27; 뚜렷</a></h3>
-            <div class="summary-box">• 광진구 자양동 우성아파트는 감정가 대비 147.3%에 낙찰됐고, 금천구 독산주공14단지는 123.9%를 기록하며 높은 가격 경쟁력을 입증했다<br>• 모두 리모델링이나 재건축 가능성이 부각되는 단지라는 공통점을 갖고 있다</div>
-            <div class="card-footer"><a href="https://www.smartbizn.com/news/articleView.html?idxno=148899" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="노원구">
             <div class="card-meta">
@@ -1235,16 +1258,6 @@
             <div class="summary-box">• 및 재건축 추진 단지 중심으로 상승 계약 체결되며 서울 전체 상승했다&quot;고 분석했다<br>• 이번 주 수도권</div>
             <div class="card-footer"><a href="http://www.areyou.co.kr/news/articleView.html?idxno=94525" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="강북구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 강북구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 16일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/015/0005310755?sid=101" target="_blank">&quot;한 달 만에 1억 넘게 뛰었대&quot;…집값 폭주, 이 동네로 번졌다</a></h3>
-            <div class="summary-box">• 잠실·문정동 재건축 추진 단지가 가격을 끌어올렸다<br>• 영등포구는 대림·신길동 위주로 0.30% 상승했다</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/015/0005310755?sid=101" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="도봉구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 도봉구</span>
@@ -1254,16 +1267,6 @@
             <h3 class="news-title"><a href="https://www.newdaily.co.kr/site/data/html/2026/07/16/2026071600142.html" target="_blank">&#x27;서남권&#x27; 준공업지역 32곳 정비사업 추진 … 용적률 400% 사업성 &#x27;쑥&#x27;</a></h3>
             <div class="summary-box">• 도봉구에 일부 지정된 면적까지 합하면 19.97㎢ 규모다<br>• 과거 공업 기능은 이미 약해졌는데도 관련 규제로 사업성이 떨어져 재개발·재건축도 막혔다는 게 서울시의 설명이다</div>
             <div class="card-footer"><a href="https://www.newdaily.co.kr/site/data/html/2026/07/16/2026071600142.html" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="도봉구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 도봉구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 16일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/016/0002671097?sid=101" target="_blank">오세훈 “문래·양평·성수 등서 용적률 완화로 2.7만가구 공급”…준공...</a></h3>
-            <div class="summary-box">• 사업성이 부족해 멈췄거나 지연됐던 정비사업이 다시 움직이면서 준공업지역 내 32개 사업지에서 약<br>• 전체 약 1997만㎡ 가운데 82%가 영등포·구로·강서·금천·양천구 등 서남권에 집중돼 있고, 성동·도봉구에도 일부</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/016/0002671097?sid=101" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
             <div class="card-meta">
@@ -2507,10 +2510,10 @@
                 <span class="tag toheo-tag">🗂️ 토지거래허가 동향 (수급 지표)</span>
             </div>
             <div class="ld-summary">
-                <div class="ld-sum-item">최근 7일 허가 <b>23건</b> <span class="ld-down">직전 7일 대비 -6건</span></div>
-                <div class="ld-sum-item ld-n">누적 아카이브 245건</div>
+                <div class="ld-sum-item">최근 7일 허가 <b>25건</b> <span class="ld-down">직전 7일 대비 -4건</span></div>
+                <div class="ld-sum-item ld-n">누적 아카이브 247건</div>
             </div>
-            <div class="th-bars"><span class="th-bar" style="height:14px" title="07-08 · 7건"></span><span class="th-bar" style="height:3px" title="07-09 · 0건"></span><span class="th-bar" style="height:18px" title="07-10 · 9건"></span><span class="th-bar" style="height:3px" title="07-11 · 0건"></span><span class="th-bar" style="height:3px" title="07-12 · 0건"></span><span class="th-bar" style="height:3px" title="07-13 · 0건"></span><span class="th-bar" style="height:26px" title="07-14 · 13건"></span><span class="th-bar" style="height:4px" title="07-15 · 2건"></span><span class="th-bar" style="height:16px" title="07-16 · 8건"></span><span class="th-bar" style="height:3px" title="07-17 · 0건"></span><span class="th-bar" style="height:3px" title="07-18 · 0건"></span><span class="th-bar" style="height:3px" title="07-19 · 0건"></span><span class="th-bar" style="height:3px" title="07-20 · 0건"></span><span class="th-bar" style="height:26px" title="07-21 · 13건"></span></div>
+            <div class="th-bars"><span class="th-bar" style="height:12px" title="07-08 · 7건"></span><span class="th-bar" style="height:3px" title="07-09 · 0건"></span><span class="th-bar" style="height:15px" title="07-10 · 9건"></span><span class="th-bar" style="height:3px" title="07-11 · 0건"></span><span class="th-bar" style="height:3px" title="07-12 · 0건"></span><span class="th-bar" style="height:3px" title="07-13 · 0건"></span><span class="th-bar" style="height:22px" title="07-14 · 13건"></span><span class="th-bar" style="height:3px" title="07-15 · 2건"></span><span class="th-bar" style="height:13px" title="07-16 · 8건"></span><span class="th-bar" style="height:3px" title="07-17 · 0건"></span><span class="th-bar" style="height:3px" title="07-18 · 0건"></span><span class="th-bar" style="height:3px" title="07-19 · 0건"></span><span class="th-bar" style="height:3px" title="07-20 · 0건"></span><span class="th-bar" style="height:26px" title="07-21 · 15건"></span></div>
             <div class="th-bars-label">최근 14일 일별 허가 건수</div>
             <div class="deal-list"><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 자양동 516</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 중곡동 253-8</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 자양동 810</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 자양동 784-1</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 구의동 631-1</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 중곡동 190-29</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 중곡동 681</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 중곡동 240-10</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 중곡동 255-21</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">광진구 군자동 360-20</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div></div>
             <div class="card-footer">출처: <a href="https://land.seoul.go.kr/land/other/contractStatus.do" target="_blank">서울부동산정보광장 토지거래허가 내역</a> (K-Geo 연계, 허가일 기준) · 가격정보가 없는 활동량 지표로, 수급 방향성 참고용입니다</div>
@@ -2563,10 +2566,10 @@
                 <span class="tag toheo-tag">🗂️ 토지거래허가 동향 (수급 지표)</span>
             </div>
             <div class="ld-summary">
-                <div class="ld-sum-item">최근 7일 허가 <b>143건</b> <span class="ld-up">직전 7일 대비 +24건</span></div>
-                <div class="ld-sum-item ld-n">누적 아카이브 1279건</div>
+                <div class="ld-sum-item">최근 7일 허가 <b>144건</b> <span class="ld-up">직전 7일 대비 +25건</span></div>
+                <div class="ld-sum-item ld-n">누적 아카이브 1280건</div>
             </div>
-            <div class="th-bars"><span class="th-bar" style="height:3px" title="07-08 · 2건"></span><span class="th-bar" style="height:24px" title="07-09 · 44건"></span><span class="th-bar" style="height:14px" title="07-10 · 27건"></span><span class="th-bar" style="height:3px" title="07-11 · 0건"></span><span class="th-bar" style="height:3px" title="07-12 · 0건"></span><span class="th-bar" style="height:8px" title="07-13 · 16건"></span><span class="th-bar" style="height:16px" title="07-14 · 30건"></span><span class="th-bar" style="height:12px" title="07-15 · 22건"></span><span class="th-bar" style="height:26px" title="07-16 · 47건"></span><span class="th-bar" style="height:3px" title="07-17 · 0건"></span><span class="th-bar" style="height:3px" title="07-18 · 0건"></span><span class="th-bar" style="height:3px" title="07-19 · 0건"></span><span class="th-bar" style="height:16px" title="07-20 · 29건"></span><span class="th-bar" style="height:24px" title="07-21 · 45건"></span></div>
+            <div class="th-bars"><span class="th-bar" style="height:3px" title="07-08 · 2건"></span><span class="th-bar" style="height:24px" title="07-09 · 44건"></span><span class="th-bar" style="height:14px" title="07-10 · 27건"></span><span class="th-bar" style="height:3px" title="07-11 · 0건"></span><span class="th-bar" style="height:3px" title="07-12 · 0건"></span><span class="th-bar" style="height:8px" title="07-13 · 16건"></span><span class="th-bar" style="height:16px" title="07-14 · 30건"></span><span class="th-bar" style="height:12px" title="07-15 · 22건"></span><span class="th-bar" style="height:26px" title="07-16 · 47건"></span><span class="th-bar" style="height:3px" title="07-17 · 0건"></span><span class="th-bar" style="height:3px" title="07-18 · 0건"></span><span class="th-bar" style="height:3px" title="07-19 · 0건"></span><span class="th-bar" style="height:16px" title="07-20 · 29건"></span><span class="th-bar" style="height:25px" title="07-21 · 46건"></span></div>
             <div class="th-bars-label">최근 14일 일별 허가 건수</div>
             <div class="deal-list"><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 중계동 514</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 중계동 366</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 공릉동 747</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 월계동 923</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 상계동 637</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 상계동 720</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 월계동 18</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 중계동 600</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 중계동 504-1</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">노원구 상계동 1256</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div></div>
             <div class="card-footer">출처: <a href="https://land.seoul.go.kr/land/other/contractStatus.do" target="_blank">서울부동산정보광장 토지거래허가 내역</a> (K-Geo 연계, 허가일 기준) · 가격정보가 없는 활동량 지표로, 수급 방향성 참고용입니다</div>
@@ -2584,12 +2587,75 @@
             <div class="th-bars-label">최근 14일 일별 허가 건수</div>
             <div class="deal-list"><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 수유동 130-43</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 148-119</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 760</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 656</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 234</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 242</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 658</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 204</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-21</span><span class="deal-name">강북구 번동 133-1</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-16</span><span class="deal-name">강북구 미아동 791-1941</span><span class="ld-tagchip">대</span><span class="deal-spec">주택임대사업토지</span></div></div>
             <div class="card-footer">출처: <a href="https://land.seoul.go.kr/land/other/contractStatus.do" target="_blank">서울부동산정보광장 토지거래허가 내역</a> (K-Geo 연계, 허가일 기준) · 가격정보가 없는 활동량 지표로, 수급 방향성 참고용입니다</div>
+        </div>
+        <div class="notion-card deal-card" data-type="peak" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary"><div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div></div>
+            <div class="deal-list"><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">행당동 행당한진타운</span><span class="ld-tagchip">2000년</span><span class="ld-tagchip">고점 1,951만/㎡ (22.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">행당동 대림e-편한세상</span><span class="ld-tagchip">2000년</span><span class="ld-tagchip">고점 1,775만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">하왕십리동 센트라스</span><span class="ld-tagchip">2016년</span><span class="ld-tagchip">고점 2,305만/㎡ (21.12)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">금호동1가 이편한세상금호파크힐스</span><span class="ld-tagchip">2019년</span><span class="ld-tagchip">고점 2,500만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">행당동 서울숲 한신 더 휴</span><span class="ld-tagchip">2003년</span><span class="ld-tagchip">고점 2,052만/㎡ (21.08)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">성수동1가 아크로서울포레스트</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 3,508만/㎡ (21.02)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">하왕십리동 왕십리지음재</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,414만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">상왕십리동 센트럴큐브</span><span class="ld-tagchip">2019년</span><span class="ld-tagchip">고점 1,269만/㎡ (21.04)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">행당동 서울숲리버뷰자이</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 2,530만/㎡ (22.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">금호동4가 힐스테이트서울숲리버</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 2,378만/㎡ (22.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div></div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 3개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="peak" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary"><div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div></div>
+            <div class="deal-list"><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">구의동 현대프라임</span><span class="ld-tagchip">1997년</span><span class="ld-tagchip">고점 2,072만/㎡ (22.03)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">자양동 더샵스타시티</span><span class="ld-tagchip">2007년</span><span class="ld-tagchip">고점 1,683만/㎡ (21.02)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">광장동 현대파크빌</span><span class="ld-tagchip">2000년</span><span class="ld-tagchip">고점 2,122만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">광장동 청구</span><span class="ld-tagchip">1996년</span><span class="ld-tagchip">고점 1,926만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">구의동 래미안파크스위트</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 2,250만/㎡ (21.06)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">자양동 자양호반써밋</span><span class="ld-tagchip">2021년</span><span class="ld-tagchip">고점 1,493만/㎡ (22.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">화양동 신원리브웰화양동주상복합</span><span class="ld-tagchip">2019년</span><span class="ld-tagchip">고점 1,303만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">화양동 아스하임(111-102)</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 1,374만/㎡ (21.03)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">자양동 명성</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 1,147만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">구의동 강변에스케이뷰</span><span class="ld-tagchip">2017년</span><span class="ld-tagchip">고점 1,673만/㎡ (21.05)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div></div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 3개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="peak" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary"><div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div></div>
+            <div class="deal-list"><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">장안동 장안현대홈타운(336)</span><span class="ld-tagchip">2003년</span><span class="ld-tagchip">고점 1,454만/㎡ (21.11)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">전농동 전농SK</span><span class="ld-tagchip">2000년</span><span class="ld-tagchip">고점 1,424만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">이문동 쌍용</span><span class="ld-tagchip">2000년</span><span class="ld-tagchip">고점 1,341만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">답십리동 래미안위브</span><span class="ld-tagchip">2014년</span><span class="ld-tagchip">고점 2,100만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">답십리동 엘림스퀘어3</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,167만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">제기동 건영스타밸리</span><span class="ld-tagchip">2021년</span><span class="ld-tagchip">고점 934만/㎡ (21.04)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">회기동 민족통일MJ캠퍼스경희대2차</span><span class="ld-tagchip">2021년</span><span class="ld-tagchip">고점 1,963만/㎡ (21.05)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">장안동 에스아이팰리스장안센텀</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,476만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">답십리동 답십리엘림퍼스트</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,321만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">용두동 동대문베네스트</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,413만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div></div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 3개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="peak" data-district="중랑구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 중랑구</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary"><div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div></div>
+            <div class="deal-list"><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">신내동 신내6대주</span><span class="ld-tagchip">1996년</span><span class="ld-tagchip">고점 1,302만/㎡ (21.11)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">신내동 신내9진흥</span><span class="ld-tagchip">1996년</span><span class="ld-tagchip">고점 1,313만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">면목동 면목한신</span><span class="ld-tagchip">1987년</span><span class="ld-tagchip">고점 1,203만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">중화동 한신아파트상가동유치원동(103~109)</span><span class="ld-tagchip">1997년</span><span class="ld-tagchip">고점 1,390만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">묵동 신내</span><span class="ld-tagchip">1996년</span><span class="ld-tagchip">고점 1,298만/㎡ (21.11)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">면목동 유진뜨레지움</span><span class="ld-tagchip">2021년</span><span class="ld-tagchip">고점 1,137만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">상봉동 상봉힐스테이</span><span class="ld-tagchip">2021년</span><span class="ld-tagchip">고점 1,768만/㎡ (22.02)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">면목동 사가정센트럴아이파크</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,720만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">망우동 세움삼익플라주</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,003만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">면목동 라온프라이빗</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,205만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div></div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 3개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="peak" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary"><div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div></div>
+            <div class="deal-list"><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">도봉동 한신</span><span class="ld-tagchip">1995년</span><span class="ld-tagchip">고점 838만/㎡ (21.11)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">방학동 신동아아파트1</span><span class="ld-tagchip">1986년</span><span class="ld-tagchip">고점 1,041만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">쌍문동 한양2</span><span class="ld-tagchip">1988년</span><span class="ld-tagchip">고점 1,149만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">창동 주공17단지</span><span class="ld-tagchip">1989년</span><span class="ld-tagchip">고점 1,509만/㎡ (21.08)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">도봉동 서원</span><span class="ld-tagchip">1996년</span><span class="ld-tagchip">고점 1,037만/㎡ (21.11)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">창동 스마트트라움</span><span class="ld-tagchip">2021년</span><span class="ld-tagchip">고점 1,033만/㎡ (21.08)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">방학동 방학지음재힐스</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 908만/㎡ (21.06)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">쌍문동 도봉금강아미움파크타운</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 767만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">방학동 송학휴스테이</span><span class="ld-tagchip">2016년</span><span class="ld-tagchip">고점 641만/㎡ (21.12)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">쌍문동 그린힐스아파트</span><span class="ld-tagchip">2015년</span><span class="ld-tagchip">고점 616만/㎡ (21.04)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div></div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 3개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="peak" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary"><div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div></div>
+            <div class="deal-list"><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">중계동 중계그린1단지</span><span class="ld-tagchip">1990년</span><span class="ld-tagchip">고점 1,452만/㎡ (21.12)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">공릉동 태강아파트(아이파크)</span><span class="ld-tagchip">1999년</span><span class="ld-tagchip">고점 1,301만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">월계동 주공2</span><span class="ld-tagchip">1992년</span><span class="ld-tagchip">고점 1,242만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">상계동 상계주공9(고층)</span><span class="ld-tagchip">1988년</span><span class="ld-tagchip">고점 1,384만/㎡ (21.11)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">상계동 벽산</span><span class="ld-tagchip">1989년</span><span class="ld-tagchip">고점 1,209만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">공릉동 태릉해링턴플레이스</span><span class="ld-tagchip">2022년</span><span class="ld-tagchip">고점 1,627만/㎡ (22.02)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">상계동 노원센트럴푸르지오</span><span class="ld-tagchip">2021년</span><span class="ld-tagchip">고점 1,441만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">월계동 월계센트럴아이파크</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,462만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">상계동 포레나노원</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 1,750만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">중계동 현대(6차)</span><span class="ld-tagchip">2018년</span><span class="ld-tagchip">고점 1,054만/㎡ (21.09)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div></div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 3개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
+        </div>
+        <div class="notion-card deal-card" data-type="peak" data-district="강북구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 강북구</span>
+                <span class="tag peak-tag">📊 전고점 대비 회복률</span>
+            </div>
+            <div class="ld-summary"><div class="ld-sum-item ld-flat">⏳ 2021.01~ 가격이력 백필 진행 중 · 완료 전까지 수치가 매일 보강됩니다</div></div>
+            <div class="deal-list"><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">미아동 에스케이북한산시티</span><span class="ld-tagchip">2004년</span><span class="ld-tagchip">고점 1,231만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">번동 주공1단지</span><span class="ld-tagchip">1991년</span><span class="ld-tagchip">고점 1,435만/㎡ (21.08)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">미아동 삼각산아이원</span><span class="ld-tagchip">2003년</span><span class="ld-tagchip">고점 1,062만/㎡ (21.10)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">미아동 두산위브트레지움</span><span class="ld-tagchip">2011년</span><span class="ld-tagchip">고점 1,335만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">🏢</span><span class="deal-name">미아동 벽산라이브파크</span><span class="ld-tagchip">2004년</span><span class="ld-tagchip">고점 1,084만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">수유동 한원힐트리움수유</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 887만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">수유동 북한산스카이뷰아파트</span><span class="ld-tagchip">2020년</span><span class="ld-tagchip">고점 790만/㎡ (21.01)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">미아동 꿈의숲해링턴플레이스</span><span class="ld-tagchip">2019년</span><span class="ld-tagchip">고점 1,442만/㎡ (21.07)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">미아동 꿈의숲롯데캐슬</span><span class="ld-tagchip">2017년</span><span class="ld-tagchip">고점 1,451만/㎡ (21.03)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div><div class="deal-row"><span class="pk-badge">✨</span><span class="deal-name">수유동 수유프리미어엠</span><span class="ld-tagchip">2016년</span><span class="ld-tagchip">고점 747만/㎡ (21.02)</span><span class="deal-spec">최근 3개월 거래 없음</span><span class="deal-price ld-flat">—</span></div></div>
+            <div class="card-footer">산식: 단지별 월중위 ㎡당가의 역대 최고점 대비 최근 3개월 가중평균 비율 · 국토부 실거래가 기반 자체 가공치로 KB·부동산원 지수와 다를 수 있음 · 대단지는 거래건수 상위(세대수 근사)</div>
         </div></div>
         </div>
     </div>
 
     <script>
-        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "deal": {"all": 244, "성동구": 40, "광진구": 22, "동대문구": 40, "중랑구": 40, "도봉구": 40, "노원구": 40, "강북구": 22}, "prog": {"all": 85, "성동구": 15, "광진구": 7, "동대문구": 27, "중랑구": 11, "도봉구": 6, "노원구": 9, "강북구": 10}, "land": {"all": 618, "성동구": 37, "광진구": 155, "동대문구": 132, "중랑구": 97, "도봉구": 25, "노원구": 78, "강북구": 94}, "toheo": {"all": 3323, "성동구": 257, "광진구": 245, "동대문구": 404, "중랑구": 374, "도봉구": 480, "노원구": 1279, "강북구": 284}};
+        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "deal": {"all": 244, "성동구": 40, "광진구": 22, "동대문구": 40, "중랑구": 40, "도봉구": 40, "노원구": 40, "강북구": 22}, "prog": {"all": 85, "성동구": 15, "광진구": 7, "동대문구": 27, "중랑구": 11, "도봉구": 6, "노원구": 9, "강북구": 10}, "land": {"all": 618, "성동구": 37, "광진구": 155, "동대문구": 132, "중랑구": 97, "도봉구": 25, "노원구": 78, "강북구": 94}, "toheo": {"all": 3326, "성동구": 257, "광진구": 247, "동대문구": 404, "중랑구": 374, "도봉구": 480, "노원구": 1280, "강북구": 284}, "peak": {"all": 70, "성동구": 10, "광진구": 10, "동대문구": 10, "중랑구": 10, "도봉구": 10, "노원구": 10, "강북구": 10}};
         let tab = 'news', district = 'all';
 
         function render() {
@@ -2607,7 +2673,7 @@
             updateDealMap();
             document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — ★(26년 3월기준) 서울시 정비사업 추진현황 · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — ★(26년 3월기준) 서울시 정비사업 추진현황 · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : '🧪 실험실 — 준비 중인 기능';
         }
 
         document.querySelectorAll('.tab-btn').forEach(b =>
