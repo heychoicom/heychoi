@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-22 · '공동주택 가상 공시가격(안)' 탭 신설"
+UPDATE_NOTICE = "🆕 2026-07-10 · '최근 실거래' 탭 신설 — 구별 아파트 매매/전세/월세 최근 7일 계약분 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -107,6 +107,8 @@ AUTH_SESSION_VERSION = "1"
 
 # 개발 업데이트 이력 (새 항목은 맨 앞에 추가)
 CHANGELOG = [
+    ("2026-07-22", ["🏷️ 'AI미공시' 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 (비교단지 공시÷시세 비율 역산 방식, 근거표 제공)",
+                     "🧭 메뉴 4×3 개편 — 실험실 4줄째 이동, 확장 슬롯 2칸 확보"]),
     ("2026-07-21", ["📊 '고점대비' 탭 신설 — 구별 대표단지(거래량 상위·신축) 전고점 대비 최근 3개월 회복률",
                      "🔐 세션 관리 도입 — 관리자 일괄 로그아웃(버전 방식) 및 개별 계정 차단 지원",
                      "📝 '업데이트' 탭 신설 — 개발 이력 타임라인"]),
@@ -1212,7 +1214,8 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .rt-note {{ font-size: 12px; color: #acaba9; }}
         .rt-pin {{ background-color: #2f6bd8; color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }}
         .rt-pin-start {{ background-color: #d94343; }}
-        .lab-hr {{ border: none; border-top: 1px solid #eaeaea; margin: 34px 0 22px 0; }}
+        .tab-empty {{ visibility: hidden; pointer-events: none; }}
+        #gongsi-box {{ display: none; padding: 10px 0 40px 0; max-width: 760px; }}
         .gs-form {{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }}
         .gs-form select, .gs-form input {{ padding: 10px 12px; border: 1px solid #e0e0dd; border-radius: 8px; font-size: 13.5px; font-family: inherit; background-color: #fff; }}
         .gs-form button {{ grid-column: 1 / -1; padding: 10px; border: none; border-radius: 8px; background-color: #37352f; color: #fff; font-weight: 600; cursor: pointer; }}
@@ -1273,8 +1276,13 @@ __GATE__
             </div>
             <div class="tab-row">
                 <div class="tab-btn" data-tab="peak">📊 고점대비</div>
-                <div class="tab-btn" data-tab="lab">🧪 실험실</div>
+                <div class="tab-btn" data-tab="gongsi">🏷️ AI미공시</div>
                 <div class="tab-btn" data-tab="log">📝 업데이트</div>
+            </div>
+            <div class="tab-row">
+                <div class="tab-btn" data-tab="lab">🧪 실험실</div>
+                <div class="tab-btn tab-empty"></div>
+                <div class="tab-btn tab-empty"></div>
             </div>
         </div>
     </div>
@@ -1291,6 +1299,7 @@ __GATE__
                 <div class="map-legend"><span class="lg lg-매매">● 매매</span> <span class="lg lg-전세">● 전세</span> <span class="lg lg-월세">● 월세</span> — 핀을 누르면 상세 표시</div>
             </div>
             <div id="lab-box">__LAB_HTML__</div>
+            <div id="gongsi-box">__GONGSI_HTML__</div>
             <div id="log-box">__LOG_HTML__</div>
             <div class="card-grid">{cards}</div>
         </div>
@@ -1310,13 +1319,14 @@ __GATE__
             document.querySelectorAll('.sidebar-item').forEach(s => {{
                 s.classList.toggle('active', s.dataset.district === district);
                 const name = s.dataset.district === 'all' ? '🌐 전체' : '📍 ' + s.dataset.district;
-                s.textContent = (tab === 'notice' || tab === 'lab' || tab === 'log') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
+                s.textContent = (tab === 'notice' || tab === 'lab' || tab === 'log' || tab === 'gongsi') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
             }});
             updateDealMap();
             document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
             document.getElementById('log-box').style.display = tab === 'log' ? 'block' : 'none';
+            document.getElementById('gongsi-box').style.display = tab === 'gongsi' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : tab === 'gongsi' ? '🏷️ AI미공시 — 신축 공동주택 가상 공시가격(안) 모의 산정' : '🧪 실험실 — 준비 중인 기능';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
@@ -1337,8 +1347,9 @@ __GATE__
     page = page.replace("__GATE__", gate)
     page = page.replace("__PROG_ASOF__", html.escape(prog_asof) or "기준 파일 없음")
     page = page.replace("__LAB_HTML__", LAB_ROUTE_HTML if KAKAO_JS_KEY else LAB_PLACEHOLDER)
+    page = page.replace("__GONGSI_HTML__", GONGSI_TOOL_HTML)
     page = page.replace("__LOG_HTML__", '<div class="cl-head">📝 <b>개발 업데이트 이력</b></div>' + log_html)
-    page = page.replace("__DEAL_MAP_JS__", (DEAL_MAP_JS + LAB_ROUTE_JS) if KAKAO_JS_KEY else "function updateDealMap(){}")
+    page = page.replace("__DEAL_MAP_JS__", ((DEAL_MAP_JS + LAB_ROUTE_JS) if KAKAO_JS_KEY else "function updateDealMap(){}") + GONGSI_JS)
     gongsi_comps = {gu: sorted(peak[gu].get("comps", []), key=lambda x: -x["mkt"]) for gu in DISTRICTS}
     page = page.replace("__GONGSI__", json.dumps(gongsi_comps, ensure_ascii=False))
     page = page.replace("__DEALS__", deals_json).replace("__KAKAO_JS_KEY__", KAKAO_JS_KEY)
@@ -1360,8 +1371,50 @@ LAB_ROUTE_HTML = """
                 <div id="rt-msg"></div>
                 <div id="rt-map"></div>
                 <ol id="rt-list"></ol>
-                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div>
+                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div>"""
 
+GONGSI_JS = r"""
+        const GONGSI = __GONGSI__;
+        function gsMedian(a) { const s = [...a].sort((x, y) => x - y); const n = s.length;
+            return n ? (n % 2 ? s[(n-1)/2] : (s[n/2-1] + s[n/2]) / 2) : 0; }
+        function gsRun() {
+            const gu = document.getElementById('gs-gu').value;
+            const by = parseInt(document.getElementById('gs-by').value);
+            const mkt = parseFloat(document.getElementById('gs-mkt').value);
+            const area = parseFloat(document.getElementById('gs-area').value);
+            const ask = parseFloat(document.getElementById('gs-ask').value);
+            const R = document.getElementById('gs-result'), C = document.getElementById('gs-comps');
+            const all = GONGSI[gu] || [];
+            if (!all.length) { R.innerHTML = '<div class="gs-err">공시가격 데이터가 없습니다 — data/공시가격_관할.csv 업로드 및 가격이력 백필 완료 후 이용 가능해요.</div>'; C.innerHTML=''; return; }
+            if (!by || !mkt) { R.innerHTML = '<div class="gs-err">준공연도와 시세 ㎡당가를 입력하세요.</div>'; C.innerHTML=''; return; }
+            let comps = all.filter(c => c.by && Math.abs(c.by - by) <= 7);
+            let note = '연식 ±7년 비교단지';
+            if (comps.length < 3) { comps = all; note = '유사 연식 부족 — 구 전체 비교단지'; }
+            const ratio = gsMedian(comps.map(c => c.r));
+            const est = mkt * ratio;  // 만원/㎡
+            let out = '<div class="gs-box"><div class="gs-main">가상 공시가격(안) <b>' + Math.round(est).toLocaleString() + '만원/㎡</b>'
+                    + ' <span class="ld-n">(적용 비율 ' + (ratio*100).toFixed(1) + '% · ' + note + ' ' + comps.length + '곳 중위)</span></div>';
+            if (area) {
+                const tot = est * area;  // 만원
+                out += '<div>전용 ' + area + '㎡ 예시: <b>' + (tot >= 10000 ? (tot/10000).toFixed(2) + '억원' : Math.round(tot).toLocaleString() + '만원') + '</b></div>';
+            }
+            if (ask) {
+                const gap = (ask - mkt) / mkt * 100;
+                out += '<div class="ld-n">매물 호가 참고: 시세 대비 ' + (gap >= 0 ? '+' : '') + gap.toFixed(1) + '% (호가는 산정에 미반영)</div>';
+            }
+            out += '</div>';
+            R.innerHTML = out;
+            const rows = comps.slice().sort((a, b) => Math.abs(a.by - by) - Math.abs(b.by - by)).slice(0, 8)
+                .map(c => '<div class="deal-row"><span class="deal-name">' + c.dp + '</span>'
+                    + '<span class="ld-tagchip">' + (c.by || '-') + '년</span>'
+                    + '<span class="deal-spec">공시 ' + Math.round(c.g/10000).toLocaleString() + '만/㎡ · 시세 ' + Math.round(c.mkt/10000).toLocaleString() + '만/㎡</span>'
+                    + '<span class="deal-price">' + (c.r*100).toFixed(1) + '%</span></div>').join('');
+            C.innerHTML = '<div class="deal-list">' + rows + '</div>';
+        }
+        document.getElementById('gs-btn') && document.getElementById('gs-btn').addEventListener('click', gsRun);
+"""
+
+GONGSI_TOOL_HTML = """
                 <hr class="lab-hr">
                 <div class="rt-head">🏷️ <b>신축 공동주택 가상 공시가격(안)</b> <span class="rt-beta">실험실 β</span></div>
                 <div class="rt-guide">인근 유사 연식 비교단지들의 <b>공시가격÷시세 비율(현실화 수준)</b>을 역산해, 신축 단지의 시세에 적용한 모의 산정치입니다. 공식 산정 절차·기준과 무관한 참고용입니다.</div>
@@ -1604,45 +1657,6 @@ LAB_ROUTE_JS = r"""
             msg.textContent = '✅ 총 ' + (order.length - 1 + (roundTrip ? 1 : 0)) + '개 구간 · 직선거리 합계 약 ' + total.toFixed(1) + 'km';
         }
         document.getElementById('rt-btn') && document.getElementById('rt-btn').addEventListener('click', rtRun);
-
-        const GONGSI = __GONGSI__;
-        function gsMedian(a) { const s = [...a].sort((x, y) => x - y); const n = s.length;
-            return n ? (n % 2 ? s[(n-1)/2] : (s[n/2-1] + s[n/2]) / 2) : 0; }
-        function gsRun() {
-            const gu = document.getElementById('gs-gu').value;
-            const by = parseInt(document.getElementById('gs-by').value);
-            const mkt = parseFloat(document.getElementById('gs-mkt').value);
-            const area = parseFloat(document.getElementById('gs-area').value);
-            const ask = parseFloat(document.getElementById('gs-ask').value);
-            const R = document.getElementById('gs-result'), C = document.getElementById('gs-comps');
-            const all = GONGSI[gu] || [];
-            if (!all.length) { R.innerHTML = '<div class="gs-err">공시가격 데이터가 없습니다 — data/공시가격_관할.csv 업로드 및 가격이력 백필 완료 후 이용 가능해요.</div>'; C.innerHTML=''; return; }
-            if (!by || !mkt) { R.innerHTML = '<div class="gs-err">준공연도와 시세 ㎡당가를 입력하세요.</div>'; C.innerHTML=''; return; }
-            let comps = all.filter(c => c.by && Math.abs(c.by - by) <= 7);
-            let note = '연식 ±7년 비교단지';
-            if (comps.length < 3) { comps = all; note = '유사 연식 부족 — 구 전체 비교단지'; }
-            const ratio = gsMedian(comps.map(c => c.r));
-            const est = mkt * ratio;  // 만원/㎡
-            let out = '<div class="gs-box"><div class="gs-main">가상 공시가격(안) <b>' + Math.round(est).toLocaleString() + '만원/㎡</b>'
-                    + ' <span class="ld-n">(적용 비율 ' + (ratio*100).toFixed(1) + '% · ' + note + ' ' + comps.length + '곳 중위)</span></div>';
-            if (area) {
-                const tot = est * area;  // 만원
-                out += '<div>전용 ' + area + '㎡ 예시: <b>' + (tot >= 10000 ? (tot/10000).toFixed(2) + '억원' : Math.round(tot).toLocaleString() + '만원') + '</b></div>';
-            }
-            if (ask) {
-                const gap = (ask - mkt) / mkt * 100;
-                out += '<div class="ld-n">매물 호가 참고: 시세 대비 ' + (gap >= 0 ? '+' : '') + gap.toFixed(1) + '% (호가는 산정에 미반영)</div>';
-            }
-            out += '</div>';
-            R.innerHTML = out;
-            const rows = comps.slice().sort((a, b) => Math.abs(a.by - by) - Math.abs(b.by - by)).slice(0, 8)
-                .map(c => '<div class="deal-row"><span class="deal-name">' + c.dp + '</span>'
-                    + '<span class="ld-tagchip">' + (c.by || '-') + '년</span>'
-                    + '<span class="deal-spec">공시 ' + Math.round(c.g/10000).toLocaleString() + '만/㎡ · 시세 ' + Math.round(c.mkt/10000).toLocaleString() + '만/㎡</span>'
-                    + '<span class="deal-price">' + (c.r*100).toFixed(1) + '%</span></div>').join('');
-            C.innerHTML = '<div class="deal-list">' + rows + '</div>';
-        }
-        document.getElementById('gs-btn') && document.getElementById('gs-btn').addEventListener('click', gsRun);
 """
 
 
