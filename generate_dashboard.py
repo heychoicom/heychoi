@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🆕 2026-07-21 · '고점대비' 탭 신설 — 테스트 작업 진행중"
+UPDATE_NOTICE = "🆕 2026-07-22 · '공동주택 가상 공시가격(안)' 탭 신설"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -160,6 +160,38 @@ PEAK_START_YM = "202101"
 PEAK_ARCHIVE = os.path.join("data", "apt_price_history.json")
 PEAK_RECENT_MONTHS = 3
 PEAK_BACKFILL_PER_RUN = 100   # 1회 실행당 수집할 구·월 조합 상한 (백필 분할)
+
+# 공시가격 시뮬레이터: 전처리된 관할 공시가격 파일 (data/공시가격_관할.csv)
+GONGSI_PATH = os.path.join("data", "공시가격_관할.csv")
+
+
+def load_gongsi() -> dict:
+    """단지별 공시 ㎡당가 로드: {구: {정규화키: {"dp","g","n"}}}"""
+    result = {d: {} for d in DISTRICTS}
+    try:
+        import csv as _csv
+        with open(GONGSI_PATH, encoding="utf-8-sig") as f:
+            cnt = 0
+            for row in _csv.DictReader(f):
+                gu = (row.get("구") or "").strip()
+                if gu not in result:
+                    continue
+                dong, name = (row.get("동") or "").strip(), (row.get("단지명") or "").strip()
+                try:
+                    g_unit = int(row.get("공시제곱미터당가_중위") or 0)
+                    n = int(row.get("호수") or 0)
+                except ValueError:
+                    continue
+                if not name or g_unit <= 0:
+                    continue
+                result[gu][_norm_apt(dong, name)] = {"dp": f"{dong} {name}", "g": g_unit, "n": n}
+                cnt += 1
+        print(f"▶ 공시가격 로드: 관할 {cnt}개 단지")
+    except FileNotFoundError:
+        print("▶ 공시가격 파일 없음 (data/공시가격_관할.csv) — 시뮬레이터는 안내만 표시")
+    except Exception as e:
+        print(f"▶ 공시가격 로드 실패: {type(e).__name__}")
+    return result
 
 
 def _txt_any(node, tags):
@@ -411,7 +443,7 @@ def _norm_apt(dong: str, name: str) -> str:
     return f"{dong.strip()} {re.sub(r'[\s]+', '', name.strip())}"
 
 
-def collect_peak(today: datetime) -> dict:
+def collect_peak(today: datetime, gongsi: dict = None) -> dict:
     """단지별 월중위 ㎡당가 이력 수집(분할 백필) → 구별 대표단지 회복률 산출"""
     try:
         with open(PEAK_ARCHIVE, encoding="utf-8") as f:
@@ -492,11 +524,19 @@ def collect_peak(today: datetime) -> dict:
             recent = int(sum(med * n for med, n in rvals) / rn) if rn else 0
             stats.append({"k": k, "dp": rec.get("dp", k), "by": rec.get("by", 0), "total": total,
                           "peak": peak, "peak_ym": peak_ym, "recent": recent, "rn": rn})
+        comps = []
+        for s in stats:
+            gi = (gongsi or {}).get(gu, {}).get(s["k"])
+            if gi and s["rn"] >= 2 and s["recent"] > 0:
+                r = gi["g"] / s["recent"]
+                if 0.25 <= r <= 0.95:
+                    comps.append({"dp": s["dp"], "by": s["by"], "g": gi["g"],
+                                  "mkt": s["recent"], "r": round(r, 4)})
         big5 = sorted([s for s in stats if s["total"] >= 5], key=lambda x: -x["total"])[:5]
         used = {s["k"] for s in big5}
         new5 = sorted([s for s in stats if s["k"] not in used and s["by"] > 0 and s["total"] >= 3],
                       key=lambda x: (-x["by"], -x["total"]))[:5]
-        result[gu] = {"big": big5, "new": new5, "pending": capped}
+        result[gu] = {"big": big5, "new": new5, "pending": capped, "comps": comps}
     return result
 
 
@@ -1172,6 +1212,14 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .rt-note {{ font-size: 12px; color: #acaba9; }}
         .rt-pin {{ background-color: #2f6bd8; color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }}
         .rt-pin-start {{ background-color: #d94343; }}
+        .lab-hr {{ border: none; border-top: 1px solid #eaeaea; margin: 34px 0 22px 0; }}
+        .gs-form {{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }}
+        .gs-form select, .gs-form input {{ padding: 10px 12px; border: 1px solid #e0e0dd; border-radius: 8px; font-size: 13.5px; font-family: inherit; background-color: #fff; }}
+        .gs-form button {{ grid-column: 1 / -1; padding: 10px; border: none; border-radius: 8px; background-color: #37352f; color: #fff; font-weight: 600; cursor: pointer; }}
+        .gs-form button:hover {{ background-color: #1f1e1b; }}
+        .gs-box {{ background-color: #f1f4f9; border-radius: 8px; padding: 14px; font-size: 14px; line-height: 1.9; margin-bottom: 12px; }}
+        .gs-main {{ font-size: 15px; }}
+        .gs-err {{ color: #d94343; font-size: 13px; margin-bottom: 10px; }}
         .toheo-tag {{ background-color: #fdecc8; color: #8a6116; }}
         .th-bars {{ display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-bottom: 2px; }}
         .th-bar {{ width: 9px; background-color: #8aa8d8; border-radius: 2px 2px 0 0; }}
@@ -1291,6 +1339,8 @@ __GATE__
     page = page.replace("__LAB_HTML__", LAB_ROUTE_HTML if KAKAO_JS_KEY else LAB_PLACEHOLDER)
     page = page.replace("__LOG_HTML__", '<div class="cl-head">📝 <b>개발 업데이트 이력</b></div>' + log_html)
     page = page.replace("__DEAL_MAP_JS__", (DEAL_MAP_JS + LAB_ROUTE_JS) if KAKAO_JS_KEY else "function updateDealMap(){}")
+    gongsi_comps = {gu: sorted(peak[gu].get("comps", []), key=lambda x: -x["mkt"]) for gu in DISTRICTS}
+    page = page.replace("__GONGSI__", json.dumps(gongsi_comps, ensure_ascii=False))
     page = page.replace("__DEALS__", deals_json).replace("__KAKAO_JS_KEY__", KAKAO_JS_KEY)
     return page
 
@@ -1310,7 +1360,22 @@ LAB_ROUTE_HTML = """
                 <div id="rt-msg"></div>
                 <div id="rt-map"></div>
                 <ol id="rt-list"></ol>
-                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div>"""
+                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div>
+
+                <hr class="lab-hr">
+                <div class="rt-head">🏷️ <b>신축 공동주택 가상 공시가격(안)</b> <span class="rt-beta">실험실 β</span></div>
+                <div class="rt-guide">인근 유사 연식 비교단지들의 <b>공시가격÷시세 비율(현실화 수준)</b>을 역산해, 신축 단지의 시세에 적용한 모의 산정치입니다. 공식 산정 절차·기준과 무관한 참고용입니다.</div>
+                <div class="gs-form">
+                    <select id="gs-gu"><option>성동구</option><option>광진구</option><option>동대문구</option><option>중랑구</option><option>도봉구</option><option>노원구</option><option>강북구</option></select>
+                    <input id="gs-by" type="number" placeholder="준공연도 (예: 2025)">
+                    <input id="gs-mkt" type="number" placeholder="시세 ㎡당가 (만원/㎡, 예: 1600)">
+                    <input id="gs-area" type="number" placeholder="전용면적 ㎡ (선택, 예: 84.9)" step="0.01">
+                    <input id="gs-ask" type="number" placeholder="매물 호가 ㎡당가 (만원/㎡, 선택·참고)">
+                    <button id="gs-btn">모의 산정</button>
+                </div>
+                <div id="gs-result"></div>
+                <div id="gs-comps"></div>
+                <div class="rt-note">※ 비교단지는 같은 구·연식 ±7년 중 공시가격과 최근 거래가 모두 있는 단지에서 자동 선정됩니다. 매물 호가 입력 시 시세와의 괴리를 참고 표시합니다.</div>"""
 
 GATE_LOGO_FALLBACK = """<svg class="gate-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <path d="M50 8 A42 42 0 0 1 92 50" fill="none" stroke="#4285F4" stroke-width="13" stroke-linecap="round"/>
@@ -1539,6 +1604,45 @@ LAB_ROUTE_JS = r"""
             msg.textContent = '✅ 총 ' + (order.length - 1 + (roundTrip ? 1 : 0)) + '개 구간 · 직선거리 합계 약 ' + total.toFixed(1) + 'km';
         }
         document.getElementById('rt-btn') && document.getElementById('rt-btn').addEventListener('click', rtRun);
+
+        const GONGSI = __GONGSI__;
+        function gsMedian(a) { const s = [...a].sort((x, y) => x - y); const n = s.length;
+            return n ? (n % 2 ? s[(n-1)/2] : (s[n/2-1] + s[n/2]) / 2) : 0; }
+        function gsRun() {
+            const gu = document.getElementById('gs-gu').value;
+            const by = parseInt(document.getElementById('gs-by').value);
+            const mkt = parseFloat(document.getElementById('gs-mkt').value);
+            const area = parseFloat(document.getElementById('gs-area').value);
+            const ask = parseFloat(document.getElementById('gs-ask').value);
+            const R = document.getElementById('gs-result'), C = document.getElementById('gs-comps');
+            const all = GONGSI[gu] || [];
+            if (!all.length) { R.innerHTML = '<div class="gs-err">공시가격 데이터가 없습니다 — data/공시가격_관할.csv 업로드 및 가격이력 백필 완료 후 이용 가능해요.</div>'; C.innerHTML=''; return; }
+            if (!by || !mkt) { R.innerHTML = '<div class="gs-err">준공연도와 시세 ㎡당가를 입력하세요.</div>'; C.innerHTML=''; return; }
+            let comps = all.filter(c => c.by && Math.abs(c.by - by) <= 7);
+            let note = '연식 ±7년 비교단지';
+            if (comps.length < 3) { comps = all; note = '유사 연식 부족 — 구 전체 비교단지'; }
+            const ratio = gsMedian(comps.map(c => c.r));
+            const est = mkt * ratio;  // 만원/㎡
+            let out = '<div class="gs-box"><div class="gs-main">가상 공시가격(안) <b>' + Math.round(est).toLocaleString() + '만원/㎡</b>'
+                    + ' <span class="ld-n">(적용 비율 ' + (ratio*100).toFixed(1) + '% · ' + note + ' ' + comps.length + '곳 중위)</span></div>';
+            if (area) {
+                const tot = est * area;  // 만원
+                out += '<div>전용 ' + area + '㎡ 예시: <b>' + (tot >= 10000 ? (tot/10000).toFixed(2) + '억원' : Math.round(tot).toLocaleString() + '만원') + '</b></div>';
+            }
+            if (ask) {
+                const gap = (ask - mkt) / mkt * 100;
+                out += '<div class="ld-n">매물 호가 참고: 시세 대비 ' + (gap >= 0 ? '+' : '') + gap.toFixed(1) + '% (호가는 산정에 미반영)</div>';
+            }
+            out += '</div>';
+            R.innerHTML = out;
+            const rows = comps.slice().sort((a, b) => Math.abs(a.by - by) - Math.abs(b.by - by)).slice(0, 8)
+                .map(c => '<div class="deal-row"><span class="deal-name">' + c.dp + '</span>'
+                    + '<span class="ld-tagchip">' + (c.by || '-') + '년</span>'
+                    + '<span class="deal-spec">공시 ' + Math.round(c.g/10000).toLocaleString() + '만/㎡ · 시세 ' + Math.round(c.mkt/10000).toLocaleString() + '만/㎡</span>'
+                    + '<span class="deal-price">' + (c.r*100).toFixed(1) + '%</span></div>').join('');
+            C.innerHTML = '<div class="deal-list">' + rows + '</div>';
+        }
+        document.getElementById('gs-btn') && document.getElementById('gs-btn').addEventListener('click', gsRun);
 """
 
 
@@ -1559,7 +1663,8 @@ def main():
     progress, prog_asof = load_progress()
     land = collect_land(today)
     toheo = collect_toheo(today)
-    peak = collect_peak(today)
+    gongsi = load_gongsi()
+    peak = collect_peak(today, gongsi)
 
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
