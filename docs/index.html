@@ -98,6 +98,14 @@
         .rt-note { font-size: 12px; color: #acaba9; }
         .rt-pin { background-color: #2f6bd8; color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
         .rt-pin-start { background-color: #d94343; }
+        .lab-hr { border: none; border-top: 1px solid #eaeaea; margin: 34px 0 22px 0; }
+        .gs-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .gs-form select, .gs-form input { padding: 10px 12px; border: 1px solid #e0e0dd; border-radius: 8px; font-size: 13.5px; font-family: inherit; background-color: #fff; }
+        .gs-form button { grid-column: 1 / -1; padding: 10px; border: none; border-radius: 8px; background-color: #37352f; color: #fff; font-weight: 600; cursor: pointer; }
+        .gs-form button:hover { background-color: #1f1e1b; }
+        .gs-box { background-color: #f1f4f9; border-radius: 8px; padding: 14px; font-size: 14px; line-height: 1.9; margin-bottom: 12px; }
+        .gs-main { font-size: 15px; }
+        .gs-err { color: #d94343; font-size: 13px; margin-bottom: 10px; }
         .toheo-tag { background-color: #fdecc8; color: #8a6116; }
         .th-bars { display: flex; align-items: flex-end; gap: 3px; height: 30px; margin-bottom: 2px; }
         .th-bar { width: 9px; background-color: #8aa8d8; border-radius: 2px 2px 0 0; }
@@ -204,8 +212,8 @@
 
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
-        <div class="subtitle">📅 2026-07-22 기준 · 최근 30일 (2026-06-22 ~) · 갱신 2026-07-22 16:41 KST</div>
-        <div class="update-bar"><div class="update-track" style="animation-duration:17s"><span class="update-item">📌 🆕 2026-07-21 · &#x27;고점대비&#x27; 탭 신설 — 테스트 작업 진행중</span><span class="update-item">📌 🆕 2026-07-21 · &#x27;고점대비&#x27; 탭 신설 — 테스트 작업 진행중</span></div></div>
+        <div class="subtitle">📅 2026-07-22 기준 · 최근 30일 (2026-06-22 ~) · 갱신 2026-07-22 20:48 KST</div>
+        <div class="update-bar"><div class="update-track" style="animation-duration:16s"><span class="update-item">📌 🆕 2026-07-22 · &#x27;공동주택 가상 공시가격(안)&#x27; 탭 신설</span><span class="update-item">📌 🆕 2026-07-22 · &#x27;공동주택 가상 공시가격(안)&#x27; 탭 신설</span></div></div>
         <div class="tab-bar">
             <div class="tab-row">
                 <div class="tab-btn active" data-tab="news">📰 뉴스</div>
@@ -247,9 +255,164 @@
                 <div id="rt-msg"></div>
                 <div id="rt-map"></div>
                 <ol id="rt-list"></ol>
-                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div></div>
+                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div>
+
+                <hr class="lab-hr">
+                <div class="rt-head">🏷️ <b>신축 공동주택 가상 공시가격(안)</b> <span class="rt-beta">실험실 β</span></div>
+                <div class="rt-guide">인근 유사 연식 비교단지들의 <b>공시가격÷시세 비율(현실화 수준)</b>을 역산해, 신축 단지의 시세에 적용한 모의 산정치입니다. 공식 산정 절차·기준과 무관한 참고용입니다.</div>
+                <div class="gs-form">
+                    <select id="gs-gu"><option>성동구</option><option>광진구</option><option>동대문구</option><option>중랑구</option><option>도봉구</option><option>노원구</option><option>강북구</option></select>
+                    <input id="gs-by" type="number" placeholder="준공연도 (예: 2025)">
+                    <input id="gs-mkt" type="number" placeholder="시세 ㎡당가 (만원/㎡, 예: 1600)">
+                    <input id="gs-area" type="number" placeholder="전용면적 ㎡ (선택, 예: 84.9)" step="0.01">
+                    <input id="gs-ask" type="number" placeholder="매물 호가 ㎡당가 (만원/㎡, 선택·참고)">
+                    <button id="gs-btn">모의 산정</button>
+                </div>
+                <div id="gs-result"></div>
+                <div id="gs-comps"></div>
+                <div class="rt-note">※ 비교단지는 같은 구·연식 ±7년 중 공시가격과 최근 거래가 모두 있는 단지에서 자동 선정됩니다. 매물 호가 입력 시 시세와의 괴리를 참고 표시합니다.</div></div>
             <div id="log-box"><div class="cl-head">📝 <b>개발 업데이트 이력</b></div><div class="cl-item"><div class="cl-date">2026-07-21</div><ul class="cl-list"><li>📊 &#x27;고점대비&#x27; 탭 신설 — 구별 대표단지(거래량 상위·신축) 전고점 대비 최근 3개월 회복률</li><li>🔐 세션 관리 도입 — 관리자 일괄 로그아웃(버전 방식) 및 개별 계정 차단 지원</li><li>📝 &#x27;업데이트&#x27; 탭 신설 — 개발 이력 타임라인</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-20</div><ul class="cl-list"><li>🗂️ &#x27;토허동향&#x27; 탭 신설 — 서울부동산정보광장 토지거래허가 내역 매일 수집, 구별 수급 지표(7일 증감·14일 추이)와 자체 누적 아카이브</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-14</div><ul class="cl-list"><li>🧭 실험실 첫 기능 &#x27;출장 표본지 최적동선&#x27; — 주소 입력만으로 방문 순서 최적화(2-opt)·지도 경로 표시</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-13</div><ul class="cl-list"><li>🔑 접속 로그인 도입 — 승인 계정만 이용 가능, 기관 심볼(구글컬러) 오프닝 화면</li><li>📢 상단 공지줄 흐름(마퀴) 효과 적용</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-12</div><ul class="cl-list"><li>🏗️ &#x27;추진현황&#x27; 탭 신설 — 관할 85개 정비구역 9단계 진행바(분기 통계 기반, 수시 보정 지원)</li><li>📐 &#x27;지가분석&#x27; 탭 신설 — 토지 실거래 ㎡당 단가·용도지역별 중위단가 당월/전월 비교(지가변동률 조사 지원)</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-11</div><ul class="cl-list"><li>🗺️ 실거래 지도 연동 — 카카오맵에 매매/전세/월세 핀 표시, 구 필터 연동</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-10</div><ul class="cl-list"><li>🏠 &#x27;최근 실거래&#x27; 탭 신설 — 국토부 실거래가 API, 구별 아파트 매매/전세/월세 최근 7일 계약분</li><li>📢 고시공고 탭을 구청 공식 게시판 바로가기로 개편</li><li>✨ 서비스명 &#x27;서울동부지사 AI toolkit&#x27;으로 변경, 공지줄 신설</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-07</div><ul class="cl-list"><li>🚀 최초 구축 — 관할 7개 구 정비사업 뉴스 매일 자동 수집(네이버 API), GitHub Actions 자동 갱신, 모바일 홈화면 앱(PWA) 지원</li></ul></div></div>
             <div class="card-grid">
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/009/0005710963?sid=101" target="_blank">“모아타운, 재개발이랑 뭐가 다르죠?”…오세훈의 ‘닥공’전략 [부동...</a></h3>
+            <div class="summary-box">• 최근 같은 날 서울시가 관리계획을 고시한 광진구 자양1동과 강북구 번동 일대 사례를 통해 모아주택<br>• 자양1동의 최종 정비 방식은 사업시행계획 수립 과정에서 결정된다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/009/0005710963?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/009/0005710955?sid=101" target="_blank">“낡은 빌라 1채로 10배 먹었다”…‘일확천금’ 재개발 투자의 모든 것...</a></h3>
+            <div class="summary-box">• 도시 및 주거환경정비법, 서울시 정비사업 정보몽땅, 한국부동산원 정비사업 표준 실무편람 및 재개발<br>• 광진구(95.7%), 송파구(82.4%), 영등포구(82.2%) 등이 상승세를 주도했다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/009/0005710955?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/014/0005551544?sid=101" target="_blank">외곽 덮친 분양가 인플레이션… 노원 국평도 15억</a></h3>
+            <div class="summary-box">• 22일 청약홈에 따르면 오는 27일부터 청약 접수를 받는 노원구 월계동 &#x27;월계 중흥S-클래스 리비에르&#x27;가 해당 지역 역대 최고 분양가로 공급된다<br>• 이 단지는 총 355가구 규모의 소규모 단지로 재건축 사업으로 조성되는</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/014/0005551544?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607221540460140131" target="_blank">노원구, 상계주공6단지 주민설명회 개최 ‘쾌속 추진 본격화’</a></h3>
+            <div class="summary-box">• 한편 구는 재건축 쾌속추진단을 출범시키고, ‘현장 밀착형 원스톱 지원체계’와 제도 개선을 병행하는 ‘투트랙’ 지원 방안을 선보이는 등 관내 정비사업 지원에 만전을 기하고 있다<br>• 서준오 노원구청장은</div>
+            <div class="card-footer"><a href="https://www.dnews.co.kr/uhtml/view.jsp?idxno=202607221540460140131" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/009/0005710941?sid=101" target="_blank">서울 준공업지 20%만 풀어도 5만가구 가능</a></h3>
+            <div class="summary-box">• 영등포구가 5.02㎢로 가장 넓고 이어 구로구 4.19㎢, 금천구 4.13㎢, 강서구 2.92㎢, 성동구 2.05㎢, 도봉구 1.49<br>• 공동주택 용적률을 최대 400%로 높이고 지구단위계획과 도시정비형 재개발, 재건축·재개발 등을 통해 현재</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/009/0005710941?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/011/0004644092?sid=101" target="_blank">서울 정비사업 구역 70곳, 인허가 받고도 착공 못해</a></h3>
+            <div class="summary-box">• 서울 시내 정비사업 구역 가운데 관리처분계획인가까지 받고도 착공하지 못한 곳이 70곳에 이르는 것으로<br>• 2곳이었고 성동구·서대문구·강서구·구로구·관악구는 각 1곳씩이었다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/011/0004644092?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="동대문구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 동대문구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/011/0004644089?sid=101" target="_blank">면적 10% 비주거시설 건설 의무…PF 건전성 관리에 돈줄도 막혀</a></h3>
+            <div class="summary-box">• 이 기준이 사업성을 낮아지게 하기 때문에 개발을 포기하는 사례가 이어진다<br>• 이에 서울시는 지난달 30일 제6차 도시재정비위원회에서 양천구 신정, 중랑구 망우, 동대문구 이문생활권중심, 동대문구 회기, 동대문구</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/011/0004644089?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/003/0014082150?sid=102" target="_blank">노원구, 상계주공6단지 재건축 정비계획안 주민 설명회</a></h3>
+            <div class="summary-box">• 서울 노원구(구청장 서준오)가 상계주공6단지 아파트 재건축사업의 정비구역 지정 및 정비계획안 수립을 위한 주민 공람을 실시하고 오는 23일 주민설명회를 개최한다고 22일 밝혔다<br>• 상계주공6단지는 신속통합기획</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/003/0014082150?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.peoplewatch.co.kr/article/view/ppw202607160001" target="_blank">노무현재단 떠난 유시민, 왜 이재명과 정면으로 맞섰나</a></h3>
+            <div class="summary-box">• 재건축이나 재개발을 시도하면 대통령도 상처받고 민주당은 엉망이 될 것&quot;이라고 경고했다<br>• 유 작가는 이 대통령이 사회관계망서비스를 통해 정원오 전 성동구청장을 부각해 서울시장 후보 경선에 영향을</div>
+            <div class="card-footer"><a href="https://www.peoplewatch.co.kr/article/view/ppw202607160001" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="광진구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 광진구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/009/0005710855?sid=101" target="_blank">재개발 힘든 빌라촌 … 도심복합개발 만나 대단지 변신</a></h3>
+            <div class="summary-box">• 천호동, 광진구 구의동, 성북구 석관동 일대 빌라촌에서 민간도심복합개발을 검토하는 움직임이 나타나고 있다<br>• 최근에는 정비업체와 신탁사 등이 참여하는 사업설명회도 잇따라 열린다</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/009/0005710855?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/293/0000087935?sid=101" target="_blank">[롯데건설 리빌딩]① 1.3조 성수4지구 수주 &#x27;정비사업&#x27; 재건 신호탄</a></h3>
+            <div class="summary-box">• 롯데건설이 1조3492억원 규모의 서울 성동구 성수전략정비구역 제4지구 재개발 사업 시공권을 확보하며 2024년 정비사업 강자로 완벽히 복귀했다<br>• 철저한 수익성 중심의 선별 수주 노선을 선택한 성과가 올해 뚜렷하게</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/293/0000087935?sid=101" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="도봉구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 도봉구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://www.ajunews.com/view/20260721143814535" target="_blank">[오늘의 ABC 뉴스룸] &quot;분당·강남 집값 60% 껑충&quot; 다시 불붙은 재건축, 지...</a></h3>
+            <div class="summary-box">• 1기 신도시 정비사업과 수서지구 재개발 기대감이 커지면서, 재건축과 리모델링 추진 단지를 중심으로<br>• 서울 내부에서도 강남구와 도봉구의 평당 시세가 4배 이상 벌어지는 등, 재정비 호재가 있는 인기 지역으로의</div>
+            <div class="card-footer"><a href="https://www.ajunews.com/view/20260721143814535" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="노원구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 노원구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/081/0003663612?sid=102" target="_blank">노원구, 상계주공6단지 재건축 정비계획안 주민 설명회 개최</a></h3>
+            <div class="summary-box">• 서울 노원구는 상계주공6단지 아파트 재건축사업의 정비구역 지정 및 정비계획안 수립을 위한 주민 공람을 실시하고 오는 23일 주민설명회를 개최한다고 22일 밝혔다<br>• 상계주공6단지는 상계주공아파트 단지 가운데</div>
+            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/081/0003663612?sid=102" target="_blank">상세 원문 보기 →</a></div>
+        </div>
+        <div class="notion-card" data-type="news" data-district="성동구">
+            <div class="card-meta">
+                <span class="tag district-tag">📍 성동구</span>
+                <span class="tag source-tag">📰 네이버뉴스</span>
+                <span class="tag date-tag">📅 2026년 7월 22일</span>
+            </div>
+            <h3 class="news-title"><a href="http://www.koreastocknews.com/news/articleView.html?idxno=119976" target="_blank">2조원 규모 &#x27;성수2지구&#x27;, DL이앤씨·IPARK현산 2파전 전망</a></h3>
+            <div class="summary-box">• 한강변 핵심 도시정비사업인 서울 성동구 성수전략정비구역 제2지구의 입찰 구도가 DL이앤씨(375500, 대표 박상신)와 IPARK현대산업개발(294870, 대표 정경구, 이하 IPARK현산) 2파전으로 전망되며 양사의 수주 금액이</div>
+            <div class="card-footer"><a href="http://www.koreastocknews.com/news/articleView.html?idxno=119976" target="_blank">상세 원문 보기 →</a></div>
+        </div>
         <div class="notion-card" data-type="news" data-district="광진구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 광진구</span>
@@ -289,16 +452,6 @@
             <h3 class="news-title"><a href="https://www.newstnt.com/news/articleView.html?idxno=711185" target="_blank">노원구, 상계주공6단지 재건축 정비계획안 주민설명회</a></h3>
             <div class="summary-box">• 노원구 상계주공6단지 재건축사업이 정비계획안 공람 단계에 들어갔다<br>• 노원구는 상계주공6단지 아파트 재건축사업의 정비구역 지정과 정비계획안 수립을 위해 주민 공람을 실시하고, 오는 23일 주민설명회를 연다고</div>
             <div class="card-footer"><a href="https://www.newstnt.com/news/articleView.html?idxno=711185" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="성동구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 성동구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/015/0005312606?sid=101" target="_blank">&quot;빚내서 집 사느니…입지 뛰어난 곳 청약부터 노려라&quot;</a></h3>
-            <div class="summary-box">• 성북구(9.15%), 노원구(8.38%), 성동구(8.03%) 등의 상승 폭이 컸다<br>• 정부가 지난해 ‘10·15 주택시장 안정화</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/015/0005312606?sid=101" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="성동구">
             <div class="card-meta">
@@ -560,16 +713,6 @@
             <div class="summary-box">• 한편, 구는 앞서 재건축 쾌속추진단(TF)을 출범시키고, 현장 밀착형 원스톱 지원체계와 사업성 제고를 위한 제도 개선을 병행하는 &#x27;투트랙&#x27; 지원 방안을 마련해 정비사업 추진에 박차를 가하고 있다<br>• 서준오 노원구청장</div>
             <div class="card-footer"><a href="https://www.hg-times.com/news/articleView.html?idxno=303778" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="노원구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 노원구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/629/0000517942?sid=102" target="_blank">노원구, 상계주공6단지 재건축 주민 공람·설명회</a></h3>
-            <div class="summary-box">• 현재 구는 재건축 쾌속추진단(TF)을 출범하고 현장 밀착형 원스톱 지원체계와 사업성을 높이기 위한 제도 개선을 병행하며 정비사업 추진에 속도를 내고 있다<br>• 서준오 노원구청장은 &quot;6단지를 비롯해 속도를 내는</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/629/0000517942?sid=102" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="성동구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 성동구</span>
@@ -630,16 +773,6 @@
             <div class="summary-box">• 국토교통부 실거래가 자료 기준 서울시 성동구 금호동 &#x27;서울숲푸르지오1차&#x27; 전용면적 84㎡는 지난 5월<br>• 대우건설은 서울시 성북구 장위동 일원에 장위10재정비촉진구역을 재개발하는 &#x27;장위 푸르지오 마크원&#x27;을</div>
             <div class="card-footer"><a href="http://www.weeklytoday.com/news/articleView.html?idxno=786415" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="성동구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 성동구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://www.ziksir.com/news/articleView.html?idxno=140777" target="_blank">수도권 &#x27;초품아&#x27; 단지 수요 증가···3040 매수 비중 60%</a></h3>
-            <div class="summary-box">• 국토교통부 실거래가 공개시스템에 따르면 서울 성동구 금호동 &#x27;서울숲푸르지오1차&#x27; 전용면적 84㎡는<br>• 장위10재정비촉진구역 주택재개발 정비사업을 통해 조성되는 단지로 지하 5층~지상 35층, 23개동, 총 1931가구</div>
-            <div class="card-footer"><a href="https://www.ziksir.com/news/articleView.html?idxno=140777" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 동대문구</span>
@@ -650,16 +783,6 @@
             <div class="summary-box">• 서울 성북구 길음동 시장정비사업 부지, 강동역 역세권 활성화사업 부지, 동대문구 경동시장 개발 사업지 등 개발 가능 부동산을 비롯해 물류단지, 주상복합, 관광·문화 복합단지 등 다양한 PF 자산이 공유됐다</div>
             <div class="card-footer"><a href="https://www.widedaily.com/news/articleView.html?idxno=297962" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="노원구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 노원구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1276592" target="_blank">노원구, 상계주공6단지 재건축 속도낸다</a></h3>
-            <div class="summary-box">• 노원구가 상계주공6단지 아파트 재건축사업의 본격적인 추진을 위해 팔을 걷어붙였다<br>• 구는 해당 단지의</div>
-            <div class="card-footer"><a href="https://www.jeonmae.co.kr/news/articleView.html?idxno=1276592" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 동대문구</span>
@@ -669,26 +792,6 @@
             <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/123/0002386960?sid=101" target="_blank">삼일PwC·MG암코 “부실자산 시장 확대기…선제적 투자전략 필수”</a></h3>
             <div class="summary-box">• 서울 성북구 길음동 시장정비사업 부지, 강동역 역세권 활성화사업 부지, 동대문구 경동시장 개발 사업지 등 개발 가능 부동산을 비롯해 물류단지, 주상복합, 관광·문화 복합단지 등 다양한 PF 자산이 공유됐다</div>
             <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/123/0002386960?sid=101" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="노원구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 노원구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/001/0016207350?sid=102" target="_blank">노원 상계주공6단지 정비계획안 공람…&quot;최고 59층 3천573세대로&quot;</a></h3>
-            <div class="summary-box">• 상계주공 신통기획단지 중 첫 정비계획안 공람…내일 주민설명회 서울 노원구(구청장 서준오)는 상계주공6단지 아파트 재건축사업의 정비구역 지정 및 정비계획안 수립을 위한 주민 공람을 하고, 오는 23일 오후 6시</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/001/0016207350?sid=102" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="노원구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 노원구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5043098" target="_blank">노원구, 상계주공6단지 재건축 정비계획 공람…23일 주민설명회 개최</a></h3>
-            <div class="summary-box">• 노원구는 앞서 재건축 쾌속추진단(TF)을 출범시키고 현장 밀착형 원스톱 지원체계 구축과 사업성 제고를 위한 제도 개선을 병행하는 &#x27;투트랙&#x27; 지원 방안을 추진하는 등 정비사업 지원을 이어가고 있다<br>• 서준오 노원구청</div>
-            <div class="card-footer"><a href="https://www.shinailbo.co.kr/news/articleView.html?idxno=5043098" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
             <div class="card-meta">
@@ -739,36 +842,6 @@
             <h3 class="news-title"><a href="https://www.etoday.co.kr/news/view/2605693" target="_blank">신속 공급 외치면서 이주비 묶었다⋯첫 삽 늦추는 금융 규제 [수요는 지...</a></h3>
             <div class="summary-box">• 서울에서도 이주비 조달 문제로 사업 일정이 흔들린 사례가 나왔다<br>• 중랑구 면목동 A 모아타운은</div>
             <div class="card-footer"><a href="https://www.etoday.co.kr/news/view/2605693" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="성동구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 성동구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/003/0014079834?sid=101" target="_blank">국토연구원 &quot;매입임대, 수요보다 싼 곳에 몰렸다&quot;</a></h3>
-            <div class="summary-box">• 반면 서초구(1652호), 동작구(1615호), 강남구(1272호), 종로구(1234호), 마포구(1142호), 성동구(1089호), 용산구<br>• 주택정비사업 등을 통해 공공이 도심 내 토지·주택을 집단적으로 비축하는 효과를 기대할 수 있는 만큼</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/003/0014079834?sid=101" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="성동구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 성동구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/020/0003735552?sid=102" target="_blank">강남-서초-강동-동대문… 재건축 많은 區 인구 늘어</a></h3>
-            <div class="summary-box">• 노원구의 ‘재건축 쾌속추진단’, 성동구의 ‘재개발·재건축 신속관리추진단’, 용산구의 ‘거침없는 용산개발과 안전 강화를 위한 전담기구’ 등이 대표적 사례다<br>• 이름은 달라도 모두 자치구 내 정비사업이</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/020/0003735552?sid=102" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="성동구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 성동구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 22일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/023/0003988857?sid=004" target="_blank">성수전략정비구역 시공사 윤곽 드러나</a></h3>
-            <div class="summary-box">• 총공사비 2조원 추정 성수 2지구 DL이앤씨·IPARK현산 2파전 전망 서울 한강변 재개발 최대어로 꼽히는 성동구 성수전략정비구역의 시공사 윤곽이 모두 드러났다<br>• GS건설과 롯데건설이 각각 1·4지구 시공권을 가져간</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/023/0003988857?sid=004" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
             <div class="card-meta">
@@ -920,16 +993,6 @@
             <div class="summary-box">• 지난달 지방선거에서 민선 7·8기에 이어 9기까지 3선에 성공한 류경기 서울 중랑구청장은 16일 오후<br>• 서울시의 정비사업 활성화 정책에도 발맞춰 각종 인허가 절차를 적극 지원하고 용적률 인센티브 등 제도 개선도</div>
             <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/016/0002672779?sid=102" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="광진구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 광진구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 21일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/022/0004144639?sid=102" target="_blank">‘따릉이’ 개인정보 유출 피해자 462만명인데…보상 계획은?</a></h3>
-            <div class="summary-box">• 공단, 개인별 유출 항목 확정 유출 피해 시민 대상 안내 시작 지난해 11월12일 서울 광진구에 공공자전거<br>• 한국영 서울시설공단 이사장은 “보안 체계를 전면 재정비하는 한편 유관기관과 긴밀히 협력해, 시민</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/022/0004144639?sid=102" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="강북구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 강북구</span>
@@ -939,16 +1002,6 @@
             <h3 class="news-title"><a href="https://www.job-post.co.kr/news/articleView.html?idxno=221687" target="_blank">강북구 오현어린이공원 새 단장…모든 세대 함께 누리는 &#x27;별빛이음터&#x27; ...</a></h3>
             <div class="summary-box">• 강북구는 총사업비 7억 원을 투입해 오현어린이공원 정비사업을 마무리하고, 놀이와 휴식, 운동 기능을 두루 갖춘 복합 생활공간으로 재개장했다고 밝혔다<br>• 이번 사업은 단순한 시설 교체를 넘어 공간의 창의성과 활용도를</div>
             <div class="card-footer"><a href="https://www.job-post.co.kr/news/articleView.html?idxno=221687" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="광진구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 광진구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 21일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/009/0005709948?sid=101" target="_blank">수도권 경매시장 ‘될 곳’만 된다…대형평형·외곽지역 물건 외면</a></h3>
-            <div class="summary-box">• 광진구 자양동 우성아파트는 감정가 대비 147.3%에 낙찰됐고, 금천구 독산주공14단지는 123.9%를 기록하며 높은 가격 경쟁력을 입증했다<br>• 모두 리모델링이나 재건축 가능성이 부각되는 단지라는 공통점을 갖고 있다</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/009/0005709948?sid=101" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="중랑구">
             <div class="card-meta">
@@ -969,16 +1022,6 @@
             <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/009/0005709918?sid=101" target="_blank">서울 집합건물 신탁 신청, 상반기 1만5318건… 전년보다 55.1%↑</a></h3>
             <div class="summary-box">• 이에 따라 재건축·재개발 사업에서 ‘신탁형 사업관리’ 방식이 확산되면서 사업부지 및 권리를<br>• 송파구는 516건에서 1582건으로 1066건, 중랑구는 83건에서 916건으로 833건, 서초구는 458건에서 1,250건으로 792건</div>
             <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/009/0005709918?sid=101" target="_blank">상세 원문 보기 →</a></div>
-        </div>
-        <div class="notion-card" data-type="news" data-district="광진구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 광진구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 21일</span>
-            </div>
-            <h3 class="news-title"><a href="https://www.asiatime.co.kr/article/20260721500045" target="_blank">서울시설공단, &#x27;따릉이 정보 유출&#x27; 피해 시민에 30일 정기권 보상</a></h3>
-            <div class="summary-box">• 서울 광진구에서 시민이 공공자전거 &#x27;따릉이&#x27;를 이용하고 있다.(사진=연합뉴스) 서울시설공단은 따릉이<br>• 전면 재정비하는 한편 유관기관과 긴밀히 협력해, 시민 여러분께서 안심하고 따릉이를 이용하실 수 있도록</div>
-            <div class="card-footer"><a href="https://www.asiatime.co.kr/article/20260721500045" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="강북구">
             <div class="card-meta">
@@ -1130,16 +1173,6 @@
             <div class="summary-box">• 도봉구와 금천구도 각각 0.40% 올랐다<br>• 강북 14개 구의 평균 상승률은 0.31%로 강남 11개 구의 0.26%를 웃돌았다</div>
             <div class="card-footer"><a href="https://www.newswhoplus.com/news/articleView.html?idxno=64851" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="동대문구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 동대문구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 20일</span>
-            </div>
-            <h3 class="news-title"><a href="https://n.news.naver.com/mnews/article/119/0003112674?sid=101" target="_blank">[오늘 부동산] 양도세 중과에 세제개편까지…서울 아파트 거래 &#x27;뚝&#x27;</a></h3>
-            <div class="summary-box">• 같은 기간 금천구(-71.4%), 구로구(-70.2%), 노원구(-70.1%), 동대문구(-66.9%), 관악구(-63.3%), 도봉구(-62.6%) 등도<br>• 재개발·재건축에 대해서는 &quot;절차를 단축하고 용적률을 조정하는 논의는 가능하지만 재개발·재건축은 최소 3</div>
-            <div class="card-footer"><a href="https://n.news.naver.com/mnews/article/119/0003112674?sid=101" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="도봉구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 도봉구</span>
@@ -1280,25 +1313,15 @@
             <div class="summary-box">• 및 재건축 추진 단지 중심으로 상승계약 체결되며 서울 전체적으로 상승했다<br>• 강북 14개구(0.35%)의</div>
             <div class="card-footer"><a href="https://www.arunews.com/news/articleView.html?idxno=65026" target="_blank">상세 원문 보기 →</a></div>
         </div>
-        <div class="notion-card" data-type="news" data-district="도봉구">
-            <div class="card-meta">
-                <span class="tag district-tag">📍 도봉구</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 2026년 7월 16일</span>
-            </div>
-            <h3 class="news-title"><a href="https://www.newspim.com/news/view/20260716000816" target="_blank">서울 아파트 매맷값 0.3%↑ 강세 견고…동탄, 규제여파에 상승폭 둔화</a></h3>
-            <div class="summary-box">• 및 재건축 추진 단지 중심으로 상승 계약이 체결되고 있다는 게 한국부동산원의 분석이다<br>• 41%), 도봉구(0.40%), 중랑구(0.35%)에서 높은 전셋값 상승이 기록됐다</div>
-            <div class="card-footer"><a href="https://www.newspim.com/news/view/20260716000816" target="_blank">상세 원문 보기 →</a></div>
-        </div>
         <div class="notion-card" data-type="news" data-district="강북구">
             <div class="card-meta">
                 <span class="tag district-tag">📍 강북구</span>
                 <span class="tag source-tag">📰 네이버뉴스</span>
                 <span class="tag date-tag">📅 2026년 7월 16일</span>
             </div>
-            <h3 class="news-title"><a href="http://www.areyou.co.kr/news/articleView.html?idxno=94525" target="_blank">[아유경제_부동산] 2026년 7월 2주 아파트 가격 동향… 매매가격 0.11% 상...</a></h3>
-            <div class="summary-box">• 및 재건축 추진 단지 중심으로 상승 계약 체결되며 서울 전체 상승했다&quot;고 분석했다<br>• 이번 주 수도권</div>
-            <div class="card-footer"><a href="http://www.areyou.co.kr/news/articleView.html?idxno=94525" target="_blank">상세 원문 보기 →</a></div>
+            <h3 class="news-title"><a href="https://www.pinpointnews.co.kr/news/articleView.html?idxno=469059" target="_blank">서울 아파트값 0.30% 상승세 유지…동탄 주춤·기흥 강세</a></h3>
+            <div class="summary-box">• 대출 규제와 일부 지역의 관망세에도 불구하고 역세권과 대단지, 재건축 단지를 중심으로 매수세가<br>• 이어 구로구(0.44%), 중구(0.40%), 강서구(0.38%), 중랑구(0.37%), 노원구(0.37%), 마포구(0.37%), 광진구·강북구(0.35%) 등이</div>
+            <div class="card-footer"><a href="https://www.pinpointnews.co.kr/news/articleView.html?idxno=469059" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="notice" data-district="성동구">
             <div class="card-meta">
@@ -2550,10 +2573,10 @@
                 <span class="tag toheo-tag">🗂️ 토지거래허가 동향 (수급 지표)</span>
             </div>
             <div class="ld-summary">
-                <div class="ld-sum-item">최근 7일 허가 <b>37건</b> <span class="ld-down">직전 7일 대비 -16건</span></div>
-                <div class="ld-sum-item ld-n">누적 아카이브 392건</div>
+                <div class="ld-sum-item">최근 7일 허가 <b>40건</b> <span class="ld-down">직전 7일 대비 -13건</span></div>
+                <div class="ld-sum-item ld-n">누적 아카이브 395건</div>
             </div>
-            <div class="th-bars"><span class="th-bar" style="height:3px" title="07-09 · 0건"></span><span class="th-bar" style="height:3px" title="07-10 · 0건"></span><span class="th-bar" style="height:3px" title="07-11 · 0건"></span><span class="th-bar" style="height:3px" title="07-12 · 0건"></span><span class="th-bar" style="height:17px" title="07-13 · 21건"></span><span class="th-bar" style="height:3px" title="07-14 · 0건"></span><span class="th-bar" style="height:26px" title="07-15 · 32건"></span><span class="th-bar" style="height:3px" title="07-16 · 1건"></span><span class="th-bar" style="height:3px" title="07-17 · 0건"></span><span class="th-bar" style="height:3px" title="07-18 · 0건"></span><span class="th-bar" style="height:3px" title="07-19 · 0건"></span><span class="th-bar" style="height:14px" title="07-20 · 18건"></span><span class="th-bar" style="height:3px" title="07-21 · 0건"></span><span class="th-bar" style="height:14px" title="07-22 · 18건"></span></div>
+            <div class="th-bars"><span class="th-bar" style="height:3px" title="07-09 · 0건"></span><span class="th-bar" style="height:3px" title="07-10 · 0건"></span><span class="th-bar" style="height:3px" title="07-11 · 0건"></span><span class="th-bar" style="height:3px" title="07-12 · 0건"></span><span class="th-bar" style="height:17px" title="07-13 · 21건"></span><span class="th-bar" style="height:3px" title="07-14 · 0건"></span><span class="th-bar" style="height:26px" title="07-15 · 32건"></span><span class="th-bar" style="height:3px" title="07-16 · 1건"></span><span class="th-bar" style="height:3px" title="07-17 · 0건"></span><span class="th-bar" style="height:3px" title="07-18 · 0건"></span><span class="th-bar" style="height:3px" title="07-19 · 0건"></span><span class="th-bar" style="height:14px" title="07-20 · 18건"></span><span class="th-bar" style="height:3px" title="07-21 · 0건"></span><span class="th-bar" style="height:17px" title="07-22 · 21건"></span></div>
             <div class="th-bars-label">최근 14일 일별 허가 건수</div>
             <div class="deal-list"><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 중화동 450</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 신내동 650</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 망우동 226</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 면목동 1521</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 중화동 452</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 신내동 657</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 상봉동 63</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 신내동 656</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 면목동 1077-1</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div><div class="deal-row"><span class="deal-date">07-22</span><span class="deal-name">중랑구 면목동 1510</span><span class="ld-tagchip">대</span><span class="deal-spec">주거용</span></div></div>
             <div class="card-footer">출처: <a href="https://land.seoul.go.kr/land/other/contractStatus.do" target="_blank">서울부동산정보광장 토지거래허가 내역</a> (K-Geo 연계, 허가일 기준) · 가격정보가 없는 활동량 지표로, 수급 방향성 참고용입니다</div>
@@ -2667,7 +2690,7 @@
     </div>
 
     <script>
-        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "deal": {"all": 237, "성동구": 40, "광진구": 18, "동대문구": 40, "중랑구": 40, "도봉구": 37, "노원구": 40, "강북구": 22}, "prog": {"all": 85, "성동구": 15, "광진구": 7, "동대문구": 27, "중랑구": 11, "도봉구": 6, "노원구": 9, "강북구": 10}, "land": {"all": 622, "성동구": 39, "광진구": 156, "동대문구": 132, "중랑구": 97, "도봉구": 26, "노원구": 78, "강북구": 94}, "toheo": {"all": 3364, "성동구": 259, "광진구": 247, "동대문구": 404, "중랑구": 392, "도봉구": 491, "노원구": 1281, "강북구": 290}, "peak": {"all": 70, "성동구": 10, "광진구": 10, "동대문구": 10, "중랑구": 10, "도봉구": 10, "노원구": 10, "강북구": 10}};
+        const COUNTS = {"news": {"all": 105, "성동구": 15, "광진구": 15, "동대문구": 15, "중랑구": 15, "도봉구": 15, "노원구": 15, "강북구": 15}, "deal": {"all": 237, "성동구": 40, "광진구": 18, "동대문구": 40, "중랑구": 40, "도봉구": 37, "노원구": 40, "강북구": 22}, "prog": {"all": 85, "성동구": 15, "광진구": 7, "동대문구": 27, "중랑구": 11, "도봉구": 6, "노원구": 9, "강북구": 10}, "land": {"all": 622, "성동구": 39, "광진구": 156, "동대문구": 132, "중랑구": 97, "도봉구": 26, "노원구": 78, "강북구": 94}, "toheo": {"all": 3367, "성동구": 259, "광진구": 247, "동대문구": 404, "중랑구": 395, "도봉구": 491, "노원구": 1281, "강북구": 290}, "peak": {"all": 70, "성동구": 10, "광진구": 10, "동대문구": 10, "중랑구": 10, "도봉구": 10, "노원구": 10, "강북구": 10}};
         let tab = 'news', district = 'all';
 
         function render() {
@@ -2844,6 +2867,45 @@
             msg.textContent = '✅ 총 ' + (order.length - 1 + (roundTrip ? 1 : 0)) + '개 구간 · 직선거리 합계 약 ' + total.toFixed(1) + 'km';
         }
         document.getElementById('rt-btn') && document.getElementById('rt-btn').addEventListener('click', rtRun);
+
+        const GONGSI = {"성동구": [{"dp": "성수동1가 트리마제", "by": 2017, "g": 27667310, "mkt": 51618624, "r": 0.536}, {"dp": "옥수동 래미안 옥수 리버젠", "by": 2012, "g": 16168776, "mkt": 36312236, "r": 0.4453}, {"dp": "옥수동 옥수파크힐스101동~116동", "by": 2016, "g": 15915276, "mkt": 34626191, "r": 0.4596}, {"dp": "금호동2가 신금호파크자이", "by": 2016, "g": 14454818, "mkt": 33761253, "r": 0.4281}, {"dp": "성수동1가 동아", "by": 1983, "g": 13729786, "mkt": 32715369, "r": 0.4197}, {"dp": "금호동4가 서울숲2차푸르지오", "by": 2012, "g": 14957063, "mkt": 32302056, "r": 0.463}, {"dp": "금호동4가 서울숲푸르지오", "by": 2007, "g": 13267350, "mkt": 31477468, "r": 0.4215}, {"dp": "행당동 서울숲리버뷰자이", "by": 2018, "g": 16454802, "mkt": 30965676, "r": 0.5314}, {"dp": "옥수동 옥수삼성", "by": 1999, "g": 12650020, "mkt": 30643471, "r": 0.4128}, {"dp": "하왕십리동 센트라스", "by": 2016, "g": 14119019, "mkt": 30465127, "r": 0.4634}, {"dp": "옥수동 옥수파크힐스117동~125동", "by": 2016, "g": 16594178, "mkt": 29715302, "r": 0.5584}, {"dp": "하왕십리동 왕십리자이", "by": 2017, "g": 12002000, "mkt": 28296382, "r": 0.4242}, {"dp": "옥수동 풍림아이원", "by": 2004, "g": 13012139, "mkt": 27880900, "r": 0.4667}, {"dp": "금호동3가 금호1차푸르지오", "by": 2005, "g": 9149788, "mkt": 27805568, "r": 0.3291}, {"dp": "금호동4가 대우", "by": 2001, "g": 10341163, "mkt": 27131256, "r": 0.3812}, {"dp": "금호동1가 금호삼성래미안", "by": 2001, "g": 9354647, "mkt": 26955795, "r": 0.347}, {"dp": "응봉동 대림강변타운", "by": 2001, "g": 10814972, "mkt": 26916220, "r": 0.4018}, {"dp": "옥수동 옥수어울림", "by": 2011, "g": 13136444, "mkt": 26572175, "r": 0.4944}, {"dp": "행당동 행당두산위브", "by": 2009, "g": 11801966, "mkt": 26505994, "r": 0.4453}, {"dp": "상왕십리동 텐즈힐(2단지)", "by": 2014, "g": 12296819, "mkt": 26032067, "r": 0.4724}, {"dp": "금호동2가 금호자이1차", "by": 2012, "g": 11345180, "mkt": 25923023, "r": 0.4376}, {"dp": "응봉동 대림(1차)", "by": 1986, "g": 9588134, "mkt": 25824394, "r": 0.3713}, {"dp": "옥수동 현대", "by": 1990, "g": 11413427, "mkt": 25176441, "r": 0.4533}, {"dp": "성수동2가 롯데캐슬파크", "by": 2003, "g": 10451492, "mkt": 24928381, "r": 0.4193}, {"dp": "하왕십리동 왕십리풍림아이원", "by": 2004, "g": 8683085, "mkt": 24435786, "r": 0.3553}, {"dp": "행당동 서울숲행당푸르지오", "by": 2011, "g": 10715128, "mkt": 24195396, "r": 0.4429}, {"dp": "성수동1가 쌍용", "by": 1997, "g": 11646586, "mkt": 24121254, "r": 0.4828}, {"dp": "금호동2가 래미안하이리버", "by": 2012, "g": 11673334, "mkt": 24064485, "r": 0.4851}, {"dp": "옥수동 한남하이츠", "by": 1982, "g": 14075510, "mkt": 23763304, "r": 0.5923}, {"dp": "금호동4가 서울숲르씨엘", "by": 2023, "g": 11410326, "mkt": 23694492, "r": 0.4816}, {"dp": "마장동 세림", "by": 1986, "g": 7429647, "mkt": 22760062, "r": 0.3264}, {"dp": "행당동 행당한진타운", "by": 2000, "g": 10273515, "mkt": 22747768, "r": 0.4516}, {"dp": "행당동 신동아", "by": 1995, "g": 7847982, "mkt": 22728030, "r": 0.3453}, {"dp": "행당동 서울숲 한신 더 휴", "by": 2003, "g": 10523837, "mkt": 22344662, "r": 0.471}, {"dp": "응봉동 대림(2차)", "by": 1989, "g": 8328404, "mkt": 22102873, "r": 0.3768}, {"dp": "성수동1가 동아그린", "by": 1999, "g": 9056648, "mkt": 22046279, "r": 0.4108}, {"dp": "하왕십리동 텐즈힐(1단지)", "by": 2015, "g": 12394067, "mkt": 21919323, "r": 0.5654}, {"dp": "금호동3가 금호자이2차", "by": 2012, "g": 10131843, "mkt": 21802173, "r": 0.4647}, {"dp": "금호동1가 벽산", "by": 2001, "g": 8028766, "mkt": 21426497, "r": 0.3747}, {"dp": "행당동 대림e-편한세상", "by": 2000, "g": 9873924, "mkt": 21266492, "r": 0.4643}, {"dp": "금호동1가 신금호두산위브", "by": 2006, "g": 7601090, "mkt": 20575874, "r": 0.3694}, {"dp": "마장동 대성유니드", "by": 2004, "g": 7614213, "mkt": 20017892, "r": 0.3804}, {"dp": "옥수동 극동그린", "by": 1997, "g": 8496231, "mkt": 19957275, "r": 0.4257}, {"dp": "응봉동 신동아", "by": 1996, "g": 7434459, "mkt": 19453284, "r": 0.3822}, {"dp": "마장동 왕십리금호어울림", "by": 2006, "g": 9485700, "mkt": 19356280, "r": 0.4901}, {"dp": "성수동2가 현대I-PARK", "by": 2003, "g": 9869931, "mkt": 19047858, "r": 0.5182}, {"dp": "금호동3가 금호한신", "by": 2005, "g": 8817611, "mkt": 18937152, "r": 0.4656}, {"dp": "금호동3가 두산", "by": 1994, "g": 8353923, "mkt": 18411721, "r": 0.4537}, {"dp": "하왕십리동 한신무학", "by": 1989, "g": 6912979, "mkt": 18372135, "r": 0.3763}, {"dp": "하왕십리동 극동미라주", "by": 2001, "g": 7280920, "mkt": 17727973, "r": 0.4107}, {"dp": "송정동 서울숲아이파크", "by": 2009, "g": 8494344, "mkt": 15946484, "r": 0.5327}, {"dp": "하왕십리동 벽산", "by": 1996, "g": 6622400, "mkt": 15347604, "r": 0.4315}, {"dp": "도선동 삼성쉐르빌", "by": 2006, "g": 7153782, "mkt": 14153042, "r": 0.5055}, {"dp": "하왕십리동 금호베스트빌", "by": 2001, "g": 7367306, "mkt": 13862145, "r": 0.5315}, {"dp": "사근동 중앙하이츠", "by": 1989, "g": 6207376, "mkt": 12265135, "r": 0.5061}, {"dp": "마장동 신명스카이뷰", "by": 2005, "g": 6984935, "mkt": 11899378, "r": 0.587}, {"dp": "마장동 마장동해맑은아파트", "by": 2004, "g": 4738272, "mkt": 11456241, "r": 0.4136}, {"dp": "용답동 YM프라젠", "by": 2007, "g": 5285462, "mkt": 9876397, "r": 0.5352}], "광진구": [{"dp": "광장동 광장힐스테이트", "by": 2012, "g": 16005649, "mkt": 35236245, "r": 0.4542}, {"dp": "광장동 극동1", "by": 1985, "g": 12864345, "mkt": 31874630, "r": 0.4036}, {"dp": "자양동 자양호반써밋", "by": 2021, "g": 13854714, "mkt": 30415815, "r": 0.4555}, {"dp": "광장동 현대5", "by": 1989, "g": 12753739, "mkt": 29830839, "r": 0.4275}, {"dp": "광장동 광장현대9단지", "by": 1999, "g": 11372352, "mkt": 28764382, "r": 0.3954}, {"dp": "광장동 극동2", "by": 1989, "g": 13236267, "mkt": 28178592, "r": 0.4697}, {"dp": "광장동 현대파크빌", "by": 2000, "g": 12533899, "mkt": 27455077, "r": 0.4565}, {"dp": "구의동 현대프라임", "by": 1997, "g": 11818789, "mkt": 27066920, "r": 0.4367}, {"dp": "광장동 현대3", "by": 1990, "g": 11158569, "mkt": 26645361, "r": 0.4188}, {"dp": "자양동 이튼타워리버5차", "by": 2009, "g": 12482336, "mkt": 26129526, "r": 0.4777}, {"dp": "광장동 삼성광장2", "by": 1989, "g": 9172259, "mkt": 25673831, "r": 0.3573}, {"dp": "자양동 우방리버파크", "by": 2003, "g": 11675296, "mkt": 25304827, "r": 0.4614}, {"dp": "구의동 래미안파크스위트", "by": 2018, "g": 11777702, "mkt": 25007135, "r": 0.471}, {"dp": "구의동 e편한세상광진그랜드파크", "by": 2021, "g": 12708824, "mkt": 24772088, "r": 0.513}, {"dp": "광장동 청구", "by": 1996, "g": 10075418, "mkt": 24651847, "r": 0.4087}, {"dp": "구의동 구의현대2단지", "by": 1996, "g": 10758897, "mkt": 24378048, "r": 0.4413}, {"dp": "자양동 우성3", "by": 1989, "g": 11017417, "mkt": 24053082, "r": 0.458}, {"dp": "자양동 우성1", "by": 1988, "g": 9554858, "mkt": 23457755, "r": 0.4073}, {"dp": "자양동 한강현대", "by": 1993, "g": 9191132, "mkt": 22648292, "r": 0.4058}, {"dp": "자양동 대동", "by": 1999, "g": 9509746, "mkt": 22253946, "r": 0.4273}, {"dp": "자양동 우성2", "by": 1989, "g": 9385301, "mkt": 22073556, "r": 0.4252}, {"dp": "자양동 자양우성7", "by": 1998, "g": 10960960, "mkt": 21959260, "r": 0.4991}, {"dp": "자양동 자양현대6", "by": 1999, "g": 9886628, "mkt": 21737826, "r": 0.4548}, {"dp": "구의동 구의현대7단지현대홈타운", "by": 1997, "g": 9137902, "mkt": 21488615, "r": 0.4252}, {"dp": "구의동 세양", "by": 2002, "g": 9689278, "mkt": 21228652, "r": 0.4564}, {"dp": "자양동 한양", "by": 1983, "g": 10481984, "mkt": 21181425, "r": 0.4949}, {"dp": "광장동 금호베스트빌", "by": 2001, "g": 9822164, "mkt": 20857378, "r": 0.4709}, {"dp": "자양동 로얄동아", "by": 1999, "g": 9247204, "mkt": 20530973, "r": 0.4504}, {"dp": "자양동 우성4", "by": 1989, "g": 8397126, "mkt": 20309480, "r": 0.4135}, {"dp": "자양동 경남", "by": 1999, "g": 8722481, "mkt": 20242016, "r": 0.4309}, {"dp": "자양동 한라아파트", "by": 1996, "g": 9018912, "mkt": 20076110, "r": 0.4492}, {"dp": "자양동 현대강변", "by": 1991, "g": 7749572, "mkt": 19980506, "r": 0.3879}, {"dp": "자양동 래미안프리미어팰리스", "by": 2017, "g": 10821950, "mkt": 19927479, "r": 0.5431}, {"dp": "광장동 광나루현대", "by": 1996, "g": 9338200, "mkt": 19724446, "r": 0.4734}, {"dp": "광장동 워커힐푸르지오", "by": 1987, "g": 9550724, "mkt": 19331738, "r": 0.494}, {"dp": "구의동 성동강변파크빌101(강변타워)", "by": 2001, "g": 7861598, "mkt": 19313822, "r": 0.407}, {"dp": "자양동 자양8차현대홈타운", "by": 2002, "g": 11308562, "mkt": 18906206, "r": 0.5981}, {"dp": "자양동 현대3", "by": 1996, "g": 8716136, "mkt": 18492343, "r": 0.4713}, {"dp": "자양동 자양삼성", "by": 1999, "g": 9872824, "mkt": 18335625, "r": 0.5385}, {"dp": "자양동 더샵스타시티", "by": 2007, "g": 10978930, "mkt": 17784342, "r": 0.6173}, {"dp": "화양동 화양현대", "by": 1999, "g": 7684614, "mkt": 17074068, "r": 0.4501}, {"dp": "광장동 워커힐", "by": 1978, "g": 10217236, "mkt": 16724949, "r": 0.6109}, {"dp": "구의동 아차산포레안", "by": 2010, "g": 8195559, "mkt": 16291481, "r": 0.5031}, {"dp": "자양동 한솔리베르", "by": 2002, "g": 9438714, "mkt": 15780229, "r": 0.5981}, {"dp": "구의동 광진파크하우스", "by": 2023, "g": 8139159, "mkt": 15346073, "r": 0.5304}, {"dp": "군자동 일성파크", "by": 1996, "g": 6811301, "mkt": 14966643, "r": 0.4551}, {"dp": "구의동 스타파크", "by": 2022, "g": 7607517, "mkt": 14059306, "r": 0.5411}, {"dp": "구의동 삼성쉐르빌", "by": 2001, "g": 7169054, "mkt": 12554128, "r": 0.5711}, {"dp": "화양동 테라팰리스건대1차", "by": 2019, "g": 5948372, "mkt": 11887627, "r": 0.5004}, {"dp": "중곡동 호동", "by": 2002, "g": 4455017, "mkt": 11678200, "r": 0.3815}, {"dp": "중곡동 중곡2단지", "by": 1976, "g": 5423304, "mkt": 11015657, "r": 0.4923}, {"dp": "구의동 현대팰리스", "by": 2022, "g": 6137623, "mkt": 10736309, "r": 0.5717}, {"dp": "중곡동 중곡1단지", "by": 1976, "g": 4973173, "mkt": 10724655, "r": 0.4637}, {"dp": "화양동 위너스힐(111-89)", "by": 2021, "g": 9127594, "mkt": 10641706, "r": 0.8577}, {"dp": "화양동 브라운스톤", "by": 2006, "g": 6606237, "mkt": 10319517, "r": 0.6402}], "동대문구": [{"dp": "답십리동 힐스테이트청계", "by": 2018, "g": 10981069, "mkt": 25720011, "r": 0.4269}, {"dp": "답십리동 답십리파크자이", "by": 2019, "g": 11517275, "mkt": 25286515, "r": 0.4555}, {"dp": "용두동 래미안엘리니티", "by": 2022, "g": 10808646, "mkt": 24866024, "r": 0.4347}, {"dp": "용두동 이편한세상청계센트럴포레", "by": 2021, "g": 10989597, "mkt": 24047174, "r": 0.457}, {"dp": "답십리동 청계한신휴플러스", "by": 2010, "g": 8761862, "mkt": 22311943, "r": 0.3927}, {"dp": "휘경동 휘경SK뷰", "by": 2019, "g": 8404154, "mkt": 21413204, "r": 0.3925}, {"dp": "답십리동 래미안미드카운티", "by": 2019, "g": 10365925, "mkt": 21409497, "r": 0.4842}, {"dp": "전농동 동대문롯데캐슬노블레스", "by": 2018, "g": 10461285, "mkt": 21242759, "r": 0.4925}, {"dp": "답십리동 래미안위브", "by": 2014, "g": 9531654, "mkt": 20315059, "r": 0.4692}, {"dp": "용두동 청량리역한양수자인그라시엘", "by": 2023, "g": 11145110, "mkt": 20313905, "r": 0.5486}, {"dp": "전농동 전농동신성미소지움", "by": 2005, "g": 7606598, "mkt": 19779046, "r": 0.3846}, {"dp": "용두동 용두두산위브", "by": 2009, "g": 7424402, "mkt": 18999941, "r": 0.3908}, {"dp": "답십리동 답십리대우", "by": 2002, "g": 6377220, "mkt": 18144261, "r": 0.3515}, {"dp": "용두동 래미안 허브리츠", "by": 2011, "g": 9085559, "mkt": 17454819, "r": 0.5205}, {"dp": "이문동 래미안이문2차", "by": 2004, "g": 7268644, "mkt": 17430107, "r": 0.417}, {"dp": "전농동 래미안크레시티", "by": 2014, "g": 10357815, "mkt": 17263908, "r": 0.6}, {"dp": "신설동 신설동역자이르네", "by": 2024, "g": 10948734, "mkt": 17217394, "r": 0.6359}, {"dp": "답십리동 두산위브", "by": 2007, "g": 8196914, "mkt": 17179954, "r": 0.4771}, {"dp": "답십리동 답십리청솔우성", "by": 2000, "g": 6027784, "mkt": 16707817, "r": 0.3608}, {"dp": "용두동 용두롯데캐슬리치", "by": 2015, "g": 8130071, "mkt": 16642697, "r": 0.4885}, {"dp": "전농동 래미안아름숲", "by": 2012, "g": 8019312, "mkt": 16441768, "r": 0.4877}, {"dp": "휘경동 휘경해모로프레스티지", "by": 2021, "g": 7846745, "mkt": 16280121, "r": 0.482}, {"dp": "전농동 동아", "by": 1997, "g": 6336585, "mkt": 16254077, "r": 0.3898}, {"dp": "휘경동 브라운스톤휘경", "by": 2013, "g": 7139485, "mkt": 16142522, "r": 0.4423}, {"dp": "답십리동 한신휴플러스그린파크", "by": 2010, "g": 7531183, "mkt": 15900112, "r": 0.4737}, {"dp": "답십리동 두산", "by": 2000, "g": 6000235, "mkt": 15890977, "r": 0.3776}, {"dp": "이문동 쌍용", "by": 2000, "g": 5807515, "mkt": 15812138, "r": 0.3673}, {"dp": "장안동 래미안장안2차", "by": 2007, "g": 7439851, "mkt": 15576804, "r": 0.4776}, {"dp": "장안동 래미안장안", "by": 2003, "g": 6759147, "mkt": 15523745, "r": 0.4354}, {"dp": "전농동 전농SK", "by": 2000, "g": 6474396, "mkt": 15190439, "r": 0.4262}, {"dp": "장안동 동대문더퍼스트데시앙", "by": 2019, "g": 7627037, "mkt": 14998375, "r": 0.5085}, {"dp": "장안동 장안힐스테이트", "by": 2007, "g": 7548148, "mkt": 14781937, "r": 0.5106}, {"dp": "휘경동 주공2", "by": 2001, "g": 6703351, "mkt": 14779756, "r": 0.4535}, {"dp": "용두동 신동아", "by": 1994, "g": 6294888, "mkt": 14691547, "r": 0.4285}, {"dp": "이문동 대림e-편한세상", "by": 2003, "g": 6496257, "mkt": 14673866, "r": 0.4427}, {"dp": "제기동 한신아파트", "by": 2004, "g": 6064181, "mkt": 14609690, "r": 0.4151}, {"dp": "청량리동 미주", "by": 1978, "g": 5938000, "mkt": 14425512, "r": 0.4116}, {"dp": "전농동 전농동삼성래미안", "by": 2000, "g": 6448576, "mkt": 13592326, "r": 0.4744}, {"dp": "청량리동 홍릉동부", "by": 2001, "g": 6359674, "mkt": 13554972, "r": 0.4692}, {"dp": "답십리동 동아", "by": 2001, "g": 5606704, "mkt": 13061120, "r": 0.4293}, {"dp": "용두동 동대문푸르지오시티(도시형생활주택)", "by": 2016, "g": 8336100, "mkt": 12918427, "r": 0.6453}, {"dp": "전농동 전농우성", "by": 1992, "g": 5280528, "mkt": 12815536, "r": 0.412}, {"dp": "답십리동 래미안엘파인아파트", "by": 2011, "g": 6451612, "mkt": 12756361, "r": 0.5058}, {"dp": "회기동 신현대", "by": 1989, "g": 5414312, "mkt": 12662487, "r": 0.4276}, {"dp": "답십리동 청계푸르지오시티", "by": 2015, "g": 4889006, "mkt": 12458908, "r": 0.3924}, {"dp": "이문동 중앙하이츠빌", "by": 2002, "g": 5718665, "mkt": 12143661, "r": 0.4709}, {"dp": "휘경동 휘경미소지움", "by": 1999, "g": 5982620, "mkt": 12113308, "r": 0.4939}, {"dp": "답십리동 한원힐트리움아파트", "by": 2020, "g": 7210300, "mkt": 12030398, "r": 0.5993}, {"dp": "휘경동 주공1", "by": 2001, "g": 5585670, "mkt": 11848530, "r": 0.4714}, {"dp": "용두동 청계천대성스카이렉스2", "by": 2007, "g": 6365454, "mkt": 11824920, "r": 0.5383}, {"dp": "답십리동 동답한신", "by": 1992, "g": 6008462, "mkt": 11756182, "r": 0.5111}, {"dp": "청량리동 한신", "by": 1997, "g": 5876118, "mkt": 11612739, "r": 0.506}, {"dp": "용두동 롯데캐슬피렌체", "by": 2009, "g": 7361963, "mkt": 11591640, "r": 0.6351}, {"dp": "휘경동 이문휘경지웰에스테이트", "by": 2021, "g": 7211130, "mkt": 11570800, "r": 0.6232}, {"dp": "이문동 현대", "by": 2000, "g": 5724299, "mkt": 11494598, "r": 0.498}, {"dp": "이문동 신이문금호어울림", "by": 2008, "g": 6129184, "mkt": 11456859, "r": 0.535}, {"dp": "답십리동 신답경남", "by": 1991, "g": 5248484, "mkt": 11356178, "r": 0.4622}, {"dp": "휘경동 롯데", "by": 2000, "g": 5642596, "mkt": 11344678, "r": 0.4974}, {"dp": "제기동 현대", "by": 1999, "g": 5937328, "mkt": 11330516, "r": 0.524}, {"dp": "답십리동 우성그린", "by": 1997, "g": 4706989, "mkt": 11287061, "r": 0.417}, {"dp": "장안동 브이티스타일", "by": 2021, "g": 6901593, "mkt": 11256354, "r": 0.6131}, {"dp": "이문동 대우", "by": 2001, "g": 5677936, "mkt": 11249782, "r": 0.5047}, {"dp": "휘경동 동일스위트리버", "by": 2007, "g": 6237275, "mkt": 11093661, "r": 0.5622}, {"dp": "답십리동 청계벽산메가트리움", "by": 2006, "g": 6649720, "mkt": 10916901, "r": 0.6091}, {"dp": "답십리동 청솔2차우성", "by": 2000, "g": 5746151, "mkt": 10910413, "r": 0.5267}, {"dp": "답십리동 대림", "by": 2003, "g": 5610678, "mkt": 10783185, "r": 0.5203}, {"dp": "휘경동 동양1차", "by": 2000, "g": 5814536, "mkt": 10781711, "r": 0.5393}, {"dp": "전농동 리베르떼", "by": 2019, "g": 6243114, "mkt": 10556710, "r": 0.5914}, {"dp": "장안동 장안평월드메르디앙2차", "by": 2007, "g": 5742391, "mkt": 10424988, "r": 0.5508}, {"dp": "답십리동 동서울한양", "by": 1989, "g": 5182567, "mkt": 10089848, "r": 0.5136}, {"dp": "제기동 안암골벽산", "by": 2003, "g": 5789597, "mkt": 10014613, "r": 0.5781}, {"dp": "장안동 장한평월드메르디앙", "by": 2006, "g": 5497351, "mkt": 9837278, "r": 0.5588}, {"dp": "휘경동 동양2차", "by": 2002, "g": 5152811, "mkt": 9651672, "r": 0.5339}, {"dp": "장안동 스타파크아파트", "by": 2016, "g": 4770642, "mkt": 9382818, "r": 0.5084}, {"dp": "답십리동 세양청마루", "by": 2005, "g": 5330666, "mkt": 9327594, "r": 0.5715}, {"dp": "장안동 장안현대", "by": 1984, "g": 4434427, "mkt": 9169518, "r": 0.4836}, {"dp": "장안동 한신아파트", "by": 1996, "g": 5116114, "mkt": 9145516, "r": 0.5594}, {"dp": "이문동 이문동웰츠타워", "by": 2008, "g": 4953304, "mkt": 8907010, "r": 0.5561}, {"dp": "이문동 삼익", "by": 1997, "g": 5462036, "mkt": 8880314, "r": 0.6151}, {"dp": "휘경동 휘경동일하이빌", "by": 2005, "g": 5200795, "mkt": 8592619, "r": 0.6053}, {"dp": "장안동 은하수드림필", "by": 2006, "g": 4475326, "mkt": 8587110, "r": 0.5212}, {"dp": "휘경동 롯데낙천대", "by": 2003, "g": 4926346, "mkt": 8345978, "r": 0.5903}, {"dp": "휘경동 효자워너빌", "by": 2006, "g": 4903119, "mkt": 8093099, "r": 0.6058}, {"dp": "장안동 정은스카이빌201동", "by": 2006, "g": 4704491, "mkt": 7870381, "r": 0.5977}, {"dp": "장안동 서희스타힐스", "by": 2013, "g": 4719013, "mkt": 7636577, "r": 0.6179}, {"dp": "답십리동 센시티16", "by": 2013, "g": 4689693, "mkt": 7582139, "r": 0.6185}, {"dp": "장안동 한강훼미리주상복합아파트", "by": 2009, "g": 4267050, "mkt": 7462543, "r": 0.5718}, {"dp": "장안동 우성2차아파트(334-6)", "by": 2005, "g": 4358096, "mkt": 7440651, "r": 0.5857}, {"dp": "장안동 삼현팰리체", "by": 2011, "g": 4451188, "mkt": 7437063, "r": 0.5985}, {"dp": "용두동 두산베어스타워", "by": 1998, "g": 3514069, "mkt": 7018478, "r": 0.5007}, {"dp": "장안동 장안삼성쉐르빌", "by": 2002, "g": 3819960, "mkt": 6995052, "r": 0.5461}, {"dp": "휘경동 서울가든", "by": 1985, "g": 3995327, "mkt": 6925046, "r": 0.5769}, {"dp": "장안동 비젼아파트101동", "by": 2004, "g": 3783847, "mkt": 6826263, "r": 0.5543}], "중랑구": [{"dp": "면목동 사가정센트럴아이파크", "by": 2020, "g": 9145910, "mkt": 17432855, "r": 0.5246}, {"dp": "면목동 쌍용더플래티넘용마산", "by": 2020, "g": 8246955, "mkt": 16363002, "r": 0.504}, {"dp": "면목동 라온프라이빗", "by": 2020, "g": 7908934, "mkt": 15184362, "r": 0.5209}, {"dp": "면목동 한양수자인사가정파크", "by": 2019, "g": 7952438, "mkt": 14477251, "r": 0.5493}, {"dp": "상봉동 우정아파트", "by": 2002, "g": 6101512, "mkt": 14163562, "r": 0.4308}, {"dp": "묵동 이편한세상화랑대", "by": 2017, "g": 7473418, "mkt": 13871433, "r": 0.5388}, {"dp": "상봉동 프레미어스엠코", "by": 2013, "g": 6880134, "mkt": 12500904, "r": 0.5504}, {"dp": "면목동 용마산하늘채", "by": 2015, "g": 7492787, "mkt": 12098604, "r": 0.6193}, {"dp": "망우동 신내역금강펜테리움센트럴파크", "by": 2021, "g": 6742199, "mkt": 11613526, "r": 0.5805}, {"dp": "면목동 두산5", "by": 2000, "g": 6516863, "mkt": 11421410, "r": 0.5706}, {"dp": "면목동 포르투나", "by": 2024, "g": 7616849, "mkt": 11406039, "r": 0.6678}, {"dp": "면목동 용마산모아엘가파크포레", "by": 2023, "g": 6608496, "mkt": 11246937, "r": 0.5876}, {"dp": "신내동 데시앙", "by": 2010, "g": 6434405, "mkt": 11176724, "r": 0.5757}, {"dp": "묵동 현대아이파크", "by": 2002, "g": 6107427, "mkt": 11066426, "r": 0.5519}, {"dp": "면목동 두산4", "by": 2000, "g": 5774216, "mkt": 11001221, "r": 0.5249}, {"dp": "망우동 신내역힐데스하임참좋은아파트", "by": 2021, "g": 6824160, "mkt": 10984751, "r": 0.6212}, {"dp": "신내동 신내6대주", "by": 1996, "g": 6099397, "mkt": 10946055, "r": 0.5572}, {"dp": "묵동 브라운스톤태릉", "by": 2004, "g": 6260788, "mkt": 10945265, "r": 0.572}, {"dp": "상봉동 한일써너스빌", "by": 2003, "g": 6229832, "mkt": 10842919, "r": 0.5746}, {"dp": "망우동 한일써너스빌리젠시1단지(101동)", "by": 2008, "g": 5846917, "mkt": 10519334, "r": 0.5558}, {"dp": "면목동 두산1", "by": 1993, "g": 5789825, "mkt": 10479417, "r": 0.5525}, {"dp": "면목동 늘푸른동아", "by": 2002, "g": 5460750, "mkt": 10401724, "r": 0.525}, {"dp": "상봉동 상봉듀오트리스", "by": 2016, "g": 5553869, "mkt": 10322322, "r": 0.538}, {"dp": "상봉동 동부아파트", "by": 1999, "g": 5259442, "mkt": 10277163, "r": 0.5118}, {"dp": "묵동 신내", "by": 1996, "g": 5645971, "mkt": 10254690, "r": 0.5506}, {"dp": "면목동 면목삼익아파트", "by": 1997, "g": 5165313, "mkt": 10232892, "r": 0.5048}, {"dp": "상봉동 건영캐스빌", "by": 2006, "g": 5977731, "mkt": 10121976, "r": 0.5906}, {"dp": "상봉동 엘지,쌍용아파트", "by": 1996, "g": 5240751, "mkt": 10109164, "r": 0.5184}, {"dp": "신내동 건영2차", "by": 1996, "g": 5296610, "mkt": 10093258, "r": 0.5248}, {"dp": "면목동 용마산금호어울림", "by": 2006, "g": 5419190, "mkt": 10023963, "r": 0.5406}, {"dp": "상봉동 태영데시앙1", "by": 2003, "g": 6157628, "mkt": 10003692, "r": 0.6155}, {"dp": "면목동 성원상떼빌", "by": 1997, "g": 4931732, "mkt": 9998330, "r": 0.4933}, {"dp": "면목동 두산3", "by": 1995, "g": 5615194, "mkt": 9909165, "r": 0.5667}, {"dp": "면목동 마젤란21", "by": 2007, "g": 5794125, "mkt": 9892057, "r": 0.5857}, {"dp": "신내동 신내11대명", "by": 1996, "g": 5485232, "mkt": 9867292, "r": 0.5559}, {"dp": "면목동 용마한신", "by": 1990, "g": 5690645, "mkt": 9848490, "r": 0.5778}, {"dp": "중화동 청광플러스원", "by": 2007, "g": 5608690, "mkt": 9847770, "r": 0.5695}, {"dp": "면목동 두산6", "by": 1993, "g": 5419527, "mkt": 9762643, "r": 0.5551}, {"dp": "신내동 화성.두산아파트", "by": 1995, "g": 5459465, "mkt": 9742541, "r": 0.5604}, {"dp": "신내동 신내 데시앙포레", "by": 2013, "g": 5298013, "mkt": 9740298, "r": 0.5439}, {"dp": "망우동 한일써너스빌리젠시2단지", "by": 2008, "g": 5658143, "mkt": 9736505, "r": 0.5811}, {"dp": "면목동 용마한신2", "by": 1998, "g": 5277481, "mkt": 9614246, "r": 0.5489}, {"dp": "상봉동 건영2차아파트", "by": 1996, "g": 5120056, "mkt": 9604864, "r": 0.5331}, {"dp": "신내동 신내9진흥", "by": 1996, "g": 5722891, "mkt": 9513428, "r": 0.6016}, {"dp": "면목동 면목한신", "by": 1987, "g": 5809859, "mkt": 9436781, "r": 0.6157}, {"dp": "면목동 현대", "by": 1994, "g": 5184920, "mkt": 9433334, "r": 0.5496}, {"dp": "면목동 면목동금호어울림아파트", "by": 2005, "g": 5411339, "mkt": 9396976, "r": 0.5759}, {"dp": "신내동 신내우디안1단지", "by": 2014, "g": 6060606, "mkt": 9322754, "r": 0.6501}, {"dp": "중화동 동양엔파트2차", "by": 2013, "g": 5376344, "mkt": 9305210, "r": 0.5778}, {"dp": "면목동 대원칸타빌", "by": 2003, "g": 5569811, "mkt": 9213908, "r": 0.6045}, {"dp": "묵동 금호어울림", "by": 2003, "g": 6216077, "mkt": 9133764, "r": 0.6806}, {"dp": "묵동 신내대림아파트", "by": 1995, "g": 5519480, "mkt": 9020769, "r": 0.6119}, {"dp": "면목동 두산2", "by": 1995, "g": 4716840, "mkt": 8965435, "r": 0.5261}, {"dp": "망우동 금호어울림(580-1)", "by": 2006, "g": 4792181, "mkt": 8945261, "r": 0.5357}, {"dp": "신내동 동성7", "by": 1999, "g": 4659117, "mkt": 8931580, "r": 0.5216}, {"dp": "신내동 동성1", "by": 1993, "g": 4814814, "mkt": 8845089, "r": 0.5443}, {"dp": "신내동 동성아파트", "by": 1997, "g": 4814814, "mkt": 8789371, "r": 0.5478}, {"dp": "면목동 신성미소지움", "by": 2004, "g": 5561700, "mkt": 8779006, "r": 0.6335}, {"dp": "상봉동 건영1", "by": 1997, "g": 4896421, "mkt": 8749214, "r": 0.5596}, {"dp": "묵동 신내두산아파트", "by": 1995, "g": 5471967, "mkt": 8666256, "r": 0.6314}, {"dp": "면목동 신우", "by": 1998, "g": 4653909, "mkt": 8649141, "r": 0.5381}, {"dp": "묵동 세방", "by": 2000, "g": 4622641, "mkt": 8641975, "r": 0.5349}, {"dp": "신내동 동성3", "by": 1997, "g": 4674119, "mkt": 8574653, "r": 0.5451}, {"dp": "중화동 동양엔파트", "by": 2010, "g": 4718435, "mkt": 8512541, "r": 0.5543}, {"dp": "신내동 우남푸르미아", "by": 2005, "g": 4889571, "mkt": 8344159, "r": 0.586}, {"dp": "신내동 영풍마드레빌", "by": 2004, "g": 4914641, "mkt": 8338390, "r": 0.5894}, {"dp": "면목동 면목삼호101", "by": 2000, "g": 4692475, "mkt": 8305930, "r": 0.565}, {"dp": "면목동 용마금호타운", "by": 1992, "g": 4864546, "mkt": 8193167, "r": 0.5937}, {"dp": "면목동 두원", "by": 1998, "g": 5125611, "mkt": 8146250, "r": 0.6292}, {"dp": "신내동 성원", "by": 1994, "g": 4549763, "mkt": 8115012, "r": 0.5607}, {"dp": "망우동 중랑숲리가", "by": 2012, "g": 5178663, "mkt": 8083222, "r": 0.6407}, {"dp": "중화동 미영리치타운", "by": 2007, "g": 5253216, "mkt": 8068704, "r": 0.6511}, {"dp": "상봉동 상봉어반뷰", "by": 2018, "g": 5158371, "mkt": 8066819, "r": 0.6395}, {"dp": "신내동 중앙하이츠", "by": 1996, "g": 4177945, "mkt": 7991054, "r": 0.5228}, {"dp": "면목동 신성", "by": 1998, "g": 5083549, "mkt": 7984545, "r": 0.6367}, {"dp": "신내동 진로아파트", "by": 1995, "g": 4869428, "mkt": 7976634, "r": 0.6105}, {"dp": "망우동 예성그린캐슬", "by": 2004, "g": 4467759, "mkt": 7957790, "r": 0.5614}, {"dp": "망우동 금호어울림(580)", "by": 2006, "g": 4957023, "mkt": 7913600, "r": 0.6264}, {"dp": "신내동 벽산", "by": 2000, "g": 4415971, "mkt": 7903679, "r": 0.5587}, {"dp": "신내동 새한", "by": 1998, "g": 4680094, "mkt": 7862172, "r": 0.5953}, {"dp": "묵동 한국", "by": 1999, "g": 4729968, "mkt": 7858763, "r": 0.6019}, {"dp": "면목동 아람플러스", "by": 2009, "g": 4495968, "mkt": 7809554, "r": 0.5757}, {"dp": "묵동 신안3", "by": 2000, "g": 5188845, "mkt": 7639459, "r": 0.6792}, {"dp": "면목동 용마동아", "by": 1993, "g": 4783223, "mkt": 7599858, "r": 0.6294}, {"dp": "신내동 석탑", "by": 1997, "g": 4444444, "mkt": 7309158, "r": 0.6081}, {"dp": "망우동 경남", "by": 1989, "g": 5103395, "mkt": 7173681, "r": 0.7114}, {"dp": "신내동 라이프미성", "by": 1992, "g": 4010067, "mkt": 7107449, "r": 0.5642}, {"dp": "상봉동 주함해븐타워", "by": 2015, "g": 5274431, "mkt": 7094018, "r": 0.7435}, {"dp": "망우동 신원", "by": 1999, "g": 4142905, "mkt": 6972105, "r": 0.5942}, {"dp": "중화동 극동", "by": 1991, "g": 4266101, "mkt": 6787308, "r": 0.6285}, {"dp": "면목동 현대휴온", "by": 2013, "g": 4380847, "mkt": 6756105, "r": 0.6484}, {"dp": "중화동 한영(101)", "by": 2003, "g": 3297294, "mkt": 6609662, "r": 0.4989}, {"dp": "묵동 우성", "by": 1975, "g": 3466136, "mkt": 6442368, "r": 0.538}, {"dp": "상봉동 문수해오름", "by": 2003, "g": 3165887, "mkt": 6189747, "r": 0.5115}, {"dp": "망우동 문수해오름", "by": 2002, "g": 3456524, "mkt": 5561535, "r": 0.6215}], "도봉구": [{"dp": "창동 창동주공3단지(해등마을)", "by": 1990, "g": 6267521, "mkt": 13059214, "r": 0.4799}, {"dp": "창동 동아청솔", "by": 1997, "g": 6521014, "mkt": 12832624, "r": 0.5082}, {"dp": "창동 주공19단지(창동리버타운)", "by": 1988, "g": 6676691, "mkt": 12738254, "r": 0.5241}, {"dp": "창동 창동주공1단지", "by": 1990, "g": 5786924, "mkt": 12112321, "r": 0.4778}, {"dp": "창동 쌍용", "by": 1997, "g": 6630486, "mkt": 11736077, "r": 0.565}, {"dp": "창동 창동주공18단지", "by": 1988, "g": 5971459, "mkt": 11379230, "r": 0.5248}, {"dp": "창동 창동주공2단지", "by": 1990, "g": 5835176, "mkt": 11310624, "r": 0.5159}, {"dp": "창동 상아1차아파트", "by": 1987, "g": 5316529, "mkt": 11137354, "r": 0.4774}, {"dp": "창동 북한산아이파크5차", "by": 2004, "g": 6015279, "mkt": 11109584, "r": 0.5414}, {"dp": "창동 동아그린", "by": 1996, "g": 5703802, "mkt": 10889738, "r": 0.5238}, {"dp": "창동 삼성래미안", "by": 1992, "g": 5832449, "mkt": 10860868, "r": 0.537}, {"dp": "창동 상아2차아파트", "by": 1988, "g": 5700631, "mkt": 10538128, "r": 0.541}, {"dp": "창동 대우그린", "by": 2000, "g": 5616389, "mkt": 10484499, "r": 0.5357}, {"dp": "창동 창동신도브래뉴1차", "by": 2003, "g": 6000776, "mkt": 10451351, "r": 0.5742}, {"dp": "창동 금호어울림", "by": 2004, "g": 5765384, "mkt": 10430638, "r": 0.5527}, {"dp": "창동 창동주공4단지", "by": 1991, "g": 5617433, "mkt": 9970450, "r": 0.5634}, {"dp": "쌍문동 한양1", "by": 1986, "g": 5653550, "mkt": 9904718, "r": 0.5708}, {"dp": "창동 창동2차현대", "by": 2001, "g": 6035217, "mkt": 9845628, "r": 0.613}, {"dp": "쌍문동 쌍문동삼성래미안", "by": 2002, "g": 4944765, "mkt": 9718459, "r": 0.5088}, {"dp": "창동 창동역블루핀1동", "by": 2020, "g": 4861005, "mkt": 9611191, "r": 0.5058}, {"dp": "창동 태영데시앙", "by": 2003, "g": 5741514, "mkt": 9601871, "r": 0.598}, {"dp": "방학동 대상타운현대아파트", "by": 2001, "g": 5673507, "mkt": 9591516, "r": 0.5915}, {"dp": "창동 현대조합", "by": 2000, "g": 4975656, "mkt": 9574778, "r": 0.5197}, {"dp": "도봉동 래미안도봉", "by": 2005, "g": 5476049, "mkt": 9530619, "r": 0.5746}, {"dp": "방학동 방학동삼성래미안2", "by": 2002, "g": 5704227, "mkt": 9477612, "r": 0.6019}, {"dp": "쌍문동 시티프라디움", "by": 2021, "g": 5339074, "mkt": 9248365, "r": 0.5773}, {"dp": "창동 LIG건영캐스빌", "by": 2002, "g": 4878365, "mkt": 9237008, "r": 0.5281}, {"dp": "방학동 방학동삼성래미안1", "by": 2002, "g": 5474645, "mkt": 9021378, "r": 0.6069}, {"dp": "창동 주공17단지", "by": 1989, "g": 5503318, "mkt": 8990345, "r": 0.6121}, {"dp": "창동 대우", "by": 1995, "g": 5175012, "mkt": 8746289, "r": 0.5917}, {"dp": "쌍문동 북한산코오롱하늘채", "by": 2014, "g": 5495410, "mkt": 8712336, "r": 0.6308}, {"dp": "창동 동도센트리움", "by": 2009, "g": 4968286, "mkt": 8425252, "r": 0.5897}, {"dp": "창동 성원상떼빌", "by": 2001, "g": 4918225, "mkt": 8263343, "r": 0.5952}, {"dp": "창동 북한산한신휴플러스", "by": 2007, "g": 5307568, "mkt": 8249427, "r": 0.6434}, {"dp": "쌍문동 빌드아르떼APT", "by": 2024, "g": 5052702, "mkt": 8236069, "r": 0.6135}, {"dp": "방학동 이에스에이아파트1", "by": 2003, "g": 3994866, "mkt": 8207813, "r": 0.4867}, {"dp": "쌍문동 브라운스톤쌍문", "by": 2006, "g": 4941757, "mkt": 8132080, "r": 0.6077}, {"dp": "창동 동아", "by": 1988, "g": 5913918, "mkt": 8096211, "r": 0.7305}, {"dp": "방학동 이에스에이아파트2", "by": 2003, "g": 4742292, "mkt": 8075428, "r": 0.5872}, {"dp": "방학동 브라운스톤방학아파트", "by": 2003, "g": 4982332, "mkt": 7864084, "r": 0.6336}, {"dp": "창동 초안산신도브래뉴", "by": 2005, "g": 4658872, "mkt": 7844180, "r": 0.5939}, {"dp": "방학동 방학지음재힐스", "by": 2018, "g": 5125084, "mkt": 7706029, "r": 0.6651}, {"dp": "도봉동 동아에코빌", "by": 2003, "g": 4566478, "mkt": 7650028, "r": 0.5969}, {"dp": "도봉동 서원", "by": 1996, "g": 4199316, "mkt": 7371192, "r": 0.5697}, {"dp": "쌍문동 삼익세라믹", "by": 1988, "g": 4472396, "mkt": 7360755, "r": 0.6076}, {"dp": "방학동 거성학마을아파트", "by": 1994, "g": 4417402, "mkt": 7297049, "r": 0.6054}, {"dp": "도봉동 도봉파크빌2", "by": 2002, "g": 4078052, "mkt": 7209736, "r": 0.5656}, {"dp": "쌍문동 금호1", "by": 1990, "g": 4054292, "mkt": 7188435, "r": 0.564}, {"dp": "도봉동 한신", "by": 1995, "g": 4097009, "mkt": 7187846, "r": 0.57}, {"dp": "쌍문동 도봉금강아미움파크타운", "by": 2018, "g": 4409444, "mkt": 7169038, "r": 0.6151}, {"dp": "쌍문동 한양7", "by": 1993, "g": 3850682, "mkt": 7090242, "r": 0.5431}, {"dp": "창동 금용", "by": 1997, "g": 3944424, "mkt": 6994769, "r": 0.5639}, {"dp": "쌍문동 성원", "by": 1989, "g": 3906801, "mkt": 6972346, "r": 0.5603}, {"dp": "창동 신창", "by": 1998, "g": 4393939, "mkt": 6945229, "r": 0.6327}, {"dp": "쌍문동 금호2", "by": 1991, "g": 3907174, "mkt": 6890152, "r": 0.5671}, {"dp": "쌍문동 한양2", "by": 1988, "g": 4227941, "mkt": 6806828, "r": 0.6211}, {"dp": "방학동 벽산아파트2", "by": 1998, "g": 4011345, "mkt": 6801111, "r": 0.5898}, {"dp": "쌍문동 현대1", "by": 1990, "g": 3720765, "mkt": 6707237, "r": 0.5547}, {"dp": "도봉동 중흥에스-클래스", "by": 2004, "g": 4346598, "mkt": 6699749, "r": 0.6488}, {"dp": "쌍문동 한양6", "by": 2002, "g": 3970903, "mkt": 6632084, "r": 0.5987}, {"dp": "쌍문동 한양5", "by": 1991, "g": 3931467, "mkt": 6557446, "r": 0.5995}, {"dp": "쌍문동 청구", "by": 1996, "g": 4041120, "mkt": 6550080, "r": 0.617}, {"dp": "방학동 신동아아파트1", "by": 1986, "g": 3845850, "mkt": 6516157, "r": 0.5902}, {"dp": "창동 창동한승미메이드", "by": 2004, "g": 4380863, "mkt": 6494541, "r": 0.6745}, {"dp": "도봉동 한양수자인", "by": 2010, "g": 3776935, "mkt": 6488700, "r": 0.5821}, {"dp": "방학동 삼익세라믹아파트", "by": 1988, "g": 4185809, "mkt": 6446889, "r": 0.6493}, {"dp": "방학동 한화성원아파트", "by": 1996, "g": 3742056, "mkt": 6401171, "r": 0.5846}, {"dp": "도봉동 럭키", "by": 1992, "g": 4089087, "mkt": 6392882, "r": 0.6396}, {"dp": "방학동 청구아파트", "by": 1994, "g": 3648346, "mkt": 6271731, "r": 0.5817}, {"dp": "방학동 벽산아파트1", "by": 1991, "g": 3666157, "mkt": 6243800, "r": 0.5872}, {"dp": "쌍문동 극동아파트", "by": 1996, "g": 3427561, "mkt": 6158918, "r": 0.5565}, {"dp": "방학동 우성아파트2", "by": 1993, "g": 3671452, "mkt": 6148936, "r": 0.5971}, {"dp": "쌍문동 미라보", "by": 1995, "g": 3824879, "mkt": 6138559, "r": 0.6231}, {"dp": "방학동 신동아아파트2", "by": 1992, "g": 3595850, "mkt": 5981827, "r": 0.6011}, {"dp": "쌍문동 에덴", "by": 2001, "g": 3590291, "mkt": 5978873, "r": 0.6005}, {"dp": "방학동 우성아파트1", "by": 1992, "g": 3427699, "mkt": 5891752, "r": 0.5818}, {"dp": "도봉동 현대성우", "by": 1998, "g": 3626022, "mkt": 5848560, "r": 0.62}, {"dp": "쌍문동 경남", "by": 1988, "g": 3505617, "mkt": 5829608, "r": 0.6013}, {"dp": "도봉동 극동", "by": 1991, "g": 3453966, "mkt": 5776258, "r": 0.598}, {"dp": "쌍문동 동익미라벨", "by": 1987, "g": 3288773, "mkt": 5747749, "r": 0.5722}, {"dp": "쌍문동 현대2", "by": 1993, "g": 3364705, "mkt": 5717646, "r": 0.5885}, {"dp": "쌍문동 신원2", "by": 1998, "g": 3616666, "mkt": 5647723, "r": 0.6404}, {"dp": "쌍문동 쌍문금용", "by": 1995, "g": 3186519, "mkt": 5441906, "r": 0.5856}, {"dp": "도봉동 서울가든", "by": 1987, "g": 3497941, "mkt": 5323243, "r": 0.6571}, {"dp": "쌍문동 신일라이프", "by": 2002, "g": 3795298, "mkt": 5222336, "r": 0.7267}, {"dp": "방학동 신동아아파트3", "by": 1992, "g": 3370256, "mkt": 5185010, "r": 0.65}, {"dp": "쌍문동 현대3", "by": 1995, "g": 3536484, "mkt": 4886376, "r": 0.7237}], "노원구": [{"dp": "월계동 미성", "by": 1986, "g": 8236936, "mkt": 19822086, "r": 0.4155}, {"dp": "월계동 미륭", "by": 1986, "g": 8022533, "mkt": 18341699, "r": 0.4374}, {"dp": "월계동 삼호3", "by": 1986, "g": 8223573, "mkt": 17863896, "r": 0.4603}, {"dp": "공릉동 태릉해링턴플레이스", "by": 2022, "g": 7895975, "mkt": 16149922, "r": 0.4889}, {"dp": "중계동 청구3", "by": 1996, "g": 9036215, "mkt": 15824330, "r": 0.571}, {"dp": "상계동 포레나노원", "by": 2020, "g": 9163570, "mkt": 15471396, "r": 0.5923}, {"dp": "중계동 건영3", "by": 1995, "g": 8633686, "mkt": 14989693, "r": 0.576}, {"dp": "상계동 노원센트럴푸르지오", "by": 2021, "g": 8117207, "mkt": 14866068, "r": 0.546}, {"dp": "월계동 삼호4", "by": 1987, "g": 7054603, "mkt": 14769155, "r": 0.4777}, {"dp": "상계동 상계주공3(고층)", "by": 1987, "g": 6680161, "mkt": 14235155, "r": 0.4693}, {"dp": "하계동 장미(시영6)", "by": 1989, "g": 6510809, "mkt": 14093346, "r": 0.462}, {"dp": "상계동 상계주공7(고층)", "by": 1988, "g": 6634113, "mkt": 13952751, "r": 0.4755}, {"dp": "월계동 월계센트럴아이파크", "by": 2020, "g": 7612660, "mkt": 13913401, "r": 0.5471}, {"dp": "상계동 상계주공6(고층)", "by": 1988, "g": 6768816, "mkt": 13766803, "r": 0.4917}, {"dp": "하계동 현대", "by": 1988, "g": 7156808, "mkt": 13510599, "r": 0.5297}, {"dp": "월계동 한진한화그랑빌", "by": 2002, "g": 6402259, "mkt": 13452064, "r": 0.4759}, {"dp": "월계동 꿈의숲SKVIEW", "by": 2016, "g": 6617214, "mkt": 13137748, "r": 0.5037}, {"dp": "월계동 풍림아이원", "by": 2005, "g": 6339921, "mkt": 13106394, "r": 0.4837}, {"dp": "중계동 중계그린1단지", "by": 1990, "g": 5982905, "mkt": 13090167, "r": 0.4571}, {"dp": "중계동 주공10", "by": 1995, "g": 7378740, "mkt": 13014562, "r": 0.567}, {"dp": "하계동 한신2", "by": 1988, "g": 6626235, "mkt": 12596370, "r": 0.526}, {"dp": "공릉동 테라파크뷰", "by": 2022, "g": 7016871, "mkt": 12591667, "r": 0.5573}, {"dp": "중계동 롯데우성", "by": 1993, "g": 7331251, "mkt": 12414741, "r": 0.5905}, {"dp": "중계동 주공8", "by": 1993, "g": 6516492, "mkt": 12306415, "r": 0.5295}, {"dp": "공릉동 태강아파트(아이파크)", "by": 1999, "g": 6149193, "mkt": 12280974, "r": 0.5007}, {"dp": "월계동 현대", "by": 2000, "g": 5836667, "mkt": 12126858, "r": 0.4813}, {"dp": "중계동 중계무지개", "by": 1991, "g": 5914412, "mkt": 12109705, "r": 0.4884}, {"dp": "중계동 양지마을(대림)1", "by": 1998, "g": 6407538, "mkt": 12094242, "r": 0.5298}, {"dp": "하계동 우성", "by": 1988, "g": 7160522, "mkt": 12049865, "r": 0.5942}, {"dp": "중계동 성원1", "by": 1996, "g": 6746874, "mkt": 11818184, "r": 0.5709}, {"dp": "상계동 상계주공4(고층)", "by": 1988, "g": 6085157, "mkt": 11794431, "r": 0.5159}, {"dp": "중계동 주공4", "by": 1991, "g": 6248634, "mkt": 11756554, "r": 0.5315}, {"dp": "하계동 한신1", "by": 1988, "g": 6771730, "mkt": 11688551, "r": 0.5793}, {"dp": "공릉동 화랑대디오베이션", "by": 2021, "g": 6434588, "mkt": 11668942, "r": 0.5514}, {"dp": "상계동 상계주공2(고층)", "by": 1987, "g": 6136872, "mkt": 11640421, "r": 0.5272}, {"dp": "월계동 롯데캐슬루나", "by": 2006, "g": 6271680, "mkt": 11586876, "r": 0.5413}, {"dp": "공릉동 풍림아파트A", "by": 2001, "g": 5777150, "mkt": 11580684, "r": 0.4989}, {"dp": "상계동 상계주공10(고층)", "by": 1988, "g": 5867040, "mkt": 11576367, "r": 0.5068}, {"dp": "상계동 상계주공11(고층)", "by": 1988, "g": 5927112, "mkt": 11455181, "r": 0.5174}, {"dp": "중계동 주공5", "by": 1992, "g": 6848777, "mkt": 11400834, "r": 0.6007}, {"dp": "중계동 라이프", "by": 1993, "g": 7099005, "mkt": 11356249, "r": 0.6251}, {"dp": "중계동 동진신안", "by": 1993, "g": 7124833, "mkt": 11355202, "r": 0.6275}, {"dp": "하계동 청솔(시영7)", "by": 1989, "g": 5939393, "mkt": 11352220, "r": 0.5232}, {"dp": "중계동 상아", "by": 1989, "g": 5907584, "mkt": 11277624, "r": 0.5238}, {"dp": "중계동 청구(366)", "by": 1993, "g": 7092751, "mkt": 11249644, "r": 0.6305}, {"dp": "월계동 성원(사슴4)", "by": 1995, "g": 5669070, "mkt": 11160107, "r": 0.508}, {"dp": "상계동 상계주공1(고층)", "by": 1988, "g": 5766920, "mkt": 11158334, "r": 0.5168}, {"dp": "중계동 신안", "by": 1999, "g": 6711409, "mkt": 11156246, "r": 0.6016}, {"dp": "공릉동 노원프레미어스엠코", "by": 2016, "g": 6294561, "mkt": 11096758, "r": 0.5672}, {"dp": "상계동 상계1차중앙하이츠", "by": 1997, "g": 5449682, "mkt": 11088821, "r": 0.4915}, {"dp": "하계동 하계2현대", "by": 1997, "g": 6113362, "mkt": 11072781, "r": 0.5521}, {"dp": "하계동 하계1청구", "by": 1997, "g": 6453900, "mkt": 11063829, "r": 0.5833}, {"dp": "중계동 중계3우성", "by": 1999, "g": 5638972, "mkt": 11021699, "r": 0.5116}, {"dp": "중계동 대림벽산(363)", "by": 1993, "g": 6514859, "mkt": 11014948, "r": 0.5915}, {"dp": "월계동 동신", "by": 1983, "g": 4689035, "mkt": 11000520, "r": 0.4263}, {"dp": "하계동 건영", "by": 1988, "g": 5833646, "mkt": 10994050, "r": 0.5306}, {"dp": "상계동 상계주공12(고층)", "by": 1988, "g": 5726872, "mkt": 10911700, "r": 0.5248}, {"dp": "하계동 미성", "by": 1989, "g": 5733458, "mkt": 10889287, "r": 0.5265}, {"dp": "상계동 상계주공9(고층)", "by": 1988, "g": 5653218, "mkt": 10876479, "r": 0.5198}, {"dp": "공릉동 두산힐스빌아파트", "by": 2000, "g": 5971731, "mkt": 10807678, "r": 0.5525}, {"dp": "하계동 벽산", "by": 1988, "g": 5700918, "mkt": 10796478, "r": 0.528}, {"dp": "상계동 상계2차중앙하이츠", "by": 1998, "g": 5650118, "mkt": 10756626, "r": 0.5253}, {"dp": "중계동 신동아(366)", "by": 1993, "g": 7342869, "mkt": 10748577, "r": 0.6831}, {"dp": "상계동 상계주공14(고층)", "by": 1989, "g": 5566680, "mkt": 10737255, "r": 0.5184}, {"dp": "하계동 학여울청구", "by": 1999, "g": 5485431, "mkt": 10717508, "r": 0.5118}, {"dp": "상계동 동양엔파트", "by": 2003, "g": 5902450, "mkt": 10588477, "r": 0.5574}, {"dp": "중계동 경남", "by": 1989, "g": 5768194, "mkt": 10576073, "r": 0.5454}, {"dp": "중계동 롯데(505)", "by": 1989, "g": 5671806, "mkt": 10550562, "r": 0.5376}, {"dp": "상계동 상계주공2(저층)", "by": 1987, "g": 5060816, "mkt": 10527747, "r": 0.4807}, {"dp": "상계동 중계센트럴파크", "by": 2016, "g": 6953907, "mkt": 10494966, "r": 0.6626}, {"dp": "공릉동 우방아파트", "by": 2000, "g": 5388251, "mkt": 10435488, "r": 0.5163}, {"dp": "하계동 극동", "by": 1988, "g": 5653266, "mkt": 10425588, "r": 0.5422}, {"dp": "중계동 중앙하이츠아쿠아", "by": 2008, "g": 6913901, "mkt": 10414813, "r": 0.6639}, {"dp": "중계동 양지마을(대림)2", "by": 1999, "g": 6149290, "mkt": 10414347, "r": 0.5905}, {"dp": "중계동 주공6", "by": 1993, "g": 6349206, "mkt": 10408162, "r": 0.61}, {"dp": "상계동 대동황토방", "by": 2001, "g": 5142991, "mkt": 10366666, "r": 0.4961}, {"dp": "중계동 한화꿈에그린", "by": 2005, "g": 5991200, "mkt": 10339261, "r": 0.5795}, {"dp": "중계동 중계3벽산", "by": 1999, "g": 5644622, "mkt": 10303941, "r": 0.5478}, {"dp": "공릉동 화랑타운아파트", "by": 2000, "g": 5753101, "mkt": 10218546, "r": 0.563}, {"dp": "공릉동 태릉우성아파트", "by": 1985, "g": 6180592, "mkt": 10191832, "r": 0.6064}, {"dp": "공릉동 신도1차아파트", "by": 2002, "g": 5520999, "mkt": 10190456, "r": 0.5418}, {"dp": "공릉동 삼익4단지아파트", "by": 1994, "g": 5454545, "mkt": 10160725, "r": 0.5368}, {"dp": "공릉동 비선아파트", "by": 1999, "g": 5329218, "mkt": 10147563, "r": 0.5252}, {"dp": "월계동 동원베네스트", "by": 2005, "g": 5129147, "mkt": 10107928, "r": 0.5074}, {"dp": "중계동 염광", "by": 1996, "g": 5763313, "mkt": 10083136, "r": 0.5716}, {"dp": "상계동 상계주공10(저층)", "by": 1988, "g": 5555555, "mkt": 10077799, "r": 0.5513}, {"dp": "공릉동 시영3차(라이프)아파트", "by": 1994, "g": 5656565, "mkt": 10037878, "r": 0.5635}, {"dp": "상계동 임광", "by": 1989, "g": 5571764, "mkt": 10019736, "r": 0.5561}, {"dp": "중계동 건영2", "by": 1991, "g": 5390772, "mkt": 10010663, "r": 0.5385}, {"dp": "상계동 한양", "by": 1988, "g": 5130773, "mkt": 9960764, "r": 0.5151}, {"dp": "하계동 청구", "by": 1988, "g": 6040458, "mkt": 9939099, "r": 0.6077}, {"dp": "공릉동 시영2단지(라이프)아파트", "by": 1994, "g": 5303030, "mkt": 9913859, "r": 0.5349}, {"dp": "월계동 성북역신도브래뉴", "by": 2005, "g": 5032783, "mkt": 9906188, "r": 0.508}, {"dp": "상계동 상계주공14(저층)", "by": 1989, "g": 5200805, "mkt": 9841424, "r": 0.5285}, {"dp": "상계동 보람아파트", "by": 1988, "g": 5184099, "mkt": 9828638, "r": 0.5274}, {"dp": "공릉동 청솔아파트8", "by": 2000, "g": 5104326, "mkt": 9751747, "r": 0.5234}, {"dp": "상계동 상계불암대림", "by": 2000, "g": 4884651, "mkt": 9671563, "r": 0.5051}, {"dp": "월계동 사슴3", "by": 1995, "g": 5786618, "mkt": 9659090, "r": 0.5991}, {"dp": "공릉동 풍림아파트B", "by": 2001, "g": 5810983, "mkt": 9544334, "r": 0.6088}, {"dp": "중계동 금호타운(583)", "by": 1997, "g": 5386609, "mkt": 9348789, "r": 0.5762}, {"dp": "상계동 미도", "by": 1988, "g": 5207262, "mkt": 9335388, "r": 0.5578}, {"dp": "공릉동 공릉동한보에센시티아파트", "by": 2000, "g": 4945249, "mkt": 9310340, "r": 0.5312}, {"dp": "공릉동 공릉해링턴플레이스", "by": 2000, "g": 5529448, "mkt": 9257683, "r": 0.5973}, {"dp": "공릉동 현대성우아파트", "by": 2000, "g": 4818272, "mkt": 9237608, "r": 0.5216}, {"dp": "상계동 코오롱", "by": 1997, "g": 5394581, "mkt": 9202508, "r": 0.5862}, {"dp": "상계동 상계주공16(고층)", "by": 1988, "g": 4984004, "mkt": 9184550, "r": 0.5427}, {"dp": "월계동 한일1", "by": 1999, "g": 5015186, "mkt": 9114395, "r": 0.5502}, {"dp": "공릉동 공릉우성아파트", "by": 1995, "g": 5180560, "mkt": 9092728, "r": 0.5697}, {"dp": "공릉동 동신아파트", "by": 1999, "g": 5300883, "mkt": 9070382, "r": 0.5844}, {"dp": "중계동 경남아너스빌", "by": 2002, "g": 4930592, "mkt": 9009718, "r": 0.5473}, {"dp": "상계동 두산", "by": 1994, "g": 5069201, "mkt": 8982362, "r": 0.5644}, {"dp": "중계동 현대(6차)", "by": 2018, "g": 5307131, "mkt": 8973648, "r": 0.5914}, {"dp": "중계동 삼성", "by": 1999, "g": 5425709, "mkt": 8971361, "r": 0.6048}, {"dp": "상계동 은빛2단지", "by": 1998, "g": 5163753, "mkt": 8913529, "r": 0.5793}, {"dp": "월계동 대동", "by": 1997, "g": 5120481, "mkt": 8906599, "r": 0.5749}, {"dp": "월계동 녹천역두산위브아파트", "by": 2017, "g": 5458502, "mkt": 8892106, "r": 0.6139}, {"dp": "공릉동 대주파크빌아파트", "by": 2003, "g": 4864677, "mkt": 8832593, "r": 0.5508}, {"dp": "상계동 은빛1단지", "by": 1998, "g": 5023364, "mkt": 8768671, "r": 0.5729}, {"dp": "월계동 세양청마루", "by": 2005, "g": 4825970, "mkt": 8711211, "r": 0.554}, {"dp": "공릉동 건영장미아파트", "by": 1999, "g": 4853911, "mkt": 8685484, "r": 0.5589}, {"dp": "중계동 중계현대2", "by": 1991, "g": 5157695, "mkt": 8655442, "r": 0.5959}, {"dp": "상계동 청암2단지", "by": 2001, "g": 4882459, "mkt": 8651568, "r": 0.5643}, {"dp": "상계동 상계주공13(고층)", "by": 1989, "g": 4923747, "mkt": 8609040, "r": 0.5719}, {"dp": "상계동 대림", "by": 1988, "g": 6208000, "mkt": 8589604, "r": 0.7227}, {"dp": "공릉동 동부아파트", "by": 1996, "g": 4552423, "mkt": 8487293, "r": 0.5364}, {"dp": "공릉동 대동아파트2", "by": 1999, "g": 4515976, "mkt": 8483096, "r": 0.5323}, {"dp": "공릉동 삼익아파트", "by": 1997, "g": 4553497, "mkt": 8469304, "r": 0.5376}, {"dp": "상계동 양우", "by": 2002, "g": 5212805, "mkt": 8453674, "r": 0.6166}, {"dp": "상계동 한신3차", "by": 1990, "g": 4539543, "mkt": 8451899, "r": 0.5371}, {"dp": "공릉동 현대(고려)아파트", "by": 1999, "g": 4744916, "mkt": 8434096, "r": 0.5626}, {"dp": "월계동 주공2", "by": 1992, "g": 4986522, "mkt": 8416375, "r": 0.5925}, {"dp": "상계동 상계대림", "by": 1989, "g": 4776269, "mkt": 8406820, "r": 0.5681}, {"dp": "하계동 우방", "by": 1999, "g": 4871108, "mkt": 8390525, "r": 0.5805}, {"dp": "공릉동 신성미소지움아파트", "by": 2004, "g": 4839336, "mkt": 8354807, "r": 0.5792}, {"dp": "중계동 중앙하이츠", "by": 1998, "g": 4726279, "mkt": 8345773, "r": 0.5663}, {"dp": "중계동 주공7", "by": 1993, "g": 5283446, "mkt": 8333332, "r": 0.634}, {"dp": "상계동 우림루미아트1", "by": 2004, "g": 4794609, "mkt": 8326778, "r": 0.5758}, {"dp": "공릉동 신원아파트", "by": 2000, "g": 4816244, "mkt": 8310593, "r": 0.5795}, {"dp": "상계동 극동늘푸른", "by": 2000, "g": 4953467, "mkt": 8152628, "r": 0.6076}, {"dp": "중계동 현대(3차)", "by": 1992, "g": 5446065, "mkt": 8145534, "r": 0.6686}, {"dp": "중계동 주공2", "by": 1992, "g": 4829290, "mkt": 8142407, "r": 0.5931}, {"dp": "공릉동 삼익포레스트아파트", "by": 1995, "g": 4644326, "mkt": 8089859, "r": 0.5741}, {"dp": "하계동 삼익선경", "by": 1993, "g": 4754452, "mkt": 8067064, "r": 0.5894}, {"dp": "공릉동 건영아파트", "by": 1998, "g": 4672566, "mkt": 8049716, "r": 0.5805}, {"dp": "중계동 중계스타클래스", "by": 2005, "g": 5030347, "mkt": 8029662, "r": 0.6265}, {"dp": "상계동 상계대림e편한세상", "by": 2002, "g": 4423512, "mkt": 7968344, "r": 0.5551}, {"dp": "상계동 한신2차", "by": 1988, "g": 4274611, "mkt": 7915297, "r": 0.54}, {"dp": "상계동 벽산", "by": 1989, "g": 4598160, "mkt": 7901907, "r": 0.5819}, {"dp": "하계동 한신동성", "by": 1993, "g": 5047364, "mkt": 7896218, "r": 0.6392}, {"dp": "월계동 삼창", "by": 1984, "g": 4406474, "mkt": 7843430, "r": 0.5618}, {"dp": "공릉동 길성그랑프리텔아파트", "by": 2003, "g": 4676539, "mkt": 7771034, "r": 0.6018}, {"dp": "상계동 동아불암", "by": 1999, "g": 4511189, "mkt": 7710677, "r": 0.5851}, {"dp": "중계동 신일", "by": 1998, "g": 4173533, "mkt": 7652460, "r": 0.5454}, {"dp": "월계동 청백3", "by": 1998, "g": 4741812, "mkt": 7635882, "r": 0.621}, {"dp": "상계동 상계현대3차", "by": 1999, "g": 4684557, "mkt": 7613206, "r": 0.6153}, {"dp": "상계동 수락리버시티3단지", "by": 2009, "g": 4220045, "mkt": 7556023, "r": 0.5585}, {"dp": "월계동 월계흥화브라운빌", "by": 2004, "g": 4958191, "mkt": 7507949, "r": 0.6604}, {"dp": "중계동 진로유통조합대림", "by": 1992, "g": 4897574, "mkt": 7504295, "r": 0.6526}, {"dp": "상계동 수락산벨리체", "by": 2000, "g": 4550991, "mkt": 7464772, "r": 0.6097}, {"dp": "상계동 수락한신", "by": 1997, "g": 4170141, "mkt": 7461740, "r": 0.5589}, {"dp": "상계동 한신1차", "by": 1987, "g": 4429206, "mkt": 7436449, "r": 0.5956}, {"dp": "월계동 청백4", "by": 1998, "g": 4741812, "mkt": 7433378, "r": 0.6379}, {"dp": "중계동 현대1(4차)", "by": 1993, "g": 4388751, "mkt": 7426545, "r": 0.591}, {"dp": "중계동 현대2(4차)", "by": 1993, "g": 4568341, "mkt": 7387615, "r": 0.6184}, {"dp": "상계동 불암현대", "by": 1999, "g": 4292929, "mkt": 7354298, "r": 0.5837}, {"dp": "상계동 수락현대", "by": 1995, "g": 4180202, "mkt": 7311074, "r": 0.5718}, {"dp": "월계동 초안2", "by": 1997, "g": 4444444, "mkt": 7176232, "r": 0.6193}, {"dp": "상계동 상계1차현대아파트", "by": 1993, "g": 3968064, "mkt": 7149666, "r": 0.555}, {"dp": "상계동 성원상떼빌", "by": 1999, "g": 4482880, "mkt": 7003537, "r": 0.6401}, {"dp": "상계동 상계신동아", "by": 1995, "g": 4294622, "mkt": 6993881, "r": 0.6141}, {"dp": "상계동 소담빌", "by": 2014, "g": 4928327, "mkt": 6962457, "r": 0.7078}, {"dp": "상계동 중앙하이츠(5지역)", "by": 1996, "g": 3935430, "mkt": 6684447, "r": 0.5887}, {"dp": "상계동 금호타운", "by": 1995, "g": 4016064, "mkt": 6600502, "r": 0.6084}, {"dp": "공릉동 하늘공원(101동)", "by": 2006, "g": 3546937, "mkt": 6550011, "r": 0.5415}, {"dp": "월계동 초안1", "by": 1998, "g": 4260651, "mkt": 6532013, "r": 0.6523}, {"dp": "월계동 대우", "by": 1998, "g": 4140828, "mkt": 6529776, "r": 0.6341}, {"dp": "공릉동 진명비베레", "by": 2012, "g": 4277744, "mkt": 6241002, "r": 0.6854}, {"dp": "월계동 극동", "by": 1996, "g": 3745048, "mkt": 6165919, "r": 0.6074}, {"dp": "중계동 동진", "by": 1988, "g": 3686517, "mkt": 5839133, "r": 0.6313}, {"dp": "공릉동 씨엠아파트", "by": 2006, "g": 3161272, "mkt": 4966651, "r": 0.6365}, {"dp": "상계동 노원IPARK", "by": 2009, "g": 3633354, "mkt": 4499720, "r": 0.8075}], "강북구": [{"dp": "미아동 송천센트레빌", "by": 2010, "g": 7317331, "mkt": 14739775, "r": 0.4964}, {"dp": "미아동 미아동부센트레빌", "by": 2006, "g": 6453132, "mkt": 14410002, "r": 0.4478}, {"dp": "미아동 삼성래미안트리베라2단지", "by": 2010, "g": 6901876, "mkt": 13337923, "r": 0.5175}, {"dp": "미아동 래미안트리베라1단지", "by": 2010, "g": 6555254, "mkt": 12539184, "r": 0.5228}, {"dp": "미아동 꿈의숲해링턴플레이스", "by": 2019, "g": 6814692, "mkt": 12363507, "r": 0.5512}, {"dp": "미아동 두산위브트레지움", "by": 2011, "g": 5955042, "mkt": 12298290, "r": 0.4842}, {"dp": "번동 주공1단지", "by": 1991, "g": 5883777, "mkt": 12294029, "r": 0.4786}, {"dp": "미아동 꿈의숲롯데캐슬", "by": 2017, "g": 6707460, "mkt": 12228086, "r": 0.5485}, {"dp": "미아동 꿈의숲한신더휴", "by": 2022, "g": 6767862, "mkt": 11322981, "r": 0.5977}, {"dp": "미아동 경남아너스빌(1356-0)", "by": 2003, "g": 5396297, "mkt": 10928127, "r": 0.4938}, {"dp": "수유동 래미안수유", "by": 2001, "g": 4941583, "mkt": 9779976, "r": 0.5053}, {"dp": "미아동 에스케이북한산시티", "by": 2004, "g": 4981158, "mkt": 9459392, "r": 0.5266}, {"dp": "번동 수유역두산위브1", "by": 2009, "g": 5223615, "mkt": 9196229, "r": 0.568}, {"dp": "미아동 삼각산아이원", "by": 2003, "g": 4981996, "mkt": 9162866, "r": 0.5437}, {"dp": "번동 주공4단지", "by": 1991, "g": 5056805, "mkt": 8638154, "r": 0.5854}, {"dp": "번동 동문", "by": 1998, "g": 4725430, "mkt": 8602403, "r": 0.5493}, {"dp": "미아동 미아한일유앤아이", "by": 2002, "g": 4860913, "mkt": 8128133, "r": 0.598}, {"dp": "미아동 현대성우", "by": 1998, "g": 4733867, "mkt": 8117276, "r": 0.5832}, {"dp": "미아동 벽산라이브파크", "by": 2004, "g": 4558840, "mkt": 7939336, "r": 0.5742}, {"dp": "번동 한솔솔파크", "by": 2005, "g": 4747879, "mkt": 7927367, "r": 0.5989}, {"dp": "수유동 수유벽산1차", "by": 1993, "g": 4473219, "mkt": 7727585, "r": 0.5789}, {"dp": "미아동 현대(190-2)", "by": 1992, "g": 4781533, "mkt": 7627683, "r": 0.6269}, {"dp": "번동 한진", "by": 2000, "g": 4107331, "mkt": 7587382, "r": 0.5413}, {"dp": "수유동 수유현대", "by": 2000, "g": 4172951, "mkt": 7267387, "r": 0.5742}, {"dp": "번동 번동솔그린", "by": 1999, "g": 4112337, "mkt": 7177956, "r": 0.5729}, {"dp": "미아동 성북프라자", "by": 2009, "g": 4455769, "mkt": 7171459, "r": 0.6213}, {"dp": "우이동 대우", "by": 2000, "g": 4309431, "mkt": 7005769, "r": 0.6151}, {"dp": "번동 신원", "by": 2000, "g": 4030732, "mkt": 6861925, "r": 0.5874}, {"dp": "번동 기산그린", "by": 2000, "g": 3979279, "mkt": 6769268, "r": 0.5878}, {"dp": "번동 번동한양아파트", "by": 1992, "g": 3779378, "mkt": 6655249, "r": 0.5679}, {"dp": "우이동 성원상떼빌", "by": 1990, "g": 3518474, "mkt": 5813131, "r": 0.6053}, {"dp": "번동 현대(148-494)", "by": 1997, "g": 3910583, "mkt": 5765606, "r": 0.6783}, {"dp": "수유동 극동", "by": 1992, "g": 3800447, "mkt": 5717393, "r": 0.6647}, {"dp": "미아동 요진", "by": 2005, "g": 4325143, "mkt": 5550059, "r": 0.7793}]};
+        function gsMedian(a) { const s = [...a].sort((x, y) => x - y); const n = s.length;
+            return n ? (n % 2 ? s[(n-1)/2] : (s[n/2-1] + s[n/2]) / 2) : 0; }
+        function gsRun() {
+            const gu = document.getElementById('gs-gu').value;
+            const by = parseInt(document.getElementById('gs-by').value);
+            const mkt = parseFloat(document.getElementById('gs-mkt').value);
+            const area = parseFloat(document.getElementById('gs-area').value);
+            const ask = parseFloat(document.getElementById('gs-ask').value);
+            const R = document.getElementById('gs-result'), C = document.getElementById('gs-comps');
+            const all = GONGSI[gu] || [];
+            if (!all.length) { R.innerHTML = '<div class="gs-err">공시가격 데이터가 없습니다 — data/공시가격_관할.csv 업로드 및 가격이력 백필 완료 후 이용 가능해요.</div>'; C.innerHTML=''; return; }
+            if (!by || !mkt) { R.innerHTML = '<div class="gs-err">준공연도와 시세 ㎡당가를 입력하세요.</div>'; C.innerHTML=''; return; }
+            let comps = all.filter(c => c.by && Math.abs(c.by - by) <= 7);
+            let note = '연식 ±7년 비교단지';
+            if (comps.length < 3) { comps = all; note = '유사 연식 부족 — 구 전체 비교단지'; }
+            const ratio = gsMedian(comps.map(c => c.r));
+            const est = mkt * ratio;  // 만원/㎡
+            let out = '<div class="gs-box"><div class="gs-main">가상 공시가격(안) <b>' + Math.round(est).toLocaleString() + '만원/㎡</b>'
+                    + ' <span class="ld-n">(적용 비율 ' + (ratio*100).toFixed(1) + '% · ' + note + ' ' + comps.length + '곳 중위)</span></div>';
+            if (area) {
+                const tot = est * area;  // 만원
+                out += '<div>전용 ' + area + '㎡ 예시: <b>' + (tot >= 10000 ? (tot/10000).toFixed(2) + '억원' : Math.round(tot).toLocaleString() + '만원') + '</b></div>';
+            }
+            if (ask) {
+                const gap = (ask - mkt) / mkt * 100;
+                out += '<div class="ld-n">매물 호가 참고: 시세 대비 ' + (gap >= 0 ? '+' : '') + gap.toFixed(1) + '% (호가는 산정에 미반영)</div>';
+            }
+            out += '</div>';
+            R.innerHTML = out;
+            const rows = comps.slice().sort((a, b) => Math.abs(a.by - by) - Math.abs(b.by - by)).slice(0, 8)
+                .map(c => '<div class="deal-row"><span class="deal-name">' + c.dp + '</span>'
+                    + '<span class="ld-tagchip">' + (c.by || '-') + '년</span>'
+                    + '<span class="deal-spec">공시 ' + Math.round(c.g/10000).toLocaleString() + '만/㎡ · 시세 ' + Math.round(c.mkt/10000).toLocaleString() + '만/㎡</span>'
+                    + '<span class="deal-price">' + (c.r*100).toFixed(1) + '%</span></div>').join('');
+            C.innerHTML = '<div class="deal-list">' + rows + '</div>';
+        }
+        document.getElementById('gs-btn') && document.getElementById('gs-btn').addEventListener('click', gsRun);
 
         render();
     </script>
