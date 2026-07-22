@@ -98,7 +98,8 @@
         .rt-note { font-size: 12px; color: #acaba9; }
         .rt-pin { background-color: #2f6bd8; color: #fff; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 3px 8px; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
         .rt-pin-start { background-color: #d94343; }
-        .lab-hr { border: none; border-top: 1px solid #eaeaea; margin: 34px 0 22px 0; }
+        .tab-empty { visibility: hidden; pointer-events: none; }
+        #gongsi-box { display: none; padding: 10px 0 40px 0; max-width: 760px; }
         .gs-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .gs-form select, .gs-form input { padding: 10px 12px; border: 1px solid #e0e0dd; border-radius: 8px; font-size: 13.5px; font-family: inherit; background-color: #fff; }
         .gs-form button { grid-column: 1 / -1; padding: 10px; border: none; border-radius: 8px; background-color: #37352f; color: #fff; font-weight: 600; cursor: pointer; }
@@ -212,8 +213,8 @@
 
     <div id="header">
         <h1>서울동부지사 AI toolkit</h1>
-        <div class="subtitle">📅 2026-07-22 기준 · 최근 30일 (2026-06-22 ~) · 갱신 2026-07-22 20:48 KST</div>
-        <div class="update-bar"><div class="update-track" style="animation-duration:16s"><span class="update-item">📌 🆕 2026-07-22 · &#x27;공동주택 가상 공시가격(안)&#x27; 탭 신설</span><span class="update-item">📌 🆕 2026-07-22 · &#x27;공동주택 가상 공시가격(안)&#x27; 탭 신설</span></div></div>
+        <div class="subtitle">📅 2026-07-22 기준 · 최근 30일 (2026-06-22 ~) · 갱신 2026-07-22 21:00 KST</div>
+        <div class="update-bar"><div class="update-track" style="animation-duration:18s"><span class="update-item">📌 🆕 2026-07-22 · &#x27;AI미공시&#x27; 탭 신설 — 시스템 정교화 작업중</span><span class="update-item">📌 🆕 2026-07-22 · &#x27;AI미공시&#x27; 탭 신설 — 시스템 정교화 작업중</span></div></div>
         <div class="tab-bar">
             <div class="tab-row">
                 <div class="tab-btn active" data-tab="news">📰 뉴스</div>
@@ -227,8 +228,13 @@
             </div>
             <div class="tab-row">
                 <div class="tab-btn" data-tab="peak">📊 고점대비</div>
-                <div class="tab-btn" data-tab="lab">🧪 실험실</div>
+                <div class="tab-btn" data-tab="gongsi">🏷️ AI미공시</div>
                 <div class="tab-btn" data-tab="log">📝 업데이트</div>
+            </div>
+            <div class="tab-row">
+                <div class="tab-btn" data-tab="lab">🧪 실험실</div>
+                <div class="tab-btn tab-empty"></div>
+                <div class="tab-btn tab-empty"></div>
             </div>
         </div>
     </div>
@@ -255,8 +261,8 @@
                 <div id="rt-msg"></div>
                 <div id="rt-map"></div>
                 <ol id="rt-list"></ol>
-                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div>
-
+                <div class="rt-note">※ 거리는 직선거리 기준 근사치입니다. 실제 도로·교통 상황에 따른 소요시간은 내비게이션으로 확인하세요.</div></div>
+            <div id="gongsi-box">
                 <hr class="lab-hr">
                 <div class="rt-head">🏷️ <b>신축 공동주택 가상 공시가격(안)</b> <span class="rt-beta">실험실 β</span></div>
                 <div class="rt-guide">인근 유사 연식 비교단지들의 <b>공시가격÷시세 비율(현실화 수준)</b>을 역산해, 신축 단지의 시세에 적용한 모의 산정치입니다. 공식 산정 절차·기준과 무관한 참고용입니다.</div>
@@ -271,7 +277,7 @@
                 <div id="gs-result"></div>
                 <div id="gs-comps"></div>
                 <div class="rt-note">※ 비교단지는 같은 구·연식 ±7년 중 공시가격과 최근 거래가 모두 있는 단지에서 자동 선정됩니다. 매물 호가 입력 시 시세와의 괴리를 참고 표시합니다.</div></div>
-            <div id="log-box"><div class="cl-head">📝 <b>개발 업데이트 이력</b></div><div class="cl-item"><div class="cl-date">2026-07-21</div><ul class="cl-list"><li>📊 &#x27;고점대비&#x27; 탭 신설 — 구별 대표단지(거래량 상위·신축) 전고점 대비 최근 3개월 회복률</li><li>🔐 세션 관리 도입 — 관리자 일괄 로그아웃(버전 방식) 및 개별 계정 차단 지원</li><li>📝 &#x27;업데이트&#x27; 탭 신설 — 개발 이력 타임라인</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-20</div><ul class="cl-list"><li>🗂️ &#x27;토허동향&#x27; 탭 신설 — 서울부동산정보광장 토지거래허가 내역 매일 수집, 구별 수급 지표(7일 증감·14일 추이)와 자체 누적 아카이브</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-14</div><ul class="cl-list"><li>🧭 실험실 첫 기능 &#x27;출장 표본지 최적동선&#x27; — 주소 입력만으로 방문 순서 최적화(2-opt)·지도 경로 표시</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-13</div><ul class="cl-list"><li>🔑 접속 로그인 도입 — 승인 계정만 이용 가능, 기관 심볼(구글컬러) 오프닝 화면</li><li>📢 상단 공지줄 흐름(마퀴) 효과 적용</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-12</div><ul class="cl-list"><li>🏗️ &#x27;추진현황&#x27; 탭 신설 — 관할 85개 정비구역 9단계 진행바(분기 통계 기반, 수시 보정 지원)</li><li>📐 &#x27;지가분석&#x27; 탭 신설 — 토지 실거래 ㎡당 단가·용도지역별 중위단가 당월/전월 비교(지가변동률 조사 지원)</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-11</div><ul class="cl-list"><li>🗺️ 실거래 지도 연동 — 카카오맵에 매매/전세/월세 핀 표시, 구 필터 연동</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-10</div><ul class="cl-list"><li>🏠 &#x27;최근 실거래&#x27; 탭 신설 — 국토부 실거래가 API, 구별 아파트 매매/전세/월세 최근 7일 계약분</li><li>📢 고시공고 탭을 구청 공식 게시판 바로가기로 개편</li><li>✨ 서비스명 &#x27;서울동부지사 AI toolkit&#x27;으로 변경, 공지줄 신설</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-07</div><ul class="cl-list"><li>🚀 최초 구축 — 관할 7개 구 정비사업 뉴스 매일 자동 수집(네이버 API), GitHub Actions 자동 갱신, 모바일 홈화면 앱(PWA) 지원</li></ul></div></div>
+            <div id="log-box"><div class="cl-head">📝 <b>개발 업데이트 이력</b></div><div class="cl-item"><div class="cl-date">2026-07-22</div><ul class="cl-list"><li>🏷️ &#x27;AI미공시&#x27; 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 (비교단지 공시÷시세 비율 역산 방식, 근거표 제공)</li><li>🧭 메뉴 4×3 개편 — 실험실 4줄째 이동, 확장 슬롯 2칸 확보</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-21</div><ul class="cl-list"><li>📊 &#x27;고점대비&#x27; 탭 신설 — 구별 대표단지(거래량 상위·신축) 전고점 대비 최근 3개월 회복률</li><li>🔐 세션 관리 도입 — 관리자 일괄 로그아웃(버전 방식) 및 개별 계정 차단 지원</li><li>📝 &#x27;업데이트&#x27; 탭 신설 — 개발 이력 타임라인</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-20</div><ul class="cl-list"><li>🗂️ &#x27;토허동향&#x27; 탭 신설 — 서울부동산정보광장 토지거래허가 내역 매일 수집, 구별 수급 지표(7일 증감·14일 추이)와 자체 누적 아카이브</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-14</div><ul class="cl-list"><li>🧭 실험실 첫 기능 &#x27;출장 표본지 최적동선&#x27; — 주소 입력만으로 방문 순서 최적화(2-opt)·지도 경로 표시</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-13</div><ul class="cl-list"><li>🔑 접속 로그인 도입 — 승인 계정만 이용 가능, 기관 심볼(구글컬러) 오프닝 화면</li><li>📢 상단 공지줄 흐름(마퀴) 효과 적용</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-12</div><ul class="cl-list"><li>🏗️ &#x27;추진현황&#x27; 탭 신설 — 관할 85개 정비구역 9단계 진행바(분기 통계 기반, 수시 보정 지원)</li><li>📐 &#x27;지가분석&#x27; 탭 신설 — 토지 실거래 ㎡당 단가·용도지역별 중위단가 당월/전월 비교(지가변동률 조사 지원)</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-11</div><ul class="cl-list"><li>🗺️ 실거래 지도 연동 — 카카오맵에 매매/전세/월세 핀 표시, 구 필터 연동</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-10</div><ul class="cl-list"><li>🏠 &#x27;최근 실거래&#x27; 탭 신설 — 국토부 실거래가 API, 구별 아파트 매매/전세/월세 최근 7일 계약분</li><li>📢 고시공고 탭을 구청 공식 게시판 바로가기로 개편</li><li>✨ 서비스명 &#x27;서울동부지사 AI toolkit&#x27;으로 변경, 공지줄 신설</li></ul></div><div class="cl-item"><div class="cl-date">2026-07-07</div><ul class="cl-list"><li>🚀 최초 구축 — 관할 7개 구 정비사업 뉴스 매일 자동 수집(네이버 API), GitHub Actions 자동 갱신, 모바일 홈화면 앱(PWA) 지원</li></ul></div></div>
             <div class="card-grid">
         <div class="notion-card" data-type="news" data-district="광진구">
             <div class="card-meta">
@@ -589,9 +595,9 @@
                 <span class="tag source-tag">📰 네이버뉴스</span>
                 <span class="tag date-tag">📅 2026년 7월 22일</span>
             </div>
-            <h3 class="news-title"><a href="https://edu.donga.com/news/articleView.html?idxno=110182" target="_blank">자이S&amp;D, 2·5호선 충정로역 직결 &#x27;충정로역자이르네&#x27; 8월 분양</a></h3>
-            <div class="summary-box">• 국토교통부 실거래가 공개시스템에 따르면 서울 동대문구 &#x27;청량리역롯데캐슬SKY-L65&#x27; 전용면적 84㎡는 지난<br>• 마포로5구역 제10·11지구 도시정비형 재개발사업을 통해 조성되는 단지로, 지하 7층~지상 25층 3개 동</div>
-            <div class="card-footer"><a href="https://edu.donga.com/news/articleView.html?idxno=110182" target="_blank">상세 원문 보기 →</a></div>
+            <h3 class="news-title"><a href="https://www.woodkorea.co.kr/news/articleView.html?idxno=90406" target="_blank">비·바람 걱정 끝... 2·5호선 충정로역 직통 &#x27;충정로역자이르네&#x27; 눈길</a></h3>
+            <div class="summary-box">• 국토교통부 실거래가 기준 서울 동대문구 &#x27;청량리역 롯데캐슬 SKY-L65&#x27;(2023년 7월 입주) 전용 84㎡는 올해 4월<br>• 맞은편 북아현 뉴타운 약 8,300세대 정비사업 추진에 따른 직간접 수혜가 예상된다</div>
+            <div class="card-footer"><a href="https://www.woodkorea.co.kr/news/articleView.html?idxno=90406" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="동대문구">
             <div class="card-meta">
@@ -599,9 +605,9 @@
                 <span class="tag source-tag">📰 네이버뉴스</span>
                 <span class="tag date-tag">📅 2026년 7월 22일</span>
             </div>
-            <h3 class="news-title"><a href="https://www.woodkorea.co.kr/news/articleView.html?idxno=90406" target="_blank">비·바람 걱정 끝... 2·5호선 충정로역 직통 &#x27;충정로역자이르네&#x27; 눈길</a></h3>
-            <div class="summary-box">• 국토교통부 실거래가 기준 서울 동대문구 &#x27;청량리역 롯데캐슬 SKY-L65&#x27;(2023년 7월 입주) 전용 84㎡는 올해 4월<br>• 맞은편 북아현 뉴타운 약 8,300세대 정비사업 추진에 따른 직간접 수혜가 예상된다</div>
-            <div class="card-footer"><a href="https://www.woodkorea.co.kr/news/articleView.html?idxno=90406" target="_blank">상세 원문 보기 →</a></div>
+            <h3 class="news-title"><a href="https://edu.donga.com/news/articleView.html?idxno=110182" target="_blank">자이S&amp;D, 2·5호선 충정로역 직결 &#x27;충정로역자이르네&#x27; 8월 분양</a></h3>
+            <div class="summary-box">• 국토교통부 실거래가 공개시스템에 따르면 서울 동대문구 &#x27;청량리역롯데캐슬SKY-L65&#x27; 전용면적 84㎡는 지난<br>• 마포로5구역 제10·11지구 도시정비형 재개발사업을 통해 조성되는 단지로, 지하 7층~지상 25층 3개 동</div>
+            <div class="card-footer"><a href="https://edu.donga.com/news/articleView.html?idxno=110182" target="_blank">상세 원문 보기 →</a></div>
         </div>
         <div class="notion-card" data-type="news" data-district="중랑구">
             <div class="card-meta">
@@ -2703,13 +2709,14 @@
             document.querySelectorAll('.sidebar-item').forEach(s => {
                 s.classList.toggle('active', s.dataset.district === district);
                 const name = s.dataset.district === 'all' ? '🌐 전체' : '📍 ' + s.dataset.district;
-                s.textContent = (tab === 'notice' || tab === 'lab' || tab === 'log') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
+                s.textContent = (tab === 'notice' || tab === 'lab' || tab === 'log' || tab === 'gongsi') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
             });
             updateDealMap();
             document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
             document.getElementById('log-box').style.display = tab === 'log' ? 'block' : 'none';
+            document.getElementById('gongsi-box').style.display = tab === 'gongsi' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — ★(26년 3월기준) 서울시 정비사업 추진현황 · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — ★(26년 3월기준) 서울시 정비사업 추진현황 · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : tab === 'gongsi' ? '🏷️ AI미공시 — 신축 공동주택 가상 공시가격(안) 모의 산정' : '🧪 실험실 — 준비 중인 기능';
         }
 
         document.querySelectorAll('.tab-btn').forEach(b =>
