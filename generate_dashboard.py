@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "2026-07-28 · 🤖AI브리핑 신설 — 최근 7일 관할 동향(뉴스·실거래·토허·시세)을 한눈에, 보고서 원클릭 복사 지원 기능"
+UPDATE_NOTICE = "🏷️ 2026-07-22 · 'AI미공시' 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 제공"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -107,8 +107,7 @@ AUTH_SESSION_VERSION = "1"
 
 # 개발 업데이트 이력 (새 항목은 맨 앞에 추가)
 CHANGELOG = [
-    ("2026-07-22", ["🤖 'AI브리핑' 신설 — 최근 7일 뉴스·실거래·토허·시세 보고체 자동 요약(원클릭 복사), 메뉴 최상단 단독 배치",
-                     "🏷️ 'AI미공시' 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 (비교단지 공시÷시세 비율 역산 방식, 근거표 제공)",
+    ("2026-07-22", ["🏷️ 'AI미공시' 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 (비교단지 공시÷시세 비율 역산 방식, 근거표 제공)",
                      "🧭 메뉴 4×3 개편 — 실험실 4줄째 이동, 확장 슬롯 2칸 확보"]),
     ("2026-07-21", ["📊 '고점대비' 탭 신설 — 구별 대표단지(거래량 상위·신축) 전고점 대비 최근 3개월 회복률",
                      "🔐 세션 관리 도입 — 관리자 일괄 로그아웃(버전 방식) 및 개별 계정 차단 지원",
@@ -1037,79 +1036,6 @@ def make_summary_bullets(summary: str) -> str:
     return "<br>".join(f"• {html.escape(p)}" for p in parts)
 
 
-BRIEF_HOT_WORDS = ["인가", "선정", "통과", "승인", "지정", "확정", "착공", "이주", "해제", "수주"]
-
-
-def build_brief(news: dict, deals: dict, toheo: dict, peak: dict, land: dict, today: datetime) -> tuple:
-    """최근 7일 데이터 → (HTML, 복사용 텍스트) 주간 브리핑"""
-    wk_start = today - timedelta(days=7)
-    period = f"{wk_start.strftime('%Y-%m-%d')} ~ {today.strftime('%m-%d')}"
-    L = []  # 텍스트 줄
-
-    # 1) 뉴스
-    wk_news = [a for v in news.values() for a in v if a["date"] >= wk_start]
-    hot = [a for a in wk_news if any(w in a["title"] for w in BRIEF_HOT_WORDS)]
-    hot.sort(key=lambda a: a["date"], reverse=True)
-    L.append(f"□ 정비사업 동향(뉴스): 최근 7일 관할 보도 {len(wk_news)}건")
-    for a in hot[:5]:
-        L.append(f"  - ({a['district'][:-1]}) {a['title']} ({a['date'].month}/{a['date'].day})")
-    if not hot:
-        L.append("  - 인가·선정 등 주요 절차 보도 없음")
-
-    # 2) 아파트 실거래
-    wk_deals = [(gu, x) for gu, v in deals.items() for x in v]
-    n_by = {"매매": 0, "전세": 0, "월세": 0}
-    for _, x in wk_deals:
-        n_by[x["type"]] = n_by.get(x["type"], 0) + 1
-    L.append(f"□ 아파트 실거래(계약 7일): 총 {len(wk_deals)}건 (매매 {n_by['매매']}·전세 {n_by['전세']}·월세 {n_by['월세']})")
-    trades = [(gu, x) for gu, x in wk_deals if x["type"] == "매매"]
-    if trades:
-        def _amt(p):
-            try:
-                e, _, r = p.partition("억")
-                return int(e) * 10000 + _num(r.strip())
-            except Exception:
-                return 0
-        gu, top = max(trades, key=lambda t: _amt(t[1]["price"]))
-        L.append(f"  - 최고가: {gu} {top['dong']} {top['apt']} {top['price']} ({top['date'].month}/{top['date'].day})")
-
-    # 3) 토지거래허가
-    t7 = sum(t["last7"] for t in toheo.values())
-    p7 = sum(t["prev7"] for t in toheo.values())
-    diff = t7 - p7
-    L.append(f"□ 토지거래허가(수급): 최근 7일 {t7}건, 직전 주 대비 {diff:+d}건")
-    movers = sorted(((gu, t["last7"], t["last7"] - t["prev7"]) for gu, t in toheo.items()
-                     if t["prev7"] + t["last7"] >= 5), key=lambda x: -abs(x[2]))[:2]
-    for gu, cur, d in movers:
-        L.append(f"  - {gu} {cur}건 ({d:+d}건)")
-
-    # 4) 전고점 대비 시세
-    reps = [(gu, s) for gu, p in peak.items() for s in p.get("big", []) + p.get("new", []) if s.get("rn")]
-    if reps:
-        ratios = [s["recent"] / s["peak"] * 100 for _, s in reps]
-        over = [(gu, s) for gu, s in reps if s["recent"] >= s["peak"]]
-        L.append(f"□ 시세 수준(대표단지 {len(reps)}곳): 전고점 대비 평균 {sum(ratios)/len(ratios):.1f}%")
-        if over:
-            gu, s = max(over, key=lambda t: t[1]["recent"] / t[1]["peak"])
-            L.append(f"  - 전고점 돌파 {len(over)}곳 (최고: {gu} {s['dp']} {s['recent']/s['peak']*100:.1f}%)")
-    else:
-        L.append("□ 시세 수준: 가격이력 축적 중 (백필 완료 후 제공)")
-
-    # 5) 토지 시세 신호
-    sig = [(gu, s) for gu, v in land.items() for s in v.get("summary", []) if s.get("chg") is not None]
-    if sig:
-        gu, s = max(sig, key=lambda t: abs(t[1]["chg"]))
-        L.append(f"□ 토지 단가 신호: {gu} {s['use']} 중위 {s['chg']:+.1f}% (전월比, {s['n']}건) 등")
-
-    text = f"[서울동부지사 주간 동향 브리핑] {period}\n" + "\n".join(L) +            "\n※ 자동 생성 요약 — 세부 내용은 각 탭 및 원자료 확인"
-    body = "".join(f'<div class="bf-line{" bf-sub" if l.startswith("  ") else ""}">{html.escape(l)}</div>' for l in L)
-    brief_html = (f'<div class="rt-head">🤖 <b>AI 브리핑</b> <span class="rt-beta">{period} · 매일 갱신</span></div>'
-                  f'<button id="bf-copy">📋 보고서 복사</button><span id="bf-msg"></span>'
-                  f'<div class="bf-box">{body}'
-                  f'<div class="rt-note">※ 수집 데이터 기반 자동 생성 요약입니다. 세부 내용은 각 탭에서 확인하세요.</div></div>')
-    return brief_html, text
-
-
 def build_news_card(a: dict) -> str:
     d = a["date"]
     return f"""
@@ -1173,8 +1099,6 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
     ]
     deals_json = json.dumps(deal_points, ensure_ascii=False)
 
-    brief_html, brief_text = build_brief(news, deals, toheo, peak, land, today)
-
     log_html = "".join(
         f'<div class="cl-item"><div class="cl-date">{d}</div><ul class="cl-list">'
         + "".join(f"<li>{html.escape(x)}</li>" for x in items) + "</ul></div>"
@@ -1213,10 +1137,6 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         @keyframes marquee {{ from {{ transform: translateX(0); }} to {{ transform: translateX(-50%); }} }}
         .tab-bar {{ display: flex; flex-direction: column; }}
         .tab-row {{ display: flex; gap: 4px; }}
-        .tab-row-center {{ justify-content: center; margin: 6px 0; }}
-        .tab-btn-hero {{ letter-spacing: 0.3px; border: 1.5px solid #e0e0dd; border-radius: 10px; padding: 9px 30px; border-bottom: 1.5px solid #e0e0dd; }}
-        .tab-btn-hero:hover {{ border-color: #b5b5b0; background-color: #f7f7f5; }}
-        .tab-btn-hero.active {{ border-color: #37352f; border-bottom-color: #37352f; background-color: #f1f1ef; }}
         .tab-btn {{ padding: 10px 18px; font-size: 15px; font-weight: 600; color: #73726e; cursor: pointer; border-bottom: 2px solid transparent; }}
         .tab-btn.active {{ color: #37352f; border-bottom-color: #37352f; }}
         #container {{ display: flex; padding: 0 50px 50px 50px; }}
@@ -1297,13 +1217,6 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .rt-pin-start {{ background-color: #d94343; }}
         .tab-empty {{ visibility: hidden; pointer-events: none; }}
         #gongsi-box {{ display: none; padding: 10px 0 40px 0; max-width: 760px; }}
-        #brief-box {{ display: none; padding: 10px 0 40px 0; max-width: 760px; }}
-        #bf-copy {{ padding: 9px 16px; border: none; border-radius: 8px; background-color: #37352f; color: #fff; font-weight: 600; cursor: pointer; margin-bottom: 12px; }}
-        #bf-copy:hover {{ background-color: #1f1e1b; }}
-        #bf-msg {{ font-size: 13px; color: #2b6a46; margin-left: 8px; }}
-        .bf-box {{ background-color: #f7f7f5; border-radius: 8px; padding: 16px; }}
-        .bf-line {{ font-size: 14px; line-height: 2.0; font-weight: 600; }}
-        .bf-sub {{ font-weight: 400; font-size: 13.5px; color: #37352f; padding-left: 10px; }}
         .gs-form {{ display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }}
         .gs-form select, .gs-form input {{ padding: 10px 12px; border: 1px solid #e0e0dd; border-radius: 8px; font-size: 13.5px; font-family: inherit; background-color: #fff; }}
         .gs-form button {{ grid-column: 1 / -1; padding: 10px; border: none; border-radius: 8px; background-color: #37352f; color: #fff; font-weight: 600; cursor: pointer; }}
@@ -1331,7 +1244,6 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
             .ai-caution {{ font-size: 12px; }}
             .update-bar {{ font-size: 12px; padding: 6px 10px; }}
             .tab-btn {{ flex: 1; text-align: center; padding: 10px 4px; font-size: 14px; }}
-            .tab-row-center .tab-btn {{ flex: 0 0 auto; padding: 10px 28px; }}
             #container {{ flex-direction: column; padding: 0 16px 30px 16px; }}
             #sidebar {{ width: 100%; padding-right: 0; border-right: none; border-bottom: 1px solid #eaeaea; margin-top: 12px; padding-bottom: 10px; position: sticky; top: 0; background-color: #fbfbfa; z-index: 10; }}
             .sidebar-title {{ display: none; }}
@@ -1355,9 +1267,6 @@ __GATE__
         <div class="subtitle">📅 {date_str} 기준 · 최근 {DAYS_BACK}일 ({period_str} ~)<br>갱신 {updated_str} KST</div>
         {notice_bar}
         <div class="tab-bar">
-            <div class="tab-row tab-row-center">
-                <div class="tab-btn tab-btn-hero" data-tab="brief">🤖 AI브리핑</div>
-            </div>
             <div class="tab-row">
                 <div class="tab-btn active" data-tab="news">📰 뉴스</div>
                 <div class="tab-btn" data-tab="notice">📢 고시공고</div>
@@ -1373,8 +1282,10 @@ __GATE__
                 <div class="tab-btn" data-tab="gongsi">🏷️ AI미공시</div>
                 <div class="tab-btn" data-tab="log">📝 업데이트</div>
             </div>
-            <div class="tab-row tab-row-center">
-                <div class="tab-btn tab-btn-hero" data-tab="lab">🧪 실험실</div>
+            <div class="tab-row">
+                <div class="tab-btn" data-tab="lab">🧪 실험실</div>
+                <div class="tab-btn tab-empty"></div>
+                <div class="tab-btn tab-empty"></div>
             </div>
         </div>
     </div>
@@ -1392,7 +1303,6 @@ __GATE__
             </div>
             <div id="lab-box">__LAB_HTML__</div>
             <div id="gongsi-box">__GONGSI_HTML__</div>
-            <div id="brief-box">__BRIEF_HTML__</div>
             <div id="log-box">__LOG_HTML__</div>
             <div class="card-grid">{cards}</div>
         </div>
@@ -1412,29 +1322,20 @@ __GATE__
             document.querySelectorAll('.sidebar-item').forEach(s => {{
                 s.classList.toggle('active', s.dataset.district === district);
                 const name = s.dataset.district === 'all' ? '🌐 전체' : '📍 ' + s.dataset.district;
-                s.textContent = (tab === 'notice' || tab === 'lab' || tab === 'log' || tab === 'gongsi' || tab === 'brief') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
+                s.textContent = (tab === 'notice' || tab === 'lab' || tab === 'log' || tab === 'gongsi') ? name : name + ' (' + (COUNTS[tab][s.dataset.district] || 0) + ')';
             }});
             updateDealMap();
             document.getElementById('lab-box').style.display = tab === 'lab' ? 'block' : 'none';
             document.getElementById('log-box').style.display = tab === 'log' ? 'block' : 'none';
             document.getElementById('gongsi-box').style.display = tab === 'gongsi' ? 'block' : 'none';
-            document.getElementById('brief-box').style.display = tab === 'brief' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : tab === 'gongsi' ? '🏷️ AI미공시 — 신축 공동주택 가상 공시가격(안) 모의 산정' : tab === 'brief' ? '🤖 최근 7일 데이터 자동 요약 — 보고서 복사 지원' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : tab === 'gongsi' ? '🏷️ AI미공시 — 신축 공동주택 가상 공시가격(안) 모의 산정' : '🧪 실험실 — 준비 중인 기능';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
             b.addEventListener('click', () => {{ tab = b.dataset.tab; render(); }}));
         document.querySelectorAll('.sidebar-item').forEach(s =>
             s.addEventListener('click', () => {{ district = s.dataset.district; render(); }}));
-        const BRIEF_TEXT = __BRIEF_TEXT__;
-        const bfBtn = document.getElementById('bf-copy');
-        if (bfBtn) bfBtn.addEventListener('click', () => {{
-            navigator.clipboard.writeText(BRIEF_TEXT).then(() => {{
-                document.getElementById('bf-msg').textContent = ' 복사됐어요!';
-                setTimeout(() => document.getElementById('bf-msg').textContent = '', 2000);
-            }});
-        }});
         __DEAL_MAP_JS__
         render();
     </script>
@@ -1449,8 +1350,6 @@ __GATE__
     page = page.replace("__GATE__", gate)
     page = page.replace("__PROG_ASOF__", html.escape(prog_asof) or "기준 파일 없음")
     page = page.replace("__LAB_HTML__", LAB_ROUTE_HTML if KAKAO_JS_KEY else LAB_PLACEHOLDER)
-    page = page.replace("__BRIEF_HTML__", brief_html)
-    page = page.replace("__BRIEF_TEXT__", json.dumps(brief_text, ensure_ascii=False))
     page = page.replace("__GONGSI_HTML__", GONGSI_TOOL_HTML)
     page = page.replace("__LOG_HTML__", '<div class="cl-head">📝 <b>개발 업데이트 이력</b></div>' + log_html)
     page = page.replace("__DEAL_MAP_JS__", ((DEAL_MAP_JS + LAB_ROUTE_JS) if KAKAO_JS_KEY else "function updateDealMap(){}") + GONGSI_JS)
