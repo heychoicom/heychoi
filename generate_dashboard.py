@@ -26,7 +26,7 @@ NAVER_CLIENT_ID = os.environ.get("NAVER_CLIENT_ID", "")
 NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 
 # 대시보드 상단 공지줄 (비우면 표시 안 됨). 내용 수정 후 커밋하면 다음 갱신에 반영
-UPDATE_NOTICE = "🏷️ 2026-07-22 · 'AI미공시' 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 제공"
+UPDATE_NOTICE = "🏷️ 2026-09-11 · '뉴스 메뉴 개선"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
 KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
@@ -34,6 +34,8 @@ KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운
 DAYS_BACK = 30
 MAX_PER_QUERY = 30
 MAX_PER_DISTRICT = 15
+NEWS_ARCHIVE = os.path.join("data", "news_archive.json")   # 기사 영구 누적
+NEWS_LIST_ROWS = 50                                        # 구별 화면 표시 건수
 OUTPUT_PATH = os.path.join("docs", "index.html")
 
 RELEVANCE_WORDS = KEYWORDS + ["조합", "관리처분", "사업시행", "안전진단", "이주", "착공",
@@ -107,6 +109,7 @@ AUTH_SESSION_VERSION = "1"
 
 # 개발 업데이트 이력 (새 항목은 맨 앞에 추가)
 CHANGELOG = [
+    ("2026-08-05", ["📰 뉴스 탭 개편 — 구별 제목 리스트 방식 전환, 기사 영구 누적 아카이브 도입 (원본 30일 한계 극복)"]),
     ("2026-07-22", ["🏷️ 'AI미공시' 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 (비교단지 공시÷시세 비율 역산 방식, 근거표 제공)",
                      "🧭 메뉴 4×3 개편 — 실험실 4줄째 이동, 확장 슬롯 2칸 확보"]),
     ("2026-07-21", ["📊 '고점대비' 탭 신설 — 구별 대표단지(거래량 상위·신축) 전고점 대비 최근 3개월 회복률",
@@ -1022,6 +1025,35 @@ def collect_news(today: datetime) -> dict:
         articles.sort(key=lambda a: a["date"], reverse=True)
         result[district] = articles[:MAX_PER_DISTRICT]
         print(f"  → 뉴스 {len(result[district])}건 채택")
+    return _merge_news_archive(result)
+
+
+def _merge_news_archive(collected: dict) -> dict:
+    """수집분을 영구 아카이브에 누적하고 구별 표시 데이터 반환"""
+    try:
+        with open(NEWS_ARCHIVE, encoding="utf-8") as f:
+            archive = json.load(f)
+    except Exception:
+        archive = {}
+    new_cnt = 0
+    for gu, arts in collected.items():
+        for a in arts:
+            if a["link"] not in archive:
+                archive[a["link"]] = {"gu": gu, "title": a["title"],
+                                      "date": a["date"].strftime("%Y-%m-%d")}
+                new_cnt += 1
+    if new_cnt:
+        os.makedirs("data", exist_ok=True)
+        with open(NEWS_ARCHIVE, "w", encoding="utf-8") as f:
+            json.dump(archive, f, ensure_ascii=False)
+    print(f"▶ 뉴스 아카이브: 총 {len(archive)}건 (신규 {new_cnt}건)")
+    result = {}
+    for gu in DISTRICTS:
+        rows = sorted(((link, v) for link, v in archive.items() if v["gu"] == gu),
+                      key=lambda x: x[1]["date"], reverse=True)
+        result[gu] = {"rows": [{"title": v["title"], "link": link, "date": v["date"]}
+                               for link, v in rows[:NEWS_LIST_ROWS]],
+                      "total": len(rows)}
     return result
 
 
@@ -1036,18 +1068,26 @@ def make_summary_bullets(summary: str) -> str:
     return "<br>".join(f"• {html.escape(p)}" for p in parts)
 
 
-def build_news_card(a: dict) -> str:
-    d = a["date"]
+def build_news_gu_card(district: str, data: dict) -> str:
+    rows_html = ""
+    for r in data["rows"]:
+        d = r["date"]
+        rows_html += (f'<div class="deal-row">'
+                      f'<span class="deal-date">{d[2:4]}.{d[5:7]}.{d[8:10]}</span>'
+                      f'<a class="nw-title" href="{r["link"]}" target="_blank">{html.escape(r["title"])}</a>'
+                      f'</div>')
+    if not rows_html:
+        rows_html = '<div class="deal-row"><span class="deal-empty">아직 수집된 기사가 없습니다.</span></div>'
+    more = (f'<span class="ld-n"> · 최근 {len(data["rows"])}건 표시</span>'
+            if data["total"] > len(data["rows"]) else "")
     return f"""
-        <div class="notion-card" data-type="news" data-district="{a['district']}">
+        <div class="notion-card deal-card" data-type="news" data-district="{district}">
             <div class="card-meta">
-                <span class="tag district-tag">📍 {a['district']}</span>
-                <span class="tag source-tag">📰 네이버뉴스</span>
-                <span class="tag date-tag">📅 {d.year}년 {d.month}월 {d.day}일</span>
+                <span class="tag district-tag">📍 {district}</span>
+                <span class="tag source-tag">📰 누적 {data["total"]}건{more}</span>
             </div>
-            <h3 class="news-title"><a href="{a['link']}" target="_blank">{html.escape(a['title'])}</a></h3>
-            <div class="summary-box">{make_summary_bullets(a['summary'])}</div>
-            <div class="card-footer"><a href="{a['link']}" target="_blank">상세 원문 보기 →</a></div>
+            <div class="deal-list">{rows_html}</div>
+            <div class="card-footer">네이버 뉴스 검색 기반 · 수집 시점부터 영구 누적 (원본 검색은 최근 30일 제공)</div>
         </div>"""
 
 
@@ -1066,8 +1106,8 @@ def build_notice_card(district: str) -> str:
 
 
 def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: dict, toheo: dict, peak: dict, today: datetime) -> str:
-    counts = {"news": {"all": sum(len(v) for v in news.values()),
-                       **{d: len(news[d]) for d in DISTRICTS}},
+    counts = {"news": {"all": sum(news[d]["total"] for d in DISTRICTS),
+                       **{d: news[d]["total"] for d in DISTRICTS}},
               "deal": {"all": sum(len(v) for v in deals.values()),
                        **{d: len(deals[d]) for d in DISTRICTS}},
               "prog": {"all": sum(len(v) for v in progress.values()),
@@ -1079,8 +1119,7 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
               "peak": {"all": sum(len(peak[d]["big"]) + len(peak[d]["new"]) for d in DISTRICTS),
                        **{d: len(peak[d]["big"]) + len(peak[d]["new"]) for d in DISTRICTS}}}
 
-    all_news = sorted((a for v in news.values() for a in v), key=lambda x: x["date"], reverse=True)
-    cards = "".join(build_news_card(a) for a in all_news) + \
+    cards = "".join(build_news_gu_card(d, news[d]) for d in DISTRICTS) + \
             "".join(build_notice_card(d) for d in DISTRICTS) + \
             "".join(build_deal_card(d, deals[d], today) for d in DISTRICTS) + \
             "".join(build_progress_card(p, d) for d in DISTRICTS for p in progress[d]) + \
@@ -1230,6 +1269,8 @@ def build_html(news: dict, deals: dict, progress: dict, prog_asof: str, land: di
         .th-bars-label {{ font-size: 11.5px; color: #acaba9; margin-bottom: 10px; }}
         .peak-tag {{ background-color: #e8e3f7; color: #4a3a85; }}
         .pk-badge {{ flex-shrink: 0; }}
+        .nw-title {{ color: #37352f; text-decoration: none; min-width: 0; }}
+        .nw-title:hover {{ color: #2383e2; text-decoration: underline; }}
         #log-box {{ display: none; padding: 10px 0 40px 0; max-width: 760px; }}
         .cl-head {{ font-size: 17px; margin-bottom: 16px; }}
         .cl-item {{ border-left: 3px solid #e0e0dd; padding: 2px 0 14px 16px; margin-left: 4px; position: relative; }}
@@ -1329,7 +1370,7 @@ __GATE__
             document.getElementById('log-box').style.display = tab === 'log' ? 'block' : 'none';
             document.getElementById('gongsi-box').style.display = tab === 'gongsi' ? 'block' : 'none';
             document.getElementById('view-bar').textContent =
-                tab === 'news' ? '📋 뉴스 갤러리 — 최신순' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : tab === 'gongsi' ? '🏷️ AI미공시 — 신축 공동주택 가상 공시가격(안) 모의 산정' : '🧪 실험실 — 준비 중인 기능';
+                tab === 'news' ? '📋 구별 뉴스 제목 아카이브 — 최신순 (영구 누적)' : tab === 'notice' ? '📋 구청별 고시공고 게시판 바로가기' : tab === 'deal' ? '📋 구별 아파트 실거래 — 계약일 기준 최근 7일' : tab === 'prog' ? '📋 정비사업 추진현황 — __PROG_ASOF__ · 진척 단계순' : tab === 'land' ? '📋 토지 매매 사례 분석 — 지가변동률 조사 지원 (최신순)' : tab === 'toheo' ? '📋 토지거래허가 동향 — 수급 활동량 지표 (허가일 기준, 누적 아카이브)' : tab === 'peak' ? '📋 구별 대표단지 전고점 대비 회복률 — ㎡당가 기준 (2021.01~)' : tab === 'log' ? '📝 서비스 개발·개선 이력 (최신순)' : tab === 'gongsi' ? '🏷️ AI미공시 — 신축 공동주택 가상 공시가격(안) 모의 산정' : '🧪 실험실 — 준비 중인 기능';
         }}
 
         document.querySelectorAll('.tab-btn').forEach(b =>
@@ -1686,7 +1727,7 @@ def main():
     os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
         f.write(build_html(news, deals, progress, prog_asof, land, toheo, peak, today))
-    total_news = sum(len(v) for v in news.values())
+    total_news = sum(news[d]["total"] for d in DISTRICTS)
     total_deals = sum(len(v) for v in deals.values())
     print(f"\n✅ 생성 완료: {OUTPUT_PATH} (뉴스 {total_news}건 / 실거래 {total_deals}건 / 게시판 바로가기 {len(DISTRICTS)}개)")
 
