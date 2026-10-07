@@ -29,13 +29,15 @@ NAVER_CLIENT_SECRET = os.environ.get("NAVER_CLIENT_SECRET", "")
 UPDATE_NOTICE = "🏷️ 2026-09-11 · '뉴스 메뉴 개선"
 
 DISTRICTS = ["성동구", "광진구", "동대문구", "중랑구", "도봉구", "노원구", "강북구"]
-KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합"]
+KEYWORDS = ["정비사업", "재개발", "재건축", "재정비", "모아타운", "신속통합기획", "공공주택 복합",
+            "토지거래허가", "공공재개발", "역세권"]
 
 DAYS_BACK = 30
 MAX_PER_QUERY = 30
-MAX_PER_DISTRICT = 15
+MAX_PER_DISTRICT = 60
 NEWS_ARCHIVE = os.path.join("data", "news_archive.json")   # 기사 영구 누적
-NEWS_LIST_ROWS = 50                                        # 구별 화면 표시 건수
+NEWS_MIN_ROWS = 20                                         # 30일치가 적어도 최소 표시 건수
+NEWS_MAX_ROWS = 200                                        # 안전 상한
 OUTPUT_PATH = os.path.join("docs", "index.html")
 
 RELEVANCE_WORDS = KEYWORDS + ["조합", "관리처분", "사업시행", "안전진단", "이주", "착공",
@@ -109,6 +111,8 @@ AUTH_SESSION_VERSION = "1"
 
 # 개발 업데이트 이력 (새 항목은 맨 앞에 추가)
 CHANGELOG = [
+    ("2026-10-07", ["📰 뉴스 수집 키워드 확대 — '토지거래허가', '공공재개발', '역세권' 추가 (구별 검색 7→10개)",
+                     "📰 뉴스 표시 확대 — 최근 30일치 기사 전부 표시 (기존 구별 50건 제한 해제), 일일 수집 상한 15→60건"]),
     ("2026-08-05", ["📰 뉴스 탭 개편 — 구별 제목 리스트 방식 전환, 기사 영구 누적 아카이브 도입 (원본 30일 한계 극복)"]),
     ("2026-07-22", ["🏷️ 'AI미공시' 탭 신설 — 신축 공동주택 가상 공시가격(안) 모의 산정 (비교단지 공시÷시세 비율 역산 방식, 근거표 제공)",
                      "🧭 메뉴 4×3 개편 — 실험실 4줄째 이동, 확장 슬롯 2칸 확보"]),
@@ -1025,10 +1029,10 @@ def collect_news(today: datetime) -> dict:
         articles.sort(key=lambda a: a["date"], reverse=True)
         result[district] = articles[:MAX_PER_DISTRICT]
         print(f"  → 뉴스 {len(result[district])}건 채택")
-    return _merge_news_archive(result)
+    return _merge_news_archive(result, today)
 
 
-def _merge_news_archive(collected: dict) -> dict:
+def _merge_news_archive(collected: dict, today: datetime) -> dict:
     """수집분을 영구 아카이브에 누적하고 구별 표시 데이터 반환"""
     try:
         with open(NEWS_ARCHIVE, encoding="utf-8") as f:
@@ -1047,12 +1051,15 @@ def _merge_news_archive(collected: dict) -> dict:
         with open(NEWS_ARCHIVE, "w", encoding="utf-8") as f:
             json.dump(archive, f, ensure_ascii=False)
     print(f"▶ 뉴스 아카이브: 총 {len(archive)}건 (신규 {new_cnt}건)")
+    cutoff = (today - timedelta(days=DAYS_BACK)).strftime("%Y-%m-%d")
     result = {}
     for gu in DISTRICTS:
         rows = sorted(((link, v) for link, v in archive.items() if v["gu"] == gu),
                       key=lambda x: x[1]["date"], reverse=True)
+        recent = [x for x in rows if x[1]["date"] >= cutoff]
+        show = recent if len(recent) >= NEWS_MIN_ROWS else rows[:NEWS_MIN_ROWS]
         result[gu] = {"rows": [{"title": v["title"], "link": link, "date": v["date"]}
-                               for link, v in rows[:NEWS_LIST_ROWS]],
+                               for link, v in show[:NEWS_MAX_ROWS]],
                       "total": len(rows)}
     return result
 
@@ -1078,7 +1085,7 @@ def build_news_gu_card(district: str, data: dict) -> str:
                       f'</div>')
     if not rows_html:
         rows_html = '<div class="deal-row"><span class="deal-empty">아직 수집된 기사가 없습니다.</span></div>'
-    more = (f'<span class="ld-n"> · 최근 {len(data["rows"])}건 표시</span>'
+    more = (f'<span class="ld-n"> · 최근 {DAYS_BACK}일 {len(data["rows"])}건 표시</span>'
             if data["total"] > len(data["rows"]) else "")
     return f"""
         <div class="notion-card deal-card" data-type="news" data-district="{district}">
